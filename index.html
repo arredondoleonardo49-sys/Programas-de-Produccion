@@ -49,7 +49,7 @@ body{margin:0;font:13px/1.45 var(--sans);background:var(--bg);color:var(--text);
 .nav-item[data-t=carga] svg{color:#4a9eff;filter:drop-shadow(0 0 4px rgba(74,158,255,.5))}
 .nav-item[data-t=progs] svg{color:#3ecf8e;filter:drop-shadow(0 0 4px rgba(62,207,142,.5))}
 .nav-item[data-t=hora] svg{color:#f5a623;filter:drop-shadow(0 0 4px rgba(245,166,35,.5))}
-.nav-item[data-t=rutas] svg{color:#c084fc;filter:drop-shadow(0 0 4px rgba(192,132,252,.5))}
+.nav-item[data-t=piezas] svg{color:#c084fc;filter:drop-shadow(0 0 4px rgba(192,132,252,.5))}
 .nav-item[data-t=modelos] svg{color:#fb7185;filter:drop-shadow(0 0 4px rgba(251,113,133,.5))}
 .sidebar.collapsed .logo-txt,.sidebar.collapsed .nav-label,.sidebar.collapsed .nav-item span,.sidebar.collapsed .sb-txt{display:none}
 .sidebar.collapsed .nav-item{padding:10px 0;justify-content:center;border-left:none}
@@ -61,12 +61,12 @@ body{margin:0;font:13px/1.45 var(--sans);background:var(--bg);color:var(--text);
 
 /* ---------- página ---------- */
 .main{flex:1;min-width:0;overflow-y:auto;display:flex;flex-direction:column}
-.topbar{padding:1.1rem 1.5rem .7rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:sticky;top:0;z-index:5;background:var(--bg)}
+.topbar{padding:.8rem 1.25rem .6rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:sticky;top:0;z-index:5;background:var(--bg)}
 .page-title{font-size:17px;font-weight:600}
 .page-title .ctb{font:600 11px var(--mono);color:var(--blue);background:var(--info-bg);border-radius:4px;padding:2px 7px;margin-left:6px;vertical-align:3px}
 .page-sub{font-size:12px;color:var(--text2);margin-top:2px}
 .acciones{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-left:auto}
-.content{padding:1.25rem 1.5rem;flex:1}
+.content{padding:1rem 1.25rem;flex:1}
 .pie{padding:.9rem 1.5rem;border-top:1px solid var(--border);font:11px var(--mono);color:var(--text3);display:flex;gap:12px;flex-wrap:wrap}
 .sp{flex:1}
 .hide{display:none!important}
@@ -103,10 +103,10 @@ a.lk{font-size:11px;text-decoration:none;margin-right:8px;white-space:nowrap}
 a.lk:hover{text-decoration:underline}
 
 /* ---------- tarjetas, KPIs ---------- */
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:1.1rem;animation:scaleIn .2s ease both}
-.card>.hd{padding:12px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-weight:600}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:.8rem;animation:scaleIn .2s ease both}
+.card>.hd{padding:10px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-weight:600}
 .card>.hd .sub{font-weight:400;color:var(--text2);font-size:12px}
-.card>.body{padding:0 16px 16px}
+.card>.body{padding:0 14px 14px}
 details.card>summary{list-style:none;cursor:pointer;padding:12px 16px;display:flex;align-items:center;gap:8px;font-weight:600}
 details.card>summary::-webkit-details-marker{display:none}
 details.card>summary::before{content:"›";color:var(--text3);font-size:16px;width:10px;transition:transform .15s}
@@ -114,10 +114,10 @@ details.card[open]>summary::before{transform:rotate(90deg)}
 details.card>summary .sub{font-weight:400;color:var(--text2);font-size:12px}
 .card.aviso{border-color:rgba(245,166,35,.45)}
 .card.aviso>.hd{color:var(--amber)}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:1.1rem}
-.kpi{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:.85rem 1rem;animation:scaleIn .3s ease both}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:.8rem}
+.kpi{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:.6rem .85rem;animation:scaleIn .3s ease both}
 .kpi .l{font-size:11px;color:var(--text2);margin-bottom:4px;font-weight:500}
-.kpi .v{font:600 22px var(--mono);line-height:1.15}
+.kpi .v{font:600 19px var(--mono);line-height:1.15}
 .kpi .ks{font-size:10.5px;color:var(--text3);margin-top:3px}
 .kpi.ok .v{color:var(--green)} .kpi.warn .v{color:var(--amber)} .kpi.err .v{color:var(--red)} .kpi.info .v{color:var(--blue)}
 .bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;min-width:70px}
@@ -125,9 +125,13 @@ details.card>summary .sub{font-weight:400;color:var(--text2);font-size:12px}
 .bar.ok>i{background:var(--green)}
 .empty{padding:2.5rem 16px;text-align:center;color:var(--text3)}
 .empty b{display:block;color:var(--text);font-size:14px;margin-bottom:4px}
-label.subir{display:block;border:1.5px dashed var(--border);background:var(--bg3);cursor:pointer;border-radius:var(--radius-lg);padding:2rem 1rem;text-align:center;color:var(--text2);transition:border-color .15s}
+label.subir{display:block;border:1.5px dashed var(--border);background:var(--bg3);cursor:pointer;border-radius:var(--radius-lg);padding:1.1rem 1rem;text-align:center;color:var(--text2);transition:border-color .15s}
 label.subir:hover,label.subir.drag{border-color:var(--blue);color:var(--text)}
 label.subir b{display:block;color:var(--text);font-size:15px;margin-bottom:4px}
+label.subir.linea{display:flex;align-items:center;justify-content:center;gap:10px;padding:.75rem 1rem;margin-bottom:.8rem;text-align:left}
+label.subir.linea b{display:inline;font-size:13.5px;margin:0}
+.card.bor{border-color:rgba(245,166,35,.55);background:linear-gradient(90deg,rgba(245,166,35,.08),var(--bg2) 60%)}
+.nav-item .n.alerta{background:var(--warn-bg);color:var(--amber)}
 .note{font-size:12px;color:var(--text2);margin:8px 0 0}
 .avisos{margin:0;padding:0;list-style:none}
 .avisos li{padding:4px 0;font-size:12.5px}
@@ -136,8 +140,8 @@ label.subir b{display:block;color:var(--text);font-size:15px;margin-bottom:4px}
 /* ---------- tablas ---------- */
 .tw{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
-th{text-align:left;padding:8px 10px;color:var(--text3);font-weight:500;font-size:10.5px;letter-spacing:.4px;text-transform:uppercase;border-bottom:1px solid var(--border);background:var(--bg3);position:sticky;top:0;white-space:nowrap}
-td{padding:7px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+th{text-align:left;padding:6px 9px;color:var(--text3);font-weight:500;font-size:10.5px;letter-spacing:.4px;text-transform:uppercase;border-bottom:1px solid var(--border);background:var(--bg3);position:sticky;top:0;white-space:nowrap}
+td{padding:5px 9px;border-bottom:1px solid var(--border);vertical-align:middle}
 tr:last-child td{border-bottom:none}
 tbody tr:hover td{background:var(--bg3)}
 tbody tr{animation:rowIn .2s ease both}
@@ -186,6 +190,39 @@ td select{padding:4px 6px;font-size:12px}
 .tg{padding:3px 8px;font-size:11px;border-radius:12px;background:transparent;color:var(--text3)}
 .tg.on{background:var(--info-bg);border-color:var(--blue);color:var(--blue)}
 
+/* ---------- dibujos DXF: miniaturas y visor con medición ---------- */
+.pzmini{width:46px;height:34px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;background:#0b0d12;border:1px solid var(--border);border-radius:6px;cursor:zoom-in;vertical-align:middle;color:var(--text3);overflow:hidden}
+.pzmini:hover{border-color:var(--blue);color:var(--blue)}
+.pzmini.g{width:150px;height:104px}
+.pzmini.x,.pzmini.err{cursor:default;opacity:.45}
+.pzmini svg{width:100%;height:100%;display:block}
+svg .dx{fill:none;stroke:#3ecf8e;stroke-width:1.2;vector-effect:non-scaling-stroke}
+svg .dx.mk{stroke:#f5a623;stroke-dasharray:5 4}
+.pz-n{display:flex;align-items:center;gap:10px}
+.visor{display:flex;gap:14px;flex-wrap:wrap}
+.vz{position:relative;flex:1 1 560px;min-width:280px;height:min(64vh,600px);background:#0b0d12;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:crosshair;touch-action:none;user-select:none}
+.vz.mueve{cursor:grabbing}
+.vz svg{width:100%;height:100%;display:block}
+.vz svg .dx{stroke-width:1.5}
+.vz .ms{stroke:#4a9eff;stroke-width:1.5;vector-effect:non-scaling-stroke;fill:none}
+.vz .ms.auto{stroke:#8b8fa8;stroke-width:1}
+.vz .ms.ext{stroke-width:.8;opacity:.6}
+.vz .ms.tmp{stroke-dasharray:4 3}
+.vz .snap{fill:none;stroke:#fff;stroke-width:1.5;vector-effect:non-scaling-stroke}
+.vz .snap.fijo{fill:#4a9eff;stroke:#4a9eff}
+.vzl{position:absolute;inset:0;pointer-events:none}
+.vzl span{position:absolute;transform:translate(-50%,-50%);background:rgba(11,13,18,.88);border:1px solid #2f4a6e;border-radius:4px;padding:1px 6px;font:600 11.5px var(--mono);color:#7dbbff;white-space:nowrap}
+.vzl span.auto{color:var(--text2);border-color:var(--border)}
+.vzl small{font-weight:400;color:var(--text2);margin-left:6px}
+.vzb{position:absolute;left:8px;top:8px;display:flex;gap:6px}
+.vzr{position:absolute;left:8px;bottom:8px;font:11px var(--mono);color:var(--text2);background:rgba(11,13,18,.85);padding:3px 8px;border-radius:4px;pointer-events:none}
+.vzi{flex:0 1 270px;min-width:230px;font-size:12.5px}
+.vzi .fila{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid var(--border)}
+.vzi .fila span:first-child{color:var(--text2)}
+.vzi .fila span:last-child{text-align:right}
+.iguales{display:flex;gap:12px;flex-wrap:wrap;padding:12px 14px}
+.iguales .pz{display:flex;flex-direction:column;gap:6px;width:230px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:10px}
+
 dialog{border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--bg2);color:var(--text);padding:0;width:min(1060px,96vw);max-height:92vh}
 dialog::backdrop{background:rgba(0,0,0,.6)}
 dialog .hd{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--border);font-weight:600}
@@ -228,20 +265,12 @@ dialog .db{padding:14px 16px;overflow:auto;max-height:calc(92vh - 60px)}
     <div class="logo-txt"><div class="logo-text">Programación Troqueles</div><div class="logo-sub" id="logoSub">Láser y dobladora</div></div>
   </div>
   <div class="ctsw" id="ctsw"></div>
+  <!-- Menú corto (Leonardo, 2026-11-17): Programas (cargar + guardados), Hora por hora, Piezas (con dibujo y medición) y Modelos -->
   <div class="nav-section">
-    <div class="nav-label">Planeación</div>
-    <div class="nav-item" data-t="carga"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span>Cargar programa</span><span class="n" id="nCarga">–</span></div>
-    <div class="nav-item" data-t="progs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg><span>Programas</span><span class="n" id="nProgs">0</span></div>
-  </div>
-  <div class="nav-section">
-    <div class="nav-label">Operación</div>
-    <div class="nav-item" data-t="hora"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg><span>Hora por hora</span><span class="n" id="nHora">0</span></div>
-  </div>
-  <div class="nav-section">
-    <div class="nav-label">Catálogo</div>
-    <div class="nav-item" data-t="piezas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 17.5h7M17.5 14v7"/></svg><span>Piezas compartidas</span><span class="n" id="nPiezas">0</span></div>
-    <div class="nav-item" data-t="rutas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="12" r="2.5"/><circle cx="19" cy="12" r="2.5"/><line x1="7.5" y1="12" x2="16.5" y2="12"/><polyline points="13.5 9 16.5 12 13.5 15"/></svg><span>Rutas de pieza</span><span class="n" id="nRutas">0</span></div>
-    <div class="nav-item" data-t="modelos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><line x1="5.6" y1="5.6" x2="18.4" y2="18.4"/></svg><span>Modelos fuera / dentro</span><span class="n" id="nFuera">0</span></div>
+    <div class="nav-item" data-t="progs" title="Carga el previo, revisa el borrador y abre los programas guardados"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg><span>Programas</span><span class="n" id="nProgs">0</span></div>
+    <div class="nav-item" data-t="hora" title="Registro de piezas por franja contra el programa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg><span>Hora por hora</span><span class="n" id="nHora">0</span></div>
+    <div class="nav-item" data-t="piezas" title="Piezas de lámina: dibujo, medidas y qué modelos la comparten"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 17.5h7M17.5 14v7"/></svg><span>Piezas</span><span class="n" id="nPiezas">0</span></div>
+    <div class="nav-item" data-t="modelos" title="Modelos que no pasan por Troqueles (se retiran solos de cada programa)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><line x1="5.6" y1="5.6" x2="18.4" y2="18.4"/></svg><span>Modelos fuera</span><span class="n" id="nFuera">0</span></div>
   </div>
   <div class="sidebar-bottom">
     <button class="sb-btn" id="bNube" title="Conectar con Google Sheets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/></svg><span class="sb-txt">Nube</span></button>
@@ -253,15 +282,14 @@ dialog .db{padding:14px 16px;overflow:auto;max-height:calc(92vh - 60px)}
 
 <div class="main">
   <div class="topbar">
-    <div><div class="page-title" id="pgT">Cargar programa</div><div class="page-sub" id="pgS"></div></div>
+    <div><div class="page-title" id="pgT">Programas</div><div class="page-sub" id="pgS"></div></div>
     <div class="acciones" id="acc"></div>
   </div>
   <div class="content">
-    <section id="v-carga"></section>
-    <section id="v-progs" class="hide"></section>
+    <section id="v-carga" class="hide"></section>
+    <section id="v-progs"></section>
     <section id="v-ver" class="hide"></section>
     <section id="v-hora" class="hide"></section>
-    <section id="v-rutas" class="hide"></section>
     <section id="v-modelos" class="hide"></section>
     <section id="v-piezas" class="hide"></section>
   </div>
@@ -274,7 +302,7 @@ dialog .db{padding:14px 16px;overflow:auto;max-height:calc(92vh - 60px)}
 <script>
 "use strict";
 /* ============================== CONFIGURACIÓN ============================== */
-const VERSION = "2026-11-17c";
+const VERSION = "2026-11-17d";
 const T1 = ["8AM–9AM","9AM–10AM","10AM–11AM","11AM–12PM","12PM–12:30PM ⏸ Comida","12:30PM–1:30PM","1:30PM–2:30PM","2:30PM–3:30PM","3:30PM–4:30PM","4:30PM–5PM"];
 /* Mismas franjas que el hora por hora de la OEE Planta */
 const FRANJAS = {
@@ -311,7 +339,8 @@ const ING_URL = "https://ingenieria.lineaitalia.net/files/";
 
 /* ============================== UTILIDADES ============================== */
 const $ = s => document.querySelector(s);
-const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const abrirDlg = () => { if (!$("#dlg").open) $("#dlg").showModal(); };   // un diálogo puede abrir otro (visor → editar pieza)
+const esc =s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const fmt = (n, d = 0) => Number(n || 0).toLocaleString("es-MX", { minimumFractionDigits: d, maximumFractionDigits: d });
 const up = s => String(s ?? "").trim().toUpperCase();
 const normH = s => String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toUpperCase().replace(/[^A-Z0-9 ]+/g, " ").replace(/\s+/g, " ").trim();
@@ -525,7 +554,7 @@ function abrirNube() {
       <button id="nProbar">Probar</button><button class="pri" id="nGuardar">Guardar y sincronizar</button></div>
     <p class="note" id="nMsg">${NUBE.url ? `Estado: ${esc($("#bNube .sb-txt").textContent)} · ${Object.keys(NUBE.pend).length} por enviar · ${Object.keys(NUBE.env).length} por confirmar` : "Sin nube: los datos viven solo en este navegador."}</p>
     <div class="toolbar" style="margin-top:10px">${NUBE.url ? '<button id="nAhora">Sincronizar ahora</button><button class="peligro" id="nQuitar">Desconectar este navegador</button>' : ""}</div>`;
-  $("#dlg").showModal();
+  abrirDlg();
   const url = () => $("#nUrl").value.trim();
   $("#nProbar").onclick = async () => { const u0 = NUBE.url; NUBE.url = url(); try { const d = await jsonp({ accion: "ping" }, 30000); $("#nMsg").innerHTML = `<span class="ok-t">Conectado a «${esc(d.libro)}» · ${fmt(d.filas)} renglones</span>`; } catch (e) { $("#nMsg").innerHTML = `<span class="err-t">${esc(e.message)}</span>`; } NUBE.url = u0; };
   $("#nGuardar").onclick = () => { const u = url(); if (!/^https:\/\/script\.google(usercontent)?\.com\//.test(u)) { $("#nMsg").innerHTML = '<span class="err-t">La URL debe ser de script.google.com</span>'; return; }
@@ -720,7 +749,7 @@ function verFoto(ruta, modelo) {
   $("#dlgT").innerHTML = `${esc(modelo || ruta)} <span class="dim mono" style="font-weight:400">ruta ${esc(ruta || "—")}</span>`;
   $("#dlgB").innerHTML = `<div class="ficha">${g.foto ? `<img src="${g.foto}" alt="">` : '<span class="dim">Sin imagen</span>'}<div style="flex:1;min-width:200px">
       ${g.desc ? `<p>${esc(g.desc)}</p>` : ""}<p>${g.metal === 1 ? '<span class="st info">Lleva estructura metálica</span>' : g.metal === 0 ? '<span class="st mel">Sin estructura metálica (melamina)</span>' : ""}</p></div></div>`;
-  $("#dlg").showModal();
+  abrirDlg();
 }
 document.addEventListener("click", e => { const t = e.target.closest("img.thumb"); if (t) verFoto(t.dataset.foto, t.dataset.mod); });
 
@@ -844,7 +873,7 @@ function catalogo() {
     const id = k.slice(2); let p = piezas.get(id);
     if (!p) { if (!e.manual) continue; p = { id, nombre: "", alt: [], cal: null, w: null, h: null, g: "", dibujo: "", lineas: [], base: {}, modelos: {}, esBase: false, doblez: null, notas: "", unir: "", unidas: [] }; piezas.set(id, p); }
     if (e.nombre) p.nombre = e.nombre;
-    if (e.manual) { p.cal = e.cal ?? null; p.w = e.w ?? null; p.h = e.h ?? null; }
+    if (e.manual) { p.cal = e.cal ?? null; p.w = e.w ?? null; p.h = e.h ?? null; p.dibujo = e.dibujo || ""; }
     if (e.doblez === true || e.doblez === false) p.doblez = e.doblez;
     for (const r of e.quitar || []) delete p.modelos[up(r)];
     for (const [r, n] of Object.entries(e.agregar || {})) p.modelos[up(r)] = +n || 1;
@@ -879,6 +908,7 @@ function ponerModeloPieza(p, ruta, n) {
   else { delete agregar[r]; if (r in p.base) quitar.add(r); }
   guardarPieza(p.id, { agregar, quitar: [...quitar] });
 }
+const celdaPieza = (p, extra = "") => `<div class="pz-n">${miniHTML(p)}<div><b>${esc(p.nombre)}</b> ${chipPieza(p)}${extra}</div></div>`;
 const chipPieza = p => `${p.cal ? `<span class="chip">cal ${p.cal}</span>` : ""}${p.w ? `<span class="chip">${medTxt(p)}</span>` : ""}${p.doblez === true ? '<span class="chip ok-t">se dobla</span>' : p.doblez === false ? '<span class="chip">sin doblez</span>' : ""}`;
 
 /* ---------- Desglose de piezas de un programa ---------- */
@@ -914,16 +944,16 @@ function desglosePiezas(p, mid) {
 function desgloseHTML(p, mid) {
   const D = desglosePiezas(p, mid), m = MAQ[mid];
   let h = `<div class="kpis">${kpi("Piezas a " + (mid === CORTE ? "cortar" : "doblar"), fmt(D.total), D.tipos + " tipos de pieza", "info")}
-      ${kpi("Compartidas", fmt(D.compartidas.length), fmt(D.totalComp) + " pz que se fabrican juntas", D.compartidas.length ? "ok" : "")}
-      ${kpi("Modelos con piezas propias", fmt(D.porModelo.length), "se desglosan por modelo")}
-      ${kpi("Sin piezas en el catálogo", fmt(D.sin.length), D.sin.length ? "OPs: usan las pz por mueble del programa" : "todas las OPs tienen piezas", D.sin.length ? "warn" : "ok")}</div>`;
-  if (D.sinDef) h += `<div class="card aviso"><div class="body" style="padding-top:12px"><ul class="avisos"><li class="warn">${D.sinDef} pieza(s) aún sin definir si se doblan: aparecen aquí con «¿se dobla?». Márcalas una vez en <b>Piezas compartidas</b> y aplica a todos los modelos.</li></ul></div></div>`;
+      ${kpi("Compartidas", fmt(D.compartidas.length), fmt(D.totalComp) + " pz se fabrican juntas", D.compartidas.length ? "ok" : "")}
+      ${kpi("Piezas propias", fmt(D.porModelo.length) + " modelos", "se desglosan por modelo")}
+      ${kpi("OPs sin piezas", fmt(D.sin.length), D.sin.length ? "captúralas abajo" : "todas tienen piezas", D.sin.length ? "warn" : "ok")}</div>`;
+  if (D.sinDef) h += `<p class="note warn-t" style="margin:0 0 10px">${D.sinDef} pieza(s) sin definir si se doblan («¿se dobla?»): márcalas una vez en <b>Piezas</b> y aplica a todos los modelos.</p>`;
   if (D.compartidas.length) {
     h += `<div class="card"><div class="hd">Piezas compartidas · se fabrican juntas <span class="sub">la misma pieza en varios modelos: se suma el total</span></div><div class="tw"><table><thead><tr><th class="num">#</th><th>Pieza</th><th>Modelos (pz x mueble × muebles)</th><th class="num">Muebles</th><th class="num">Total a ${mid === CORTE ? "cortar" : "doblar"}</th></tr></thead><tbody>`;
     let calAnt = null;
     D.compartidas.forEach((a, i) => {
       if (a.p.cal !== calAnt) { h += `<tr class="grupo"><td colspan="5">${a.p.cal ? "Calibre " + a.p.cal : "Sin calibre"}</td></tr>`; calAnt = a.p.cal; }
-      h += `<tr><td class="num dim">${i + 1}</td><td><b>${esc(a.p.nombre)}</b> ${chipPieza(a.p)}${mid === DOBLEZ && a.p.doblez == null ? ' <span class="chip warn-t">¿se dobla?</span>' : ""}</td>
+      h += `<tr><td class="num dim">${i + 1}</td><td>${celdaPieza(a.p, mid === DOBLEZ && a.p.doblez == null ? ' <span class="chip warn-t">¿se dobla?</span>' : "")}</td>
         <td>${[...a.mods.values()].map(x => `<span class="chip" title="${esc([...x.modelos].join(", ") + " · " + x.ops.join(", "))}">${esc(x.ruta)} · ${fmt(x.pz)}×${fmt(x.muebles)} = ${fmt(x.total)}</span>`).join("")}</td>
         <td class="num">${fmt(a.muebles)}</td><td class="num"><b>${fmt(a.total)}</b></td></tr>`;
     });
@@ -933,7 +963,7 @@ function desgloseHTML(p, mid) {
     h += `<div class="card"><div class="hd">Piezas por modelo <span class="sub">piezas propias de cada modelo, desglosadas completas</span></div><div class="tw"><table><thead><tr><th>Pieza</th><th class="num">Pz x mueble</th><th class="num">Muebles</th><th class="num">Total</th></tr></thead><tbody>`;
     for (const g of D.porModelo) {
       h += `<tr class="grupo"><td colspan="4">Modelo ${esc(g.ruta)}${g.modelos.size && ![...g.modelos].every(x => up(x) === up(g.ruta)) ? " · " + esc([...g.modelos].join(", ")) : ""} · ${g.ops.length} OP(s) · ${fmt(g.muebles)} muebles</td></tr>`;
-      for (const x of g.piezas) h += `<tr><td><b>${esc(x.p.nombre)}</b> ${chipPieza(x.p)}${mid === DOBLEZ && x.p.doblez == null ? ' <span class="chip warn-t">¿se dobla?</span>' : ""}</td><td class="num">${fmt(x.pz)}</td><td class="num">${fmt(g.muebles)}</td><td class="num"><b>${fmt(x.total)}</b></td></tr>`;
+      for (const x of g.piezas) h += `<tr><td>${celdaPieza(x.p, mid === DOBLEZ && x.p.doblez == null ? ' <span class="chip warn-t">¿se dobla?</span>' : "")}</td><td class="num">${fmt(x.pz)}</td><td class="num">${fmt(g.muebles)}</td><td class="num"><b>${fmt(x.total)}</b></td></tr>`;
       if (g.compartidas.length) h += `<tr><td colspan="4" class="dim" style="font-size:11.5px">También lleva (van en compartidas): ${g.compartidas.map(x => `${esc(x.p.nombre)} ×${fmt(x.pz)}`).join(" · ")}</td></tr>`;
     }
     h += `</tbody></table></div></div>`;
@@ -956,51 +986,47 @@ function posiblesIguales() {     // mismo calibre y medidas, distinta pieza (otr
 }
 function renderPiezas() {
   const el = $("#v-piezas"), C = catalogo(), q = up(pzBusq);
-  const comp = C.lista.filter(p => nModelos(p) > 1), mods = C.porRuta.size, pos = posiblesIguales();
-  $("#acc").innerHTML = `<button id="bPzNueva">+ Pieza nueva</button><button id="bPzXls">Exportar Excel</button>`;
-  let h = `<div class="kpis">${kpi("Piezas en el catálogo", fmt(C.lista.length), "de la biblioteca DXF de Nidos" + (PZB.gen ? " (" + esc(PZB.gen.slice(0, 10)) + ")" : "") + " y capturadas")}
-      ${kpi("Compartidas", fmt(comp.length), "piezas que llevan 2 o más modelos", "ok")}${kpi("Modelos con piezas", fmt(mods), "rutas con su despiece de lámina", "info")}
-      ${kpi("Posibles iguales", fmt(pos.length), "mismas medidas y calibre: revisar", pos.length ? "warn" : "")}</div>
-    <div class="toolbar"><div class="seg">${[["comp", "Compartidas"], ["todas", "Todas"], ["modelo", "Por modelo"], ["iguales", "Posibles iguales"]].map(([v, t]) => `<button data-pzt="${v}" class="${pzTab === v ? "on" : ""}">${t}</button>`).join("")}</div>
-      <input type="text" id="pzBusq" placeholder="${pzTab === "modelo" ? "Modelo o ruta (105, 2300, AC-120120…)" : "Buscar pieza o modelo"}" value="${esc(pzBusq)}" style="min-width:260px"></div>`;
+  const comp = C.lista.filter(p => nModelos(p) > 1), pos = posiblesIguales();
+  $("#acc").innerHTML = `<span id="pzBib"></span><label class="btn" title="Ver y medir un DXF de tu equipo (no se guarda)">Abrir DXF…<input type="file" id="pzArch" accept=".dxf" hidden></label><button id="bPzNueva">+ Pieza nueva</button><button id="bPzXls">Excel</button>`;
+  const tabs = [["comp", `Compartidas · ${comp.length}`], ["todas", `Todas · ${C.lista.length}`], ["modelo", "Por modelo"], ["iguales", `Posibles iguales · ${pos.length}`]];
+  const chipsMods = (p, max, sin) => { const rs = Object.entries(p.modelos).filter(([r]) => r !== sin).sort((a, b) => a[0].localeCompare(b[0], "es", { numeric: true }));
+    return rs.slice(0, max).map(([r, n]) => `<span class="chip">${esc(r)}${n !== 1 && !sin ? " ×" + n : ""}</span>`).join("") + (rs.length > max ? `<span class="dim"> +${rs.length - max}</span>` : ""); };
+  let h = `<div class="toolbar"><div class="seg">${tabs.map(([v, t]) => `<button data-pzt="${v}" class="${pzTab === v ? "on" : ""}">${t}</button>`).join("")}</div>
+      <input type="text" id="pzBusq" placeholder="${pzTab === "modelo" ? "Modelo o ruta (105, 2300, AC-120120…)" : "Buscar pieza, modelo o calibre"}" value="${esc(pzBusq)}" style="min-width:250px">
+      <span class="dim" style="font-size:11.5px">${fmt(C.porRuta.size)} modelos con piezas · clic en el dibujo para verlo y medirlo</span></div>`;
   if (pzTab === "comp" || pzTab === "todas") {
     let xs = (pzTab === "comp" ? comp : C.lista).filter(p => !q || up(p.nombre).includes(q) || Object.keys(p.modelos).some(r => r.includes(q)) || String(p.cal) === q.replace(/^CAL\s*/, ""));
     xs = xs.sort((a, b) => nModelos(b) - nModelos(a) || (a.cal ?? 99) - (b.cal ?? 99) || a.nombre.localeCompare(b.nombre));
-    h += `<div class="card"><div class="tw"><table><thead><tr><th>Pieza</th><th class="num">Modelos</th><th>Modelos que la llevan (pz x mueble)</th><th>¿Se dobla?</th><th></th></tr></thead><tbody>`;
-    for (const p of xs.slice(0, 400)) {
-      const rs = Object.entries(p.modelos).sort((a, b) => a[0].localeCompare(b[0], "es", { numeric: true }));
-      h += `<tr><td><b>${esc(p.nombre)}</b> ${chipPieza(p)}${p.esBase ? "" : ' <span class="chip">capturada</span>'}${p.unidas.length ? `<div class="dim" style="font-size:11px">Unida con: ${esc(p.unidas.join(", "))}</div>` : ""}</td>
-        <td class="num">${fmt(rs.length)}</td><td>${rs.slice(0, 14).map(([r, n]) => `<span class="chip">${esc(r)}${n !== 1 ? " ×" + n : ""}</span>`).join("")}${rs.length > 14 ? `<span class="dim"> +${rs.length - 14}</span>` : ""}</td>
+    h += `<div class="card"><div class="tw"><table><thead><tr><th>Pieza</th><th class="num">Modelos</th><th>Modelos que la llevan (pz × mueble)</th><th>¿Se dobla?</th><th></th></tr></thead><tbody>`;
+    for (const p of xs.slice(0, 300)) {
+      const extra = (p.esBase ? "" : ' <span class="chip">capturada</span>') + (p.unidas.length ? `<div class="dim" style="font-size:11px">Unida con: ${esc(p.unidas.join(", "))}</div>` : "");
+      h += `<tr><td>${celdaPieza(p, extra)}</td><td class="num">${fmt(nModelos(p))}</td><td>${chipsMods(p, 12)}</td>
         <td><select data-pzd="${p.id}"><option value="" ${p.doblez == null ? "selected" : ""}>Sin definir</option><option value="si" ${p.doblez === true ? "selected" : ""}>Sí</option><option value="no" ${p.doblez === false ? "selected" : ""}>No</option></select></td>
         <td><button class="mini" data-pze="${p.id}">Editar</button></td></tr>`;
     }
-    h += `</tbody></table></div>${xs.length > 400 ? `<p class="note">Se muestran 400 de ${xs.length}: usa la búsqueda.</p>` : ""}${!xs.length ? '<div class="empty">Sin piezas con ese filtro.</div>' : ""}</div>`;
+    h += `</tbody></table></div>${xs.length > 300 ? `<p class="note" style="padding:0 14px 12px">Se muestran 300 de ${xs.length}: usa la búsqueda.</p>` : ""}${!xs.length ? '<div class="empty">Sin piezas con ese filtro.</div>' : ""}</div>`;
   } else if (pzTab === "modelo") {
     const rutas = [...C.porRuta.keys()].filter(r => !q || r.includes(q)).sort((a, b) => a.localeCompare(b, "es", { numeric: true }));
-    const exacta = rutas.find(r => r === q);
-    const ver = exacta ? [exacta] : rutas.slice(0, q ? 12 : 0);
-    if (!q) h += `<div class="card"><div class="body" style="padding-top:14px"><p class="note" style="margin:0">Escribe un modelo o ruta para ver sus piezas de lámina, con qué modelos comparte cada una y qué modelos son compatibles. ${fmt(C.porRuta.size)} modelos tienen piezas.</p></div></div>`;
-    else if (!ver.length) h += `<div class="card"><div class="empty"><b>${esc(pzBusq)} no tiene piezas en el catálogo</b>Sus dibujos no están en la biblioteca de Nidos. Agrégale piezas existentes (por ejemplo, el mismo cajón de otro modelo) o una pieza nueva.<div style="margin-top:10px"><button class="pri" data-pzmod="${esc(q)}">Agregar piezas a ${esc(q)}</button></div></div></div>`;
+    const exacta = rutas.find(r => r === q), ver = exacta ? [exacta] : rutas.slice(0, q ? 8 : 0);
+    if (!q) h += `<div class="card"><div class="empty"><b>Escribe un modelo o ruta</b>Verás sus piezas de lámina con su dibujo, con qué modelos comparte cada una y qué modelos son compatibles.</div></div>`;
+    else if (!ver.length) h += `<div class="card"><div class="empty"><b>${esc(pzBusq)} no tiene piezas todavía</b>Agrégale piezas que ya existen (por ejemplo, el mismo cajón de otro modelo) o una pieza nueva con su DXF.<div style="margin-top:10px"><button class="pri" data-pzmod="${esc(q)}">Agregar piezas a ${esc(q)}</button></div></div></div>`;
     for (const r of ver) {
       const L = C.porRuta.get(r) || [], compat = new Map();
       for (const { p } of L) for (const r2 of Object.keys(p.modelos)) if (r2 !== r) compat.set(r2, (compat.get(r2) || 0) + 1);
       const top = [...compat].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "es", { numeric: true }));
-      const f0 = { ruta: r, modelo: r };
-      h += `<div class="card"><div class="hd" style="display:flex;align-items:center;gap:10px">${fotoHTML(f0)}<span>Modelo ${esc(r)} <span class="sub">${L.length} pieza(s) de lámina · ${fmt(L.reduce((s, x) => s + x.pz, 0))} pz por mueble</span></span><span class="sp" style="flex:1"></span><button class="mini" data-pzmod="${esc(r)}">Agregar pieza</button></div>
-        <div class="tw"><table><thead><tr><th>Pieza</th><th class="num">Pz x mueble</th><th>También la llevan</th><th></th></tr></thead><tbody>
-        ${L.map(({ p, pz }) => { const otros = Object.keys(p.modelos).filter(x => x !== r).sort((a, b) => a.localeCompare(b, "es", { numeric: true }));
-          return `<tr><td><b>${esc(p.nombre)}</b> ${chipPieza(p)}</td><td class="num">${fmt(pz)}</td><td>${otros.length ? otros.slice(0, 16).map(x => `<span class="chip">${esc(x)}</span>`).join("") + (otros.length > 16 ? `<span class="dim"> +${otros.length - 16}</span>` : "") : '<span class="dim">solo este modelo</span>'}</td><td><button class="mini" data-pze="${p.id}">Editar</button></td></tr>`; }).join("")}
+      h += `<div class="card"><div class="hd">${fotoHTML({ ruta: r, modelo: r })}<span>Modelo ${esc(r)} <span class="sub">${L.length} pieza(s) · ${fmt(L.reduce((s, x) => s + x.pz, 0))} pz por mueble</span></span><span class="sp"></span><button class="mini" data-pzmod="${esc(r)}">Agregar pieza</button></div>
+        <div class="tw"><table><thead><tr><th>Pieza</th><th class="num">Pz × mueble</th><th>También la llevan</th><th></th></tr></thead><tbody>
+        ${L.map(({ p, pz }) => `<tr><td>${celdaPieza(p)}</td><td class="num">${fmt(pz)}</td><td>${nModelos(p) > 1 ? chipsMods(p, 14, r) : '<span class="dim">solo este modelo</span>'}</td><td><button class="mini" data-pze="${p.id}">Editar</button></td></tr>`).join("")}
         </tbody></table></div>
-        ${top.length ? `<div class="body"><p class="note" style="margin:0">Modelos compatibles (comparten piezas): ${top.slice(0, 20).map(([x, n]) => `<span class="chip">${esc(x)} · ${n} de ${L.length}</span>`).join("")}</p></div>` : ""}</div>`;
+        ${top.length ? `<div class="body"><p class="note" style="margin:0">Compatibles (comparten piezas): ${top.slice(0, 20).map(([x, n]) => `<span class="chip">${esc(x)} · ${n}/${L.length}</span>`).join("")}</p></div>` : ""}</div>`;
     }
-    if (!exacta && rutas.length > 12) h += `<p class="note">${rutas.length} modelos coinciden; escribe el modelo completo.</p>`;
+    if (!exacta && rutas.length > 8) h += `<p class="note">${rutas.length} modelos coinciden; escribe el modelo completo.</p>`;
   } else {
-    h += `<div class="card"><div class="body" style="padding-top:14px"><p class="note" style="margin:0">Piezas con el mismo calibre y las mismas medidas pero distinto nombre o dibujo. Si son la misma pieza, únelas: sus modelos se suman en una sola y el programa las fabrica juntas.</p></div></div>`;
+    h += `<p class="note" style="margin:0 0 10px">Mismo calibre y mismas medidas, pero distinto nombre o dibujo. Compara los dibujos (clic para medir): si son la misma pieza, únelas y el programa las fabrica juntas.</p>`;
     for (const grupo of pos.filter(g => !q || g.some(p => up(p.nombre).includes(q) || Object.keys(p.modelos).some(r => r.includes(q))))) {
-      h += `<div class="card"><div class="tw"><table><thead><tr><th>Pieza</th><th class="num">Modelos</th><th>Modelos</th><th></th></tr></thead><tbody>
-        ${grupo.map((p, i) => `<tr><td><b>${esc(p.nombre)}</b> ${chipPieza(p)}</td><td class="num">${nModelos(p)}</td><td>${Object.keys(p.modelos).slice(0, 12).map(x => `<span class="chip">${esc(x)}</span>`).join("")}${nModelos(p) > 12 ? `<span class="dim"> +${nModelos(p) - 12}</span>` : ""}</td>
-          <td style="white-space:nowrap">${grupo.filter(o => o !== p).slice(0, 3).map(o => `<button class="mini" data-pzu="${p.id}" data-pzu2="${o.id}">Unir con ${esc(o.nombre)}${nModelos(o) !== nModelos(p) ? ` (${nModelos(o)})` : ""}</button>`).join(" ")}</td></tr>`).join("")}
-        </tbody></table></div></div>`;
+      h += `<div class="card"><div class="iguales">${grupo.map(p => `<div class="pz">${miniHTML(p, "g")}<div><b>${esc(p.nombre)}</b> ${chipPieza(p)}</div>
+          <div class="dim" style="font-size:11.5px">${nModelos(p)} modelo(s): ${chipsMods(p, 6)}</div>
+          <div>${grupo.filter(o => o !== p).slice(0, 2).map(o => `<button class="mini" data-pzu="${p.id}" data-pzu2="${o.id}" title="Sus modelos pasan a «${esc(o.nombre)}»">Es la misma que ${esc(o.nombre)}</button>`).join(" ")}</div></div>`).join("")}</div></div>`;
     }
     if (!pos.length) h += `<div class="card"><div class="empty">No hay piezas con medidas repetidas.</div></div>`;
   }
@@ -1010,6 +1036,8 @@ function renderPiezas() {
   enlazarPiezas(el);
   $("#bPzNueva").onclick = () => editarPieza(null);
   $("#bPzXls").onclick = exportarPiezas;
+  $("#pzArch").onchange = async e => { const f = e.target.files[0]; e.target.value = ""; if (f) verDibujo({ texto: await f.text(), nombre: f.name }); };
+  estadoBib($("#pzBib")); pintarMinis(el);
 }
 function enlazarPiezas(el) {
   el.querySelectorAll("[data-pzd]").forEach(s => s.onchange = () => { guardarPieza(s.dataset.pzd, { doblez: s.value === "si" ? true : s.value === "no" ? false : null }); toast("Guardado: aplica a todos los modelos que llevan esta pieza.", "ok"); });
@@ -1031,14 +1059,16 @@ function editarPieza(id, rutaInicial) {
       <label>Largo (mm)<input type="number" id="pzW" value="${p?.w ?? ""}" ${p?.esBase ? "disabled" : ""} style="width:100px"></label>
       <label>Ancho (mm)<input type="number" id="pzH" value="${p?.h ?? ""}" ${p?.esBase ? "disabled" : ""} style="width:100px"></label>
       <label>¿Se dobla?<select id="pzD"><option value="">Sin definir</option><option value="si" ${p?.doblez === true ? "selected" : ""}>Sí</option><option value="no" ${p?.doblez === false ? "selected" : ""}>No</option></select></label></div>
-    ${p?.esBase ? `<p class="note">De la biblioteca de Nidos: <span class="mono">${esc(p.dibujo)}</span>${p.alt.length ? " · también se llama " + esc(p.alt.join(", ")) : ""}. Calibre y medidas salen del DXF.</p>` : ""}
+    ${p?.esBase ? `<div class="pz-n" style="margin-top:8px">${miniHTML(p)}<p class="note" style="margin:0">De la biblioteca de Nidos: <span class="mono">${esc(p.dibujo)}</span>${p.alt.length ? " · también se llama " + esc(p.alt.join(", ")) : ""}. Calibre y medidas salen del DXF.</p></div>`
+      : `<div class="params" style="margin-top:8px"><label style="flex:1">Dibujo DXF (de la biblioteca)<input type="text" id="pzDib" value="${esc(p?.dibujo || "")}" placeholder="Sin dibujo: elige su DXF y se toman las medidas" readonly></label>
+        <button id="pzDibB" title="Elige el DXF dentro de la carpeta de la biblioteca de Nidos">Elegir DXF…</button>${p?.dibujo ? `<button data-verpz="${esc(p.id)}">Ver</button>` : ""}</div>`}
     <div class="hd" style="padding:12px 0 6px">Modelos que la llevan <span class="sub">pz por mueble</span></div>
     <div class="tw" style="max-height:260px;overflow:auto"><table><tbody id="pzMods">${mods.map(([r, n]) => `<tr><td class="mono">${esc(r)}</td><td><input type="number" min="0" step="1" data-r="${esc(r)}" value="${n}" style="width:80px"></td><td class="dim" style="font-size:11px">${p && r in p.base ? "biblioteca" : "agregado"}</td></tr>`).join("")}</tbody></table></div>
     <div class="params" style="margin-top:8px"><label>Agregar modelo<input type="text" id="pzR" placeholder="105" style="width:140px"></label><label>Pz x mueble<input type="number" id="pzRn" value="1" min="1" style="width:80px"></label><button id="pzRadd">Agregar</button></div>
     <p class="note">Pz = 0 quita el modelo de esta pieza. Agrega aquí los modelos que llevan la misma pieza aunque su dibujo no esté en la biblioteca (por ejemplo, el mismo cajón del 105 en el 106).</p>
     <div class="params"><label style="flex:1">Notas<input type="text" id="pzNotas" value="${esc(p?.notas || "")}"></label></div>
     <div class="toolbar" style="margin-top:12px"><button class="pri" id="pzOk">Guardar</button>${p && !p.esBase ? '<button class="peligro" id="pzDel">Borrar pieza</button>' : ""}</div>`;
-  $("#dlg").showModal();
+  abrirDlg(); pintarMinis($("#dlgB"));
   $("#pzRadd").onclick = () => { const r = up($("#pzR").value), n = +$("#pzRn").value || 1; if (!r) return;
     const ex = $("#pzMods").querySelector(`input[data-r="${CSS.escape(r)}"]`); if (ex) { ex.value = n; return; }
     $("#pzMods").insertAdjacentHTML("beforeend", `<tr><td class="mono">${esc(r)}</td><td><input type="number" min="0" step="1" data-r="${esc(r)}" value="${n}" style="width:80px"></td><td class="dim" style="font-size:11px">nuevo</td></tr>`); $("#pzR").value = ""; };
@@ -1049,8 +1079,24 @@ function editarPieza(id, rutaInicial) {
     for (const [r, n] of Object.entries(vals)) { if (n > 0 && base[r] !== n) agregar[r] = n; if (n === 0 && r in base) quitar.push(r); }
     for (const r of Object.keys(base)) if (!(r in vals)) quitar.push(r);
     const d = $("#pzD").value, cambios = { nombre: p?.esBase && nombre === PZB.piezas.find(s => s.id === p.id)?.n ? "" : nombre, doblez: d === "si" ? true : d === "no" ? false : null, agregar, quitar, notas: $("#pzNotas").value.trim() };
-    if (!p || !p.esBase) Object.assign(cambios, { manual: true, cal: +$("#pzC").value || null, w: +$("#pzW").value || null, h: +$("#pzH").value || null });
+    if (!p || !p.esBase) Object.assign(cambios, { manual: true, cal: +$("#pzC").value || null, w: +$("#pzW").value || null, h: +$("#pzH").value || null, dibujo: $("#pzDib")?.value || "" });
     guardarPieza(pid, cambios); $("#dlg").close(); toast(`Pieza «${esc(nombre)}» guardada.`, "ok"); abrir(vista);
+  };
+  if ($("#pzDibB")) $("#pzDibB").onclick = async () => {   // ligar el DXF de la biblioteca a una pieza capturada: guarda su ruta y toma medidas y calibre
+    if (!window.showOpenFilePicker) { toast("Este navegador no deja elegir archivos de la carpeta: usa Chrome o Edge.", "err"); return; }
+    if (!(await bibConectar({ handle: true }))) return;
+    try {
+      const [fh] = await showOpenFilePicker({ id: "nidos-biblioteca", startIn: BIB.h, types: [{ description: "Dibujo DXF", accept: { "application/dxf": [".dxf"] } }] });
+      const camino = await BIB.h.resolve(fh);
+      if (!camino) { toast(`El DXF debe estar dentro de la carpeta «${esc(BIB.h.name)}».`, "warn"); return; }
+      const g = geometriaDXF(await (await fh.getFile()).text()), ruta = camino.join("/");
+      BIB.geo.set(ruta, Promise.resolve(g)); $("#pzDib").value = ruta;
+      if (!$("#pzW").value) $("#pzW").value = Math.round(Math.max(g.w, g.h) * 10) / 10;
+      if (!$("#pzH").value) $("#pzH").value = Math.round(Math.min(g.w, g.h) * 10) / 10;
+      const mc = fh.name.match(/CAL\s*\.?\s*(\d+)/i); if (mc && !$("#pzC").value) $("#pzC").value = mc[1];
+      if (!$("#pzN").value.trim()) $("#pzN").value = piezaDeArchivo(fh.name);
+      toast("Dibujo ligado: medidas y calibre tomados del DXF. Pulsa Guardar.", "ok");
+    } catch (e) { if (e.name !== "AbortError") toast(esc(e.message), "err"); }
   };
   if ($("#pzDel")) $("#pzDel").onclick = () => { if (!confirm("¿Borrar esta pieza capturada?")) return; delete DB.despiece["P:" + p.id]; guardar("despiece"); $("#dlg").close(); abrir(vista); };
 }
@@ -1061,14 +1107,15 @@ function agregarPiezasModelo(ruta) {
   $("#dlgB").innerHTML = `<p class="note" style="margin-top:0">Busca la pieza que este modelo comparte con otros (por nombre o por otro modelo que la lleve) y ponle las piezas por mueble. Si es una pieza que no existe, créala.</p>
     <div class="params"><label style="flex:1">Buscar pieza o modelo<input type="text" id="apB" placeholder="CAJON, 106XL, CANALETA…"></label><button id="apNueva">+ Pieza nueva para ${esc(r)}</button></div>
     <div class="tw" style="max-height:380px;overflow:auto;margin-top:8px"><table><thead><tr><th>Pieza</th><th>Modelos que la llevan</th><th class="num">Pz x mueble</th><th></th></tr></thead><tbody id="apL"></tbody></table></div>`;
-  $("#dlg").showModal();
+  abrirDlg();
   const pintar = () => {
     const q = up($("#apB").value);
     const xs = C.lista.filter(p => !q || up(p.nombre).includes(q) || Object.keys(p.modelos).some(x => x.includes(q))).sort((a, b) => ya.has(b.id) - ya.has(a.id) || nModelos(b) - nModelos(a)).slice(0, 80);
-    $("#apL").innerHTML = xs.map(p => `<tr><td><b>${esc(p.nombre)}</b> ${chipPieza(p)}</td><td>${Object.keys(p.modelos).slice(0, 8).map(x => `<span class="chip">${esc(x)}</span>`).join("")}${nModelos(p) > 8 ? `<span class="dim"> +${nModelos(p) - 8}</span>` : ""}</td>
+    $("#apL").innerHTML = xs.map(p => `<tr><td>${celdaPieza(p)}</td><td>${Object.keys(p.modelos).slice(0, 8).map(x => `<span class="chip">${esc(x)}</span>`).join("")}${nModelos(p) > 8 ? `<span class="dim"> +${nModelos(p) - 8}</span>` : ""}</td>
       <td class="num"><input type="number" min="0" value="${p.modelos[r] ?? 1}" data-apn="${p.id}" style="width:70px"></td><td><button class="mini ${ya.has(p.id) ? "" : "pri"}" data-apa="${p.id}">${ya.has(p.id) ? "Actualizar" : "Agregar"}</button></td></tr>`).join("") || '<tr><td colspan="4" class="dim">Sin coincidencias</td></tr>';
     $("#apL").querySelectorAll("[data-apa]").forEach(b => b.onclick = () => { const p = C.piezas.get(b.dataset.apa), n = Math.max(0, Math.round(+$("#apL").querySelector(`[data-apn="${p.id}"]`).value || 0));
       ponerModeloPieza(p, r, n); n > 0 ? ya.add(p.id) : ya.delete(p.id); toast(n > 0 ? `${esc(p.nombre)} ×${n} agregada a ${esc(r)}.` : `${esc(p.nombre)} quitada de ${esc(r)}.`, "ok"); b.textContent = n > 0 ? "Actualizar" : "Agregar"; b.classList.toggle("pri", !(n > 0)); });
+    pintarMinis($("#apL"));
   };
   $("#apB").oninput = pintar; pintar();
   $("#apNueva").onclick = () => editarPieza(null, r);
@@ -1101,6 +1148,348 @@ function hojaDesglose(p, mid) {
   const ws = XLSX.utils.aoa_to_sheet(aoa); ws["!cols"] = [{ wch: 5 }, { wch: 30 }, { wch: 8 }, { wch: 16 }, { wch: 36 }, { wch: 30 }, { wch: 10 }, { wch: 9 }, { wch: 12 }, { wch: 40 }, { wch: 24 }];
   return ws;
 }
+
+/* ============================== DIBUJOS DXF · ver y medir piezas ==============================
+   Los dibujos se leen de la biblioteca DXF de Nidos (carpeta de OneDrive) en este equipo: no se suben a GitHub ni a la nube.
+   La carpeta se elige una vez y se guarda igual que en Nidos Láser de Cama (IndexedDB «nidos-laser»): en el mismo navegador
+   sirve el permiso de cualquiera de las dos. En localhost (herramientas/servir.ps1) se leen de /biblio/.
+   El lector es el de Nidos (parseDXF + aPolilinea), reducido a ver y medir (Leonardo, 2026-11-17). */
+const DXF = (() => {
+  function parse(txt) {
+    if (/^AutoCAD Binary DXF/.test(txt)) throw new Error("DXF binario: guárdalo como DXF ASCII");
+    const L = txt.split(/\r\n|\r|\n/), P = [];
+    for (let i = 0; i + 1 < L.length; i += 2) { const c = parseInt(L[i].trim(), 10); if (!Number.isNaN(c)) P.push([c, L[i + 1].replace(/\s+$/, "")]); }
+    if (!P.length) throw new Error("Archivo vacío o no es DXF");
+    const out = { capas: {}, ents: [] };
+    let sec = null, i = 0;
+    while (i < P.length) {
+      const [c, v] = P[i];
+      if (c === 0 && v === "SECTION") { sec = P[i + 1] && P[i + 1][1]; i += 2; continue; }
+      if (c === 0 && v === "ENDSEC") { sec = null; i++; continue; }
+      if (sec === "TABLES" && c === 0 && v === "LAYER") {
+        let j = i + 1, nombre = null, tipoLinea = "CONTINUOUS";
+        while (j < P.length && P[j][0] !== 0) { if (P[j][0] === 2) nombre = P[j][1].trim(); if (P[j][0] === 6) tipoLinea = P[j][1].trim(); j++; }
+        if (nombre != null) out.capas[nombre] = { tipoLinea };
+        i = j; continue;
+      }
+      if (sec === "ENTITIES" && c === 0) {
+        const tipo = v.trim(); let j = i + 1; const raw = [];
+        while (j < P.length && P[j][0] !== 0) { raw.push(P[j]); j++; }
+        const e = { tipo, raw };
+        if (tipo === "POLYLINE") {
+          e.vert = [];
+          while (j < P.length && P[j][0] === 0 && P[j][1].trim() === "VERTEX") { let k = j + 1; const vr = []; while (k < P.length && P[k][0] !== 0) { vr.push(P[k]); k++; } e.vert.push(vr); j = k; }
+          if (j < P.length && P[j][1].trim() === "SEQEND") { j++; while (j < P.length && P[j][0] !== 0) j++; }
+        }
+        if (tipo !== "SEQEND" && tipo !== "ENDSEC") out.ents.push(e);
+        i = j; continue;
+      }
+      i++;
+    }
+    for (const e of out.ents) {
+      const g = c => { const p = e.raw.find(x => x[0] === c); return p ? p[1] : undefined; };
+      e.capa = (g(8) ?? "0").trim(); e.extrZ = parseFloat(g(230) ?? "1");
+      const tl = (g(6) ?? "BYLAYER").trim();
+      e.tipoLinea = /^BYLAYER$/i.test(tl) ? ((out.capas[e.capa] || {}).tipoLinea || "CONTINUOUS") : tl;
+    }
+    return out;
+  }
+  const esPunteada = e => !!e && !!e.tipoLinea && !/^(CONTINUOUS|BYLAYER|BYBLOCK)$/i.test(e.tipoLinea);
+  const num = (raw, c, d = 0) => { const p = raw.find(x => x[0] === c); return p ? parseFloat(p[1]) : d; };
+  const pasoAng = r => (r > 0.05 ? 2 * Math.acos(1 - 0.05 / r) : Math.PI / 4);
+  function arcoPts(cx, cy, r, a0, a1) {
+    let da = a1 - a0; while (da <= 0) da += 360; if (da > 360) da = 360;
+    const n = Math.min(720, Math.max(4, Math.ceil(da * Math.PI / 180 / pasoAng(r)))), pts = [];
+    for (let k = 0; k <= n; k++) { const a = (a0 + da * k / n) * Math.PI / 180; pts.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]); }
+    return pts;
+  }
+  function bulgePts(p0, p1, b) {
+    if (!b) return [p0, p1];
+    const th = 4 * Math.atan(b), dx = p1[0] - p0[0], dy = p1[1] - p0[1], c = Math.hypot(dx, dy);
+    if (c < 1e-9) return [p0, p1];
+    const r = c / (2 * Math.sin(th / 2)), mx = (p0[0] + p1[0]) / 2, my = (p0[1] + p1[1]) / 2, h = r * Math.cos(th / 2), ux = -dy / c, uy = dx / c;
+    const cx = mx + ux * h, cy = my + uy * h, a0 = Math.atan2(p0[1] - cy, p0[0] - cx), R = Math.abs(r);
+    const n = Math.min(720, Math.max(2, Math.ceil(Math.abs(th) / pasoAng(R)))), pts = [];
+    for (let k = 0; k <= n; k++) { const a = a0 + th * k / n; pts.push([cx + R * Math.cos(a), cy + R * Math.sin(a)]); }
+    pts[0] = p0; pts[pts.length - 1] = p1;
+    return pts;
+  }
+  function nurbs(ctrl, knots, w, deg, nSeg) {
+    const n = ctrl.length; if (n < 2) return ctrl.slice();
+    if (!knots || knots.length !== n + deg + 1) { knots = []; for (let k = 0; k < n + deg + 1; k++) knots.push(k <= deg ? 0 : k >= n ? n - deg : k - deg); }
+    const W = w && w.length === n ? w : ctrl.map(() => 1), t0 = knots[deg], t1 = knots[n], pts = [];
+    for (let s = 0; s <= nSeg; s++) {
+      const t = t0 + (t1 - t0) * s / nSeg; let k = deg; while (k < n - 1 && t >= knots[k + 1]) k++;
+      const d = []; for (let j = 0; j <= deg; j++) { const q = ctrl[k - deg + j], ww = W[k - deg + j]; d.push([q[0] * ww, q[1] * ww, ww]); }
+      for (let r = 1; r <= deg; r++) for (let j = deg; j >= r; j--) {
+        const i = k - deg + j, den = knots[i + deg - r + 1] - knots[i], a = den === 0 ? 0 : (t - knots[i]) / den;
+        d[j] = [(1 - a) * d[j - 1][0] + a * d[j][0], (1 - a) * d[j - 1][1] + a * d[j][1], (1 - a) * d[j - 1][2] + a * d[j][2]];
+      }
+      pts.push([d[deg][0] / d[deg][2], d[deg][1] / d[deg][2]]);
+    }
+    return pts;
+  }
+  function polyBulge(v, cerrada) {
+    const pts = [], n = v.length; if (!n) return pts;
+    const segs = cerrada ? n : n - 1;
+    for (let k = 0; k < segs; k++) { const a = v[k], b = v[(k + 1) % n], s = bulgePts([a.x, a.y], [b.x, b.y], a.b); if (k > 0) s.shift(); pts.push(...s); }
+    if (segs === 0) pts.push([v[0].x, v[0].y]);
+    if (cerrada && pts.length > 1) pts.pop();
+    return pts;
+  }
+  function lwVert(R) { const v = []; let cur = null; for (const [c, s] of R) { if (c === 10) { cur = { x: parseFloat(s), y: 0, b: 0 }; v.push(cur); } else if (c === 20 && cur) cur.y = parseFloat(s); else if (c === 42 && cur) cur.b = parseFloat(s); } return v; }
+  /** Entidad → {pts, cerrada} o {soporte:false, motivo} */
+  function aPolilinea(e) {
+    const R = e.raw, f = (c, d) => num(R, c, d), espejo = e.extrZ < 0;
+    const fin = (pts, cerrada) => ({ pts: espejo ? pts.map(p => [-p[0], p[1]]) : pts, cerrada });
+    switch (e.tipo) {
+      case "LINE": return { pts: [[f(10), f(20)], [f(11), f(21)]], cerrada: false };
+      case "CIRCLE": { const p = arcoPts(f(10), f(20), f(40), 0, 360); p.pop(); return fin(p, true); }
+      case "ARC": return fin(arcoPts(f(10), f(20), f(40), f(50), f(51)), false);
+      case "LWPOLYLINE": { const cerrada = (f(70) & 1) === 1; return fin(polyBulge(lwVert(R), cerrada), cerrada); }
+      case "POLYLINE": {
+        const flags = f(70); if (flags & 16 || flags & 64) return { soporte: false, motivo: "Polilínea 3D/malla" };
+        const cerrada = (flags & 1) === 1; return fin(polyBulge(e.vert.map(vr => ({ x: num(vr, 10), y: num(vr, 20), b: num(vr, 42) })), cerrada), cerrada);
+      }
+      case "SPLINE": {
+        const deg = f(71, 3), flags = f(70), ctrl = [], fit = [], knots = [], w = []; let cx = null, fx = null;
+        for (const [c, s] of R) {
+          if (c === 10) cx = parseFloat(s); else if (c === 20 && cx != null) { ctrl.push([cx, parseFloat(s)]); cx = null; }
+          else if (c === 11) fx = parseFloat(s); else if (c === 21 && fx != null) { fit.push([fx, parseFloat(s)]); fx = null; }
+          else if (c === 40) knots.push(parseFloat(s)); else if (c === 41) w.push(parseFloat(s));
+        }
+        const cerrada = (flags & 1) === 1;
+        if (ctrl.length >= deg + 1) return { pts: nurbs(ctrl, knots, w, deg, Math.max(24, ctrl.length * 10)), cerrada };
+        if (fit.length >= 2) return { pts: fit, cerrada };
+        return { soporte: false, motivo: "Spline sin puntos" };
+      }
+      case "ELLIPSE": {
+        const cx = f(10), cy = f(20), mx = f(11), my = f(21), ra = f(40), p0 = f(41, 0), p1 = f(42, 2 * Math.PI);
+        const a = Math.hypot(mx, my), b = a * ra * (espejo ? -1 : 1), rot = Math.atan2(my, mx);
+        let dp = p1 - p0; while (dp <= 0) dp += 2 * Math.PI;
+        const n = Math.min(1440, Math.max(16, Math.ceil(dp / pasoAng(Math.max(a, 0.1))))), pts = [];
+        for (let k = 0; k <= n; k++) { const t = p0 + dp * k / n, x = a * Math.cos(t), y = b * Math.sin(t); pts.push([cx + x * Math.cos(rot) - y * Math.sin(rot), cy + x * Math.sin(rot) + y * Math.cos(rot)]); }
+        const completa = Math.abs(dp - 2 * Math.PI) < 1e-6; if (completa) pts.pop();
+        return { pts, cerrada: completa };
+      }
+      case "POINT": return { soporte: false, motivo: "Punto", ignorar: true };
+      case "TEXT": case "MTEXT": return { soporte: false, motivo: "Texto" };
+      case "INSERT": return { soporte: false, motivo: "Bloque sin explotar" };
+      case "DIMENSION": return { soporte: false, motivo: "Cota" };
+      case "HATCH": return { soporte: false, motivo: "Achurado" };
+      default: return { soporte: false, motivo: "Entidad " + e.tipo };
+    }
+  }
+  return { parse, aPolilinea, num, esPunteada, lwVert };
+})();
+/** DXF → trazos para dibujar, puntos para pegar las medidas (esquinas, medios, centros), barrenos, caja y perímetro de corte */
+function geometriaDXF(txt) {
+  const d = DXF.parse(txt), trazos = [], snaps = [], circ = [], omit = {};
+  const P = (x, y, k) => snaps.push({ x, y, k });
+  for (const e of d.ents) {
+    const pl = DXF.aPolilinea(e);
+    if (!pl.pts) { if (!pl.ignorar) omit[pl.motivo] = (omit[pl.motivo] || 0) + 1; continue; }
+    const pts = pl.pts; if (!pts.length) continue;
+    const sx = e.extrZ < 0 ? -1 : 1, f = c => DXF.num(e.raw, c), ult = pts[pts.length - 1];
+    const t = { pts, cerrada: pl.cerrada, mk: DXF.esPunteada(e) || /MARCA|DOBL|BEND|GRAB/i.test(e.capa), capa: e.capa };
+    if (e.tipo === "CIRCLE") { t.c = { x: sx * f(10), y: f(20), r: f(40) }; circ.push(t.c); P(t.c.x, t.c.y, "centro"); }
+    else if (e.tipo === "ARC") { P(sx * f(10), f(20), "centro"); P(pts[0][0], pts[0][1], "extremo"); P(ult[0], ult[1], "extremo"); }
+    else if (e.tipo === "LINE") { P(pts[0][0], pts[0][1], "extremo"); P(ult[0], ult[1], "extremo"); P((pts[0][0] + ult[0]) / 2, (pts[0][1] + ult[1]) / 2, "medio"); }
+    else if (e.tipo === "LWPOLYLINE" || e.tipo === "POLYLINE") {
+      const v = e.tipo === "POLYLINE" ? e.vert.map(r => ({ x: DXF.num(r, 10), y: DXF.num(r, 20), b: DXF.num(r, 42) })) : DXF.lwVert(e.raw);
+      v.forEach((a, i) => { P(sx * a.x, a.y, "esquina"); const b = v[i + 1] || (pl.cerrada ? v[0] : null); if (b && !a.b) P(sx * (a.x + b.x) / 2, (a.y + b.y) / 2, "medio"); });
+    } else { P(pts[0][0], pts[0][1], "extremo"); if (!pl.cerrada) P(ult[0], ult[1], "extremo"); }
+    trazos.push(t);
+  }
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (const t of trazos) for (const [x, y] of t.pts) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+  if (!trazos.length) x0 = y0 = x1 = y1 = 0;
+  const largo = (pts, c) => { let s = 0; for (let k = 1; k < pts.length; k++) s += Math.hypot(pts[k][0] - pts[k - 1][0], pts[k][1] - pts[k - 1][1]); if (c && pts.length > 2) s += Math.hypot(pts[0][0] - pts[pts.length - 1][0], pts[0][1] - pts[pts.length - 1][1]); return s; };
+  return { trazos, snaps, circ, omit, x0, y0, x1, y1, w: x1 - x0, h: y1 - y0,
+           corte: trazos.filter(t => !t.mk).reduce((s, t) => s + largo(t.pts, t.cerrada), 0), marcas: trazos.filter(t => t.mk).length };
+}
+const r3 = v => Math.round(v * 1000) / 1000;
+const pathTrazo = t => t.pts.map((p, i) => (i ? "L" : "M") + r3(p[0]) + " " + r3(-p[1])).join("") + (t.cerrada ? "Z" : "");
+function svgGeo(g, extra = "") {
+  const pad = Math.max(g.w, g.h) * 0.05 || 1;
+  return `<svg viewBox="${r3(g.x0 - pad)} ${r3(-g.y1 - pad)} ${r3(g.w + 2 * pad)} ${r3(g.h + 2 * pad)}" preserveAspectRatio="xMidYMid meet">`
+    + g.trazos.map(t => `<path class="dx${t.mk ? " mk" : ""}" d="${pathTrazo(t)}">${t.c ? `<title>Barreno Ø ${fmt(2 * t.c.r, 1)} mm</title>` : ""}</path>`).join("") + extra + "</svg>";
+}
+
+/* ---------- acceso a la biblioteca DXF ---------- */
+const BIB = { h: null, ok: false, geo: new Map() }, BIB_CLAVE = "__carpeta_biblioteca__";
+const enLocal = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+const idbN = (() => {     // misma base que Nidos Láser de Cama: ahí guarda el manejador de la carpeta
+  let p = null;
+  const db = () => p || (p = new Promise((res, rej) => { try { const r = indexedDB.open("nidos-laser", 1); r.onupgradeneeded = () => r.result.createObjectStore("dxf"); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); } catch (e) { rej(e); } }));
+  const tx = async (modo, fn) => { try { const d = await db(); return await new Promise((res, rej) => { const t = d.transaction("dxf", modo), r = fn(t.objectStore("dxf")); t.oncomplete = () => res(r && r.result); t.onerror = () => rej(t.error); }); } catch { return undefined; } };
+  return { get: k => tx("readonly", s => s.get(k)), put: (k, v) => tx("readwrite", s => s.put(v, k)) };
+})();
+async function permisoBib() {
+  try { if (!BIB.h) BIB.h = (await idbN.get(BIB_CLAVE)) || null; BIB.ok = !!BIB.h && (await BIB.h.queryPermission({ mode: "read" })) === "granted"; }
+  catch { BIB.ok = false; }
+  return BIB.ok;
+}
+const puedeVer = async () => enLocal || await permisoBib();
+/** Pide permiso para la carpeta ya elegida o una carpeta nueva (llamar desde un clic). handle = hace falta la carpeta aunque sea localhost */
+async function bibConectar({ otra = false, handle = false } = {}) {
+  if (enLocal && !otra && !handle) return true;
+  if (!window.showDirectoryPicker) { toast("Este navegador no deja leer carpetas: usa Chrome o Edge.", "err"); return false; }
+  try {
+    if (!otra) {
+      if (!BIB.h) BIB.h = (await idbN.get(BIB_CLAVE)) || null;
+      if (BIB.h && (await BIB.h.requestPermission({ mode: "read" })) === "granted") { BIB.ok = true; return true; }
+    }
+    const h = await showDirectoryPicker({ id: "nidos-biblioteca", mode: "read" });
+    await idbN.put(BIB_CLAVE, h); BIB.h = h; BIB.ok = true; BIB.geo.clear(); return true;
+  } catch (e) { if (e.name !== "AbortError") toast(esc(e.message), "err"); return false; }
+}
+async function textoDibujo(ruta) {
+  if (enLocal) { const r = await fetch("/biblio/" + ruta.split("/").map(encodeURIComponent).join("/"), { cache: "no-store" }).catch(() => null); if (r && r.ok) return r.text(); }
+  if (!(await permisoBib())) { const e = new Error("Sin permiso para leer la biblioteca DXF"); e.permiso = true; throw e; }
+  const partes = ruta.split("/"), nom = partes.pop(); let d = BIB.h;
+  try { for (const x of partes) d = await d.getDirectoryHandle(x); return await (await (await d.getFileHandle(nom)).getFile()).text(); }
+  catch { throw new Error(`No está en la carpeta «${BIB.h.name}». Elige la carpeta «Nidos Laser de Cama - Biblioteca DXF».`); }
+}
+function geoDibujo(ruta) {
+  if (!BIB.geo.has(ruta)) { const pr = textoDibujo(ruta).then(geometriaDXF); pr.catch(() => BIB.geo.delete(ruta)); BIB.geo.set(ruta, pr); }
+  return BIB.geo.get(ruta);
+}
+
+/* ---------- miniaturas ---------- */
+const ICO_DXF = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16v12H4z"/><circle cx="8.5" cy="12" r="1.6"/><path d="M13 9.5h4M13 14.5h4"/></svg>';
+const miniHTML = (p, cls = "") => p && p.dibujo ? `<span class="pzmini ${cls}" data-dib="${esc(p.dibujo)}" data-verpz="${esc(p.id)}" title="Ver dibujo y medir">${ICO_DXF}</span>` : `<span class="pzmini ${cls} x" title="Sin dibujo en la biblioteca">—</span>`;
+let MINI_OBS = null;
+async function pintarMinis(el) {
+  const xs = [...el.querySelectorAll(".pzmini[data-dib]:not(.ok):not(.err)")]; if (!xs.length || !(await puedeVer())) return;
+  MINI_OBS = MINI_OBS || new IntersectionObserver(es => es.forEach(en => {
+    if (!en.isIntersecting) return; const s = en.target; MINI_OBS.unobserve(s);
+    geoDibujo(s.dataset.dib).then(g => { s.innerHTML = svgGeo(g); s.classList.add("ok"); }).catch(() => { s.classList.add("err"); s.title = "No se encontró el dibujo en la biblioteca"; });
+  }), { rootMargin: "300px" });
+  xs.forEach(s => MINI_OBS.observe(s));
+}
+document.addEventListener("click", e => { const t = e.target.closest("[data-verpz]"); if (t) { e.preventDefault(); verDibujo(t.dataset.verpz); } });
+/** Estado de la biblioteca en la barra de Piezas */
+async function estadoBib(el) {
+  if (!el) return;
+  if (enLocal) { el.innerHTML = '<span class="st ok">Dibujos: servidor local</span>'; return; }
+  if (await permisoBib()) { el.innerHTML = `<span class="st ok" title="Carpeta de la biblioteca DXF en este equipo">Dibujos: ${esc(BIB.h.name)}</span> <button class="mini" id="bibOtra">Cambiar</button>`; }
+  else el.innerHTML = `<button id="bibCon" title="Lee los DXF de la carpeta de OneDrive en este equipo (no se suben a internet)">${ICO_DXF} Ver dibujos</button>`;
+  const ir = async otra => { if (await bibConectar({ otra, handle: true })) { estadoBib(el); pintarMinis(document); } };
+  if ($("#bibCon")) $("#bibCon").onclick = () => ir(false);
+  if ($("#bibOtra")) $("#bibOtra").onclick = () => ir(true);
+}
+
+/* ---------- visor con medición ---------- */
+/** x = id de pieza del catálogo, o {texto, nombre} de un DXF abierto del equipo */
+async function verDibujo(x) {
+  const p = typeof x === "string" ? catalogo().piezas.get(x) : null, src = typeof x === "object" ? x : null;
+  $("#dlgT").innerHTML = p ? `${esc(p.nombre)} <span style="font-weight:400">${chipPieza(p)}</span>` : `Dibujo · ${esc(src?.nombre || "")}`;
+  if (!$("#dlg").open) { $("#dlgB").innerHTML = '<div class="empty">Abriendo dibujo…</div>'; $("#dlg").showModal(); }
+  const pedir = () => {
+    $("#dlgB").innerHTML = `<div class="empty"><b>Conecta la biblioteca DXF</b>Los dibujos se leen de la carpeta «Nidos Laser de Cama - Biblioteca DXF» de OneDrive en este equipo (no se suben a internet). Si ya la elegiste en Nidos, solo da permiso.
+      <div style="margin-top:12px"><button class="pri" id="vzCon">Conectar biblioteca</button></div></div>`;
+    $("#vzCon").onclick = async () => { if (await bibConectar({ handle: true })) { verDibujo(x); pintarMinis(document); estadoBib($("#pzBib")); } };
+  };
+  let g;
+  try {
+    if (src) g = geometriaDXF(src.texto);
+    else if (!p || !p.dibujo) throw new Error("Esta pieza no tiene dibujo. Ábrela en «Editar» y elige su DXF de la biblioteca.");
+    else if (!(await puedeVer())) return pedir();
+    else g = await geoDibujo(p.dibujo);
+  } catch (e) {
+    if (e.permiso) return pedir();
+    $("#dlgB").innerHTML = `<div class="empty"><b>No se pudo abrir el dibujo</b>${esc(e.message)}${p?.dibujo ? `<div class="mono" style="margin-top:6px;font-size:11px">${esc(p.dibujo)}</div>` : ""}
+      ${p?.dibujo && !enLocal ? '<div style="margin-top:10px"><button id="vzOtra">Elegir otra carpeta</button></div>' : ""}</div>`;
+    if ($("#vzOtra")) $("#vzOtra").onclick = async () => { if (await bibConectar({ otra: true })) verDibujo(x); };
+    return;
+  }
+  visor(g, p, src);
+}
+function visor(g, p, src) {
+  const L = Math.max(g.w, g.h), A = Math.min(g.w, g.h), D = L || 1, off = D * 0.08, pad = D * 0.05;
+  const barr = new Map(); for (const c of g.circ) { const k = fmt(2 * c.r, 1); barr.set(k, (barr.get(k) || 0) + 1); }
+  const fila = (a, b) => `<div class="fila"><span>${a}</span><span class="mono">${b}</span></div>`;
+  const mods = p ? Object.entries(p.modelos).sort((a, b) => a[0].localeCompare(b[0], "es", { numeric: true })) : [];
+  $("#dlgB").innerHTML = `<div class="visor">
+    <div class="vz" id="vz">${svgGeo(g, '<g id="vzM"></g><circle id="vzSn" class="snap" r="0"/>')}<div class="vzl" id="vzL"></div>
+      <div class="vzb"><button class="mini" id="vzFit" title="Ver la pieza completa">Ajustar</button><button class="mini" id="vzClr">Borrar medidas</button></div>
+      <div class="vzr" id="vzR">${fmt(g.w, 1)} × ${fmt(g.h, 1)} mm</div></div>
+    <div class="vzi">
+      ${fila("Largo × ancho", `${fmt(L, 1)} × ${fmt(A, 1)} mm`)}${p?.cal ? fila("Calibre", p.cal) : ""}
+      ${fila("Corte (perímetro)", fmt(g.corte, 0) + " mm")}
+      ${fila("Barrenos", g.circ.length ? [...barr].map(([d, n]) => `${n} × Ø${d}`).join("<br>") : "—")}
+      ${g.marcas ? fila("Dobleces / marcas", fmt(g.marcas)) : ""}
+      ${p ? fila("¿Se dobla?", p.doblez === true ? "Sí" : p.doblez === false ? "No" : "Sin definir") : ""}
+      ${Object.keys(g.omit).length ? `<p class="note warn-t">No se dibujan: ${esc(Object.entries(g.omit).map(([m, n]) => `${m} (${n})`).join(", "))}</p>` : ""}
+      ${p ? `<div style="margin:10px 0 4px;font-weight:600">Modelos que la llevan <span class="dim" style="font-weight:400">${mods.length}</span></div>
+        <div>${mods.slice(0, 40).map(([r, n]) => `<span class="chip">${esc(r)}${n !== 1 ? " ×" + n : ""}</span>`).join("")}${mods.length > 40 ? `<span class="dim"> +${mods.length - 40}</span>` : ""}</div>` : ""}
+      <p class="note mono" style="font-size:10.5px;word-break:break-all">${esc(p?.dibujo || src?.nombre || "")}</p>
+      ${p ? '<div class="toolbar" style="margin-top:8px"><button id="vzEd">Editar pieza</button></div>' : ""}
+      <p class="note"><b>Medir:</b> clic en dos puntos; se pega a esquinas, centros de barrenos y orillas. Shift = horizontal o vertical. Rueda = zoom, arrastrar = mover, clic derecho = cancelar.</p>
+    </div></div>`;
+  const box = $("#vz"), svg = box.querySelector("svg"), gm = $("#vzM"), sn = $("#vzSn"), lab = $("#vzL"), rd = $("#vzR");
+  const fit = () => ({ x: g.x0 - pad, y: -g.y1 - pad, w: g.w + off + 3 * pad, h: g.h + off + 3 * pad });
+  let V = fit(), M0 = null, cur = null, drag = null;
+  const medidas = [{ a: { x: g.x0, y: g.y0 }, b: { x: g.x1, y: g.y0 }, o: { x: 0, y: -off * 0.7 }, auto: true },
+                   { a: { x: g.x1, y: g.y0 }, b: { x: g.x1, y: g.y1 }, o: { x: off * 0.7, y: 0 }, auto: true }];
+  const aSvg = (cx, cy) => { const q = svg.createSVGPoint(); q.x = cx; q.y = cy; return q.matrixTransform(svg.getScreenCTM().inverse()); };
+  const aDib = (cx, cy) => { const q = aSvg(cx, cy); return { x: q.x, y: -q.y }; };
+  const aPant = (x, y) => { const m = svg.getScreenCTM(), b = box.getBoundingClientRect(); return [m.a * x - m.c * y + m.e - b.left, m.b * x - m.d * y + m.f - b.top]; };
+  const escala = () => svg.getScreenCTM().a || 1;
+  const ln = (a, b, cls) => `<line class="ms ${cls}" x1="${r3(a.x)}" y1="${r3(-a.y)}" x2="${r3(b.x)}" y2="${r3(-b.y)}"/>`;
+  function pintarMedidas() {
+    let s = "", t = "";
+    for (const M of medidas.concat(M0 && cur ? [{ a: M0, b: cur, tmp: true }] : [])) {
+      const o = M.o || { x: 0, y: 0 }, a2 = { x: M.a.x + o.x, y: M.a.y + o.y }, b2 = { x: M.b.x + o.x, y: M.b.y + o.y }, cls = M.auto ? "auto" : M.tmp ? "tmp" : "";
+      if (M.o) s += ln(M.a, a2, cls + " ext") + ln(M.b, b2, cls + " ext");
+      s += ln(a2, b2, cls);
+      const d = Math.hypot(M.b.x - M.a.x, M.b.y - M.a.y); if (d < 1e-6) continue;
+      const [px, py] = aPant((a2.x + b2.x) / 2, (a2.y + b2.y) / 2), dx = Math.abs(M.b.x - M.a.x), dy = Math.abs(M.b.y - M.a.y);
+      t += `<span class="${cls}" style="left:${px}px;top:${py}px">${fmt(d, 1)}${!M.auto && dx > 0.05 && dy > 0.05 ? `<small>ΔX ${fmt(dx, 1)} · ΔY ${fmt(dy, 1)}</small>` : ""}</span>`;
+    }
+    if (M0) s += `<circle class="snap fijo" cx="${r3(M0.x)}" cy="${r3(-M0.y)}" r="${r3(4 / escala())}"/>`;
+    gm.innerHTML = s; lab.innerHTML = t;
+  }
+  const setV = () => { svg.setAttribute("viewBox", `${r3(V.x)} ${r3(V.y)} ${r3(V.w)} ${r3(V.h)}`); pintarMedidas(); };
+  const proy = (q, a, b) => { const vx = b[0] - a[0], vy = b[1] - a[1], LL = vx * vx + vy * vy; let u = LL ? ((q.x - a[0]) * vx + (q.y - a[1]) * vy) / LL : 0; u = Math.max(0, Math.min(1, u)); return { x: a[0] + u * vx, y: a[1] + u * vy }; };
+  function pegar(cx, cy) {
+    const lim = 12 / escala(), q = aDib(cx, cy); let best = null, bd = lim;
+    for (const s of g.snaps) { const d = Math.hypot(s.x - q.x, s.y - q.y); if (d < bd) { bd = d; best = { x: s.x, y: s.y, k: s.k }; } }
+    if (best) return best;
+    bd = lim * 0.7;
+    for (const t of g.trazos) { const Pp = t.pts, n = Pp.length; for (let i = 0; i < n - (t.cerrada ? 0 : 1); i++) { const r = proy(q, Pp[i], Pp[(i + 1) % n]), d = Math.hypot(r.x - q.x, r.y - q.y); if (d < bd) { bd = d; best = { ...r, k: "orilla" }; } } }
+    return best || { x: q.x, y: q.y, k: "" };
+  }
+  function punto(e) {
+    let q = pegar(e.clientX, e.clientY);
+    if (e.shiftKey && M0) q = Math.abs(q.x - M0.x) >= Math.abs(q.y - M0.y) ? { x: q.x, y: M0.y, k: "horizontal" } : { x: M0.x, y: q.y, k: "vertical" };
+    return q;
+  }
+  function mover(q) {
+    cur = q; sn.setAttribute("cx", r3(q.x)); sn.setAttribute("cy", r3(-q.y)); sn.setAttribute("r", q.k ? r3(5 / escala()) : 0);
+    rd.textContent = `X ${fmt(q.x - g.x0, 1)} · Y ${fmt(q.y - g.y0, 1)}${q.k ? " · " + q.k : ""}${M0 ? ` · ${fmt(Math.hypot(q.x - M0.x, q.y - M0.y), 1)} mm` : ""}`;
+    pintarMedidas();
+  }
+  svg.addEventListener("pointerdown", e => { if (e.button !== 0) return; drag = { x: e.clientX, y: e.clientY, V: { ...V }, s: escala(), mov: false }; svg.setPointerCapture(e.pointerId); });
+  svg.addEventListener("pointermove", e => {
+    if (drag) { const dx = e.clientX - drag.x, dy = e.clientY - drag.y; if (!drag.mov && Math.hypot(dx, dy) > 4) { drag.mov = true; box.classList.add("mueve"); }
+      if (drag.mov) { V.x = drag.V.x - dx / drag.s; V.y = drag.V.y - dy / drag.s; setV(); return; } }
+    mover(punto(e));
+  });
+  svg.addEventListener("pointerup", e => { const d = drag; drag = null; box.classList.remove("mueve"); if (!d || d.mov) return;
+    const q = punto(e); if (!M0) M0 = q; else { if (Math.hypot(q.x - M0.x, q.y - M0.y) > 1e-6) medidas.push({ a: M0, b: q }); M0 = null; } mover(q); });
+  svg.addEventListener("pointerleave", () => { if (!drag) { sn.setAttribute("r", 0); cur = M0 ? cur : null; pintarMedidas(); } });
+  svg.addEventListener("contextmenu", e => { e.preventDefault(); M0 = null; pintarMedidas(); });
+  svg.addEventListener("wheel", e => { e.preventDefault(); const f = e.deltaY > 0 ? 1.2 : 1 / 1.2, q = aSvg(e.clientX, e.clientY);
+    V = { x: q.x - (q.x - V.x) * f, y: q.y - (q.y - V.y) * f, w: V.w * f, h: V.h * f }; setV(); }, { passive: false });
+  $("#vzFit").onclick = () => { V = fit(); setV(); };
+  $("#vzClr").onclick = () => { medidas.splice(2); M0 = null; pintarMedidas(); };
+  if ($("#vzEd")) $("#vzEd").onclick = () => editarPieza(p.id);
+  requestAnimationFrame(setV);
+}
+/** Nombre de la pieza a partir del nombre del DXF (convención RUTA_NPZAS_LAMINA_CALxx_PIEZA vN) */
+const piezaDeArchivo = n => { const m = String(n).match(/_CAL\s*\d+_(.+?)(?:[ _]+V\d+.*)?\.DXF$/i); return m ? m[1].replace(/[-_]+/g, " ").trim() : ""; };
 
 /* ============================== PROGRAMAS Y AVANCE ============================== */
 const progsCT = (ct = CT) => DB.programas.filter(p => p.ct === ct.id);
@@ -1249,22 +1638,23 @@ const maqActual = () => CT.maqs.find(m => m.id === PREF.maq[CT.id]) || CT.maqs[0
 
 /* ============================== VISTAS ============================== */
 const TITULOS = {
-  carga: ["Cargar programa", "Previo, lanzado o exporte de BC → OPs del CT, sin los modelos que no pasan por él"],
-  progs: ["Programas", "Programas guardados por día, con su avance"],
+  carga: ["Revisar borrador", "Marca lo que no pasa por Troqueles, revisa las piezas y guarda"],
+  progs: ["Programas", "Arrastra el previo, revisa el borrador y abre los programas guardados"],
   ver: ["Programa", "Piezas programadas"],
   hora: ["Hora por hora", "Registro de piezas por franja, contra el programa"],
-  rutas: ["Rutas de pieza", "Despiece por ruta: qué piezas se cortan y cuáles se doblan"],
-  modelos: ["Modelos fuera / dentro", "Base que se aplica sola a cada programa nuevo de este CT"],
-  piezas: ["Piezas compartidas", "Piezas de lámina por modelo y qué modelos comparten la misma pieza (de la biblioteca DXF de Nidos y capturadas)"]
+  modelos: ["Modelos fuera", "Modelos que no pasan por Troqueles: se retiran solos de cada programa nuevo"],
+  piezas: ["Piezas", "Piezas de lámina: dibujo, medidas y qué modelos comparten la misma pieza"]
 };
-let vista = "carga", verId = null, verMaq = null, modTab = "fuera", filtroCarga = "todos", busq = "", busqR = "", filtroR = "todos";
+let vista = "progs", verId = null, verMaq = null, modTab = "fuera", filtroCarga = "todos", busq = "";
+const ctbHTML = () => CTS.length > 1 ? `<span class="ctb">${esc(CT.label)}</span>` : "";   // con un solo CT no hace falta la etiqueta
 function abrir(v) {
+  if (v === "carga" && !bor()) v = "progs";          // sin borrador, «Programas» es la entrada
   vista = v;
-  for (const s of ["carga", "progs", "ver", "hora", "rutas", "modelos", "piezas"]) $("#v-" + s).classList.toggle("hide", s !== v);
-  document.querySelectorAll(".nav-item[data-t]").forEach(n => n.classList.toggle("on", n.dataset.t === (v === "ver" ? "progs" : v)));
-  $("#pgT").innerHTML = esc(TITULOS[v][0]) + (v !== "rutas" && v !== "piezas" ? `<span class="ctb">${esc(CT.label)}</span>` : "");
+  for (const s of ["carga", "progs", "ver", "hora", "modelos", "piezas"]) $("#v-" + s).classList.toggle("hide", s !== v);
+  document.querySelectorAll(".nav-item[data-t]").forEach(n => n.classList.toggle("on", n.dataset.t === (v === "ver" || v === "carga" ? "progs" : v)));
+  $("#pgT").innerHTML = esc(TITULOS[v][0]) + (v !== "piezas" ? ctbHTML() : "");
   $("#pgS").textContent = TITULOS[v][1]; $("#acc").innerHTML = "";
-  ({ carga: renderCarga, progs: renderProgs, ver: renderVer, hora: renderHora, rutas: renderRutas, modelos: renderModelos, piezas: renderPiezas })[v]();
+  ({ carga: renderCarga, progs: renderProgs, ver: renderVer, hora: renderHora, modelos: renderModelos, piezas: renderPiezas })[v]();
   contadores();
 }
 function cambiarCT(id) {
@@ -1280,13 +1670,11 @@ function pintarCTs() {
   $("#logoSub").textContent = CTS.length > 1 ? CT.label : "Láser y dobladora";
 }
 function contadores() {
-  $("#nCarga").textContent = bor() ? bor().ops.length : "–";
-  $("#nProgs").textContent = new Set(progsCT().map(p => p.dia)).size;
+  const np = $("#nProgs"); np.textContent = bor() ? "borrador" : new Set(progsCT().map(p => p.dia)).size; np.classList.toggle("alerta", !!bor());
   $("#nFuera").textContent = Object.values(DB.modelos).filter(x => x.ct === CT.id && x.estado === "fuera").length;
-  $("#nRutas").textContent = despModelos().length;
-  $("#nPiezas").textContent = catalogo().lista.filter(p => nModelos(p) > 1).length;
+  $("#nPiezas").textContent = catalogo().lista.length;
   const hoy = fechaTrabajo(); $("#nHora").textContent = fmt(DB.registros.filter(x => x.ct === CT.id && x.fecha === hoy).reduce((s, x) => s + x.pz, 0));
-  $("#pieInfo").textContent = `v${VERSION} · ${DB.programas.filter(p => esCT(p.ct)).length} programas ·${despModelos().length} despieces · ${catalogo().lista.length} piezas · ${DB.registros.length} registros · ingeniería: ${Object.keys(ING.fichas).length} rutas · ${NUBE.url ? "datos en Google Sheets" : "datos en este navegador"}`;
+  $("#pieInfo").textContent = `v${VERSION} · ${DB.programas.filter(p => esCT(p.ct)).length} programas · ${catalogo().lista.length} piezas · ${DB.registros.length} registros · ingeniería: ${Object.keys(ING.fichas).length} rutas · ${NUBE.url ? "datos en Google Sheets" : "datos en este navegador"}`;
 }
 const kpi = (l, v, s = "", cls = "") => `<div class="kpi ${cls}"><div class="l">${l}</div><div class="v">${v}</div>${s ? `<div class="ks">${s}</div>` : ""}</div>`;
 const barra = (p, ok) => `<div class="bar ${ok ? "ok" : ""}"><i style="width:${Math.min(100, Math.round(p * 100))}%"></i></div>`;
@@ -1297,20 +1685,13 @@ const uniProc = CT => CT.maqs.length === 1;
 /* ---------- Cargar programa ---------- */
 function renderCarga() {
   const el = $("#v-carga"), b = bor();
-  const subir = `<label class="subir" id="dz"><b>Arrastra aquí el previo, el lanzado o el exporte de BC</b>
-      PRPCP-06- DD-MM-AAAA PREVIO.xlsx · LANZADO · «Órdenes producción planificadas».xlsx<br><span class="dim">El archivo arma el borrador de ${CTS.length > 1 ? "cada CT" : esc(CT.label)}. Si ya cargaste un previo, el exporte de BC solo le completa las rutas.</span>
-      <input type="file" id="fArch" accept=".xlsx,.xls" hidden></label>`;
-  if (!b) {
-    el.innerHTML = `<div class="card"><div class="body" style="padding-top:16px">${subir}
-      <p class="note">Los modelos guardados como <b>fuera de ${esc(CT.label)}</b> se retiran solos. Los que nunca has clasificado salen como <span class="st warn">Nuevo</span> para que decidas si pasan o no.</p></div></div>${ultimos()}`;
-    enlazarSubida(); return;
-  }
+  if (!b) { abrir("progs"); return; }
   const todas = filasB(), incl = todas.filter(x => !x.c.fuera), ret = todas.filter(x => x.c.fuera), nuevos = incl.filter(x => x.c.nuevo);
   const sel = new Set(b.sel), mu = incl.reduce((s, x) => s + x.f.cant, 0);
   const sinPz = incl.filter(x => CT.maqs.some(m => x.f.proc?.[m.id]?.on && !(x.f.proc[m.id].pz > 0))).length;
   const mel = incl.filter(x => ingDe(x.f).metal === 0 && !(bcPz(x.f, b, CT) > 0));   // la ficha no menciona metal y BC tampoco le da piezas en este CT
   const bcT = b.ctBC && b.ctBC[CT.bc];
-  $("#acc").innerHTML = `<button id="bDesc" class="peligro">Descartar</button><label class="btn">Cargar otro<input type="file" id="fArch2" accept=".xlsx,.xls" hidden></label>`;
+  $("#acc").innerHTML = `<button id="bVolver">← Programas</button><button id="bDesc" class="peligro">Descartar</button><label class="btn">Cargar otro<input type="file" id="fArch2" accept=".xlsx,.xls" hidden></label>`;
   const prev = vigente(b.dia);
   let h = `<div class="mh">
       <div class="m"><div class="dim" style="font-size:11px">${esc(b.tipo)} · ${esc(b.archivo)}</div><div style="font-size:15px;font-weight:600">${fechaLarga(b.dia)}</div>
@@ -1325,19 +1706,15 @@ function renderCarga() {
         <div style="font-size:12.5px;margin-top:4px"><b class="mono">${dentro.length}</b> OPs · ${fmt(dentro.reduce((s, x) => s + x.f.cant, 0))} muebles${nv.length ? ` · <span class="warn-t">${nv.length} nuevas</span>` : ""}</div>
         <div class="dim" style="font-size:11.5px">${fs.length - dentro.length} retiradas${fam.length ? ` (${fam.length} de mamparas)` : ""} · se trabaja el <b>${diaCorto(restarHabiles(b.dia, c.adelanto || 0))}</b></div></div>`; }).join("")}</div>`}
     <div class="kpis">
-      ${kpi("OPs en el archivo", fmt(b.ops.length), fmt(b.ops.reduce((s, f) => s + f.cant, 0)) + " muebles")}
-      ${kpi("Retiradas solas", fmt(ret.length), "fuera de " + esc(CT.label), ret.length ? "ok" : "")}
-      ${kpi("Pasan por " + esc(CT.label), fmt(incl.length), fmt(mu) + " muebles", "info")}
-      ${kpi("Nuevas por revisar", fmt(nuevos.length), "sin clasificar todavía", nuevos.length ? "warn" : "ok")}
-      ${CT.maqs.map(m => kpi(uniProc(CT) ? "Piezas a procesar" : "Pz " + esc(m.corto.toLowerCase()), fmt(incl.reduce((s, x) => s + programadas(x.f, m.id), 0)), esc(m.label))).join("")}
-      ${bcT ? kpi("BC · " + esc(CT.label), fmt(bcT.pz), fmt(bcT.h, 1) + " h según el previo") : ""}
+      ${kpi("Pasan por " + esc(CT.label), fmt(incl.length) + " OPs", fmt(mu) + " muebles · " + fmt(ret.length) + " retiradas solas", "info")}
+      ${kpi("Nuevas por revisar", fmt(nuevos.length), nuevos.length ? "¿pasan por " + esc(CT.label) + "?" : "todas clasificadas", nuevos.length ? "warn" : "ok")}
+      ${CT.maqs.map(m => kpi(uniProc(CT) ? "Piezas a procesar" : "Pz " + esc(m.corto.toLowerCase()), fmt(incl.reduce((s, x) => s + programadas(x.f, m.id), 0)), esc(m.label) + (m.id === CORTE && bcT ? ` · BC ${fmt(bcT.pz)}` : ""))).join("")}
     </div>`;
   const av = [];
-  if (nuevos.length) av.push(`<li class="warn">${nuevos.length} modelo(s) nuevos en ${esc(CT.label)}: revisa si pasan por el CT (la foto y la ficha técnica ayudan). Los que no, selecciónalos y pulsa <b>Marcar fuera</b>; se quedan guardados para los siguientes programas.</li>`);
-  if (mel.length) av.push(`<li class="warn">${mel.length} OP(s) con ficha técnica <b>sin estructura metálica</b> (melamina): ${mel.slice(0, 10).map(x => `<span class="chip">${esc(x.f.modelo)}</span>`).join("")}. Usa «Seleccionar melamina según ficha» y confirma con Marcar fuera.</li>`);
-  if (sinPz && !uniProc(CT)) av.push(`<li class="warn">${sinPz} OP(s) sin piezas por mueble: se programan como 1 pieza por mueble hasta que captures el dato o su despiece (se recuerda por modelo).</li>`);
-  if (b.origen === "previo" && !b.bcRutas) av.push(`<li class="info">El archivo no trae la hoja «Tiempos y Piezas»: no hay sugerencia de BC por ruta.</li>`);
-  if (b.origen === "previo") av.push(`<li class="info">Para rutas exactas por OP, arrastra también el exporte de BC «Órdenes producción planificadas» del mismo día.</li>`);
+  if (nuevos.length) av.push(`<li class="warn">${nuevos.length} modelo(s) nuevo(s): revisa si pasan por ${esc(CT.label)} (la foto ayuda). Los que no, selecciónalos y pulsa <b>Marcar fuera</b>; se recuerdan para los siguientes programas.</li>`);
+  if (mel.length) av.push(`<li class="warn">${mel.length} con ficha <b>sin estructura metálica</b> (melamina): ${mel.slice(0, 10).map(x => `<span class="chip">${esc(x.f.modelo)}</span>`).join("")} → «Seleccionar melamina».</li>`);
+  if (sinPz && !uniProc(CT)) av.push(`<li class="warn">${sinPz} OP(s) sin piezas por mueble: cuentan 1 por mueble hasta que les pongas sus piezas (botón <b>Piezas</b> de cada renglón).</li>`);
+  if (b.origen === "previo") av.push(`<li class="info">Para rutas exactas por OP arrastra también el exporte de BC «Órdenes producción planificadas» del mismo día${b.bcRutas ? "" : " (este archivo no trae «Tiempos y Piezas»)"}.</li>`);
   if (prev) {
     const d = diffProgramas(prev.rows, incl.map(x => x.f));
     const partes = [d.nuevas.length ? `<b class="warn-t">${d.nuevas.length} OP(s) nuevas</b>: ${d.nuevas.slice(0, 12).map(r => `<span class="chip">${esc(r.op)} ${esc(r.modelo)} ×${r.cant}</span>`).join("")}` : "",
@@ -1348,33 +1725,32 @@ function renderCarga() {
   if (av.length) h += `<div class="card"><div class="body" style="padding-top:12px"><ul class="avisos">${av.join("")}</ul></div></div>`;
 
   const lista = incl.filter(x => filtroCarga === "todos" || (filtroCarga === "nuevos" ? x.c.nuevo : !x.c.nuevo));
-  const nc = 11 + CT.maqs.length;
+  const nc = 8 + CT.maqs.length;
   h += `<div class="card"><div class="hd">OPs que pasan por ${esc(CT.label)} <span class="sub">${incl.length} OPs · ${fmt(mu)} muebles</span><span class="sp"></span>
         <div class="seg">${[["todos", "Todas"], ["nuevos", `Nuevas (${nuevos.length})`], ["conocidos", "Conocidas"]].map(([k, t]) => `<button data-fc="${k}" class="${filtroCarga === k ? "on" : ""}">${t}</button>`).join("")}</div></div>
     <div class="body"><div class="toolbar">
       <button id="sNuevos">Seleccionar nuevas</button>
-      ${b.bcRutas ? `<button id="sBC" title="Selecciona las OPs cuya ruta no tiene piezas de ${esc(CT.bc)} en «Tiempos y Piezas». Tú confirmas con Marcar fuera.">Seleccionar sin ${esc(CT.label)} según BC</button>` : ""}
-      ${mel.length ? `<button id="sMel" title="Selecciona las OPs cuya ficha técnica no menciona estructura metálica. Tú confirmas con Marcar fuera.">Seleccionar melamina según ficha (${mel.length})</button>` : ""}
+      ${b.bcRutas ? `<button id="sBC" title="Selecciona las OPs cuya ruta no tiene piezas de ${esc(CT.bc)} en «Tiempos y Piezas». Tú confirmas con Marcar fuera.">Sin ${esc(CT.label)} según BC</button>` : ""}
+      ${mel.length ? `<button id="sMel" title="Selecciona las OPs cuya ficha técnica no menciona estructura metálica. Tú confirmas con Marcar fuera.">Melamina según ficha (${mel.length})</button>` : ""}
       <button id="sNada">Quitar selección</button><span class="sp"></span>
-      <span class="radio">Retirar por: <label><input type="radio" name="por" value="modelo" ${!PREF.porRuta ? "checked" : ""}>Modelo</label><label title="Retira todas las variantes de la ruta (NI105, L105, S105…)"><input type="radio" name="por" value="ruta" ${PREF.porRuta ? "checked" : ""}>Ruta (todas sus variantes)</label></span>
-      <button class="peligro" id="bFuera" ${sel.size ? "" : "disabled"}>Marcar fuera de ${esc(CT.label)} (${sel.size})</button></div>
-    <div class="tw"><table><thead><tr><th class="c"><input type="checkbox" id="selTodo"></th><th>OP</th><th>Modelo</th><th>Familia</th><th>Ruta BC</th><th class="num">Muebles</th><th class="num" title="Piezas de ${esc(CT.bc)} por mueble según «Tiempos y Piezas»">BC pz</th>
-      ${CT.maqs.map(m => `<th title="${esc(m.label)}: ¿pasa? · piezas por mueble = total">${uniProc(CT) ? "Piezas por mueble" : esc(m.corto) + " · pz/mueble"}</th>`).join("")}<th>Ruta de piezas</th><th>Estado</th><th></th></tr></thead><tbody>`;
+      <span class="radio">Retirar por: <label><input type="radio" name="por" value="modelo" ${!PREF.porRuta ? "checked" : ""}>Modelo</label><label title="Retira todas las variantes de la ruta (NI105, L105, S105…)"><input type="radio" name="por" value="ruta" ${PREF.porRuta ? "checked" : ""}>Ruta</label></span>
+      <button class="peligro" id="bFuera" ${sel.size ? "" : "disabled"}>Marcar fuera (${sel.size})</button></div>
+    <div class="tw"><table><thead><tr><th class="c"><input type="checkbox" id="selTodo"></th><th>OP</th><th>Modelo</th><th>Ruta BC</th><th class="num">Muebles</th><th class="num" title="Piezas de ${esc(CT.bc)} por mueble según «Tiempos y Piezas» (sugerencia)">BC pz</th>
+      ${CT.maqs.map(m => `<th title="${esc(m.label)}: ¿pasa? · piezas por mueble = total">${uniProc(CT) ? "Piezas por mueble" : esc(m.corto) + " · pz/mueble"}</th>`).join("")}<th>Ruta de piezas</th><th></th></tr></thead><tbody>`;
   let famAnt = null;
   for (const { f, c } of lista) {
     if (f.familia !== famAnt) { h += `<tr class="grupo"><td colspan="${nc}">${esc(f.familia || "Sin familia")}</td></tr>`; famAnt = f.familia; }
     const bp = bcPz(f, b, CT), desp = f.pzSrc === "despiece";
     h += `<tr data-k="${esc(f.k)}" class="${sel.has(f.k) ? "sel" : ""}"><td class="c"><input type="checkbox" class="sk" ${sel.has(f.k) ? "checked" : ""}></td>
-      <td class="mono">${esc(f.op)}</td><td>${modeloHTML(f)}</td><td class="muted">${esc(f.familia)}</td>
+      <td class="mono">${esc(f.op)}</td><td>${modeloHTML(f, (c.nuevo ? ' <span class="st warn">Nuevo</span>' : "") + (desp ? ' <span class="st desp">despiece</span>' : f.pzSrc && f.pzSrc !== "guardado" ? ` <span class="dim" style="font-size:10.5px">pz: ${esc(f.pzSrc)}</span>` : ""))}</td>
       <td class="mono" title="${f.rutaSrc === "BC" ? "de BC" : f.rutaSrc === "nombre" ? "ligada por el nombre del modelo" : ""}">${f.ruta ? esc(f.ruta) : '<span class="dim">—</span>'}${f.rutaSrc === "nombre" ? ' <span class="dim">~</span>' : ""}</td>
       <td class="num">${fmt(f.cant)}</td><td class="num">${bcDe(f, b) ? (bp > 0 ? fmt(bp) : '<span class="err-t">0</span>') : '<span class="dim">—</span>'}</td>
       ${CT.maqs.map(m => { const x = f.proc?.[m.id] || {}; return `<td><span class="proc">${uniProc(CT) ? "" : `<input type="checkbox" class="pc" data-m="${esc(m.id)}" ${x.on ? "checked" : ""} ${desp ? "disabled" : ""}>`}<input type="number" min="0" step="1" class="pn" data-m="${esc(m.id)}" value="${x.pz ?? ""}" placeholder="1" ${x.on && !desp ? "" : "disabled"}><span class="t">${x.on ? "= " + fmt(programadas(f, m.id)) : ""}</span></span></td>`; }).join("")}
       <td>${rutaHTML(f, CT.id, otrosDeBorrador(f))}</td>
-      <td>${c.nuevo ? '<span class="st warn">Nuevo</span>' : '<span class="st ok">Conocido</span>'}${desp ? ' <span class="st desp">despiece</span>' : f.pzSrc && f.pzSrc !== "guardado" ? ` <span class="dim" style="font-size:10.5px">pz: ${esc(f.pzSrc)}</span>` : ""}</td>
-      <td style="white-space:nowrap"><button class="mini bdesp" title="Piezas del modelo y su ruta">Despiece</button> <button class="mini peligro bf1" title="No pasa por ${esc(CT.label)}">Fuera</button></td></tr>`;
+      <td style="white-space:nowrap"><button class="mini bdesp" title="Piezas de lámina del modelo: con su dibujo y las que comparte con otros modelos">Piezas</button> <button class="mini peligro bf1" title="No pasa por ${esc(CT.label)}">Fuera</button></td></tr>`;
   }
   h += `</tbody></table></div>${!lista.length ? '<div class="empty">Nada en este filtro.</div>' : ""}
-    <p class="note">BC pz = piezas de ${esc(CT.bc)} por mueble en «Tiempos y Piezas» (solo sugerencia). «~» = ruta ligada por el nombre del modelo. Foto, ficha y especificación vienen de ingenieria.lineaitalia.net (clic en la foto para verla grande).${uniProc(CT) ? "" : " Con <span class=\"st desp\">despiece</span> las piezas salen de la ruta de cada pieza."}</p></div></div>`;
+    <p class="note">BC pz = sugerencia de «Tiempos y Piezas». «~» = ruta ligada por el nombre del modelo. Clic en la foto para verla grande.</p></div></div>`;
 
   h += `<details class="card" ${ret.length && !incl.length ? "open" : ""}><summary>Retiradas automáticamente <span class="sub">${ret.length} OPs · ${fmt(ret.reduce((s, x) => s + x.f.cant, 0))} muebles · no pasan por ${esc(CT.label)}</span></summary><div class="body">
     ${ret.length ? `<div class="tw"><table><thead><tr><th>OP</th><th>Modelo</th><th>Familia</th><th>Ruta</th><th class="num">Muebles</th><th>Motivo</th><th></th></tr></thead><tbody>
@@ -1382,10 +1758,10 @@ function renderCarga() {
       <td>${c.por === "familia" ? `<span class="st gris">Familia ${esc(c.fam)}: no va en ${esc(CT.label)}</span>` : c.por === "ruta" ? `<span class="st gris">Ruta ${esc(f.ruta)} fuera</span>` : '<span class="st gris">Modelo fuera</span>'}</td>
       <td>${c.key ? `<button class="mini ok breg" data-key="${esc(c.key)}" data-por="${c.por}">Regresar a ${esc(CT.label)}</button>` : ""}</td></tr>`).join("")}</tbody></table></div>` : '<div class="empty">Ninguna todavía. Conforme marques modelos fuera, aquí aparecerán solos en cada programa.</div>'}
     </div></details>`;
-  el.innerHTML = h + `<div class="card"><div class="body" style="padding-top:16px">${subir}</div></div>`;
-  enlazarSubida();
+  el.innerHTML = h;
 
-  $("#bDesc").onclick = () => { if (confirm(`¿Descartar el archivo cargado en ${CT.label}? (no borra nada guardado)`)) { delete BS[CT.id]; guardar("bor"); abrir("carga"); } };
+  $("#bVolver").onclick = () => abrir("progs");
+  $("#bDesc").onclick = () => { if (confirm(`¿Descartar el archivo cargado en ${CT.label}? (no borra nada guardado)`)) { delete BS[CT.id]; guardar("bor"); abrir("progs"); } };
   $("#fArch2").onchange = e => leerInput(e.target);
   $("#bGuardar").onclick = guardarPrograma;
   if ($("#bTodos")) $("#bTodos").onclick = guardarTodos;
@@ -1411,7 +1787,7 @@ function renderCarga() {
     const f = b.ops.find(o => o.k === tr.dataset.k); if (!f) return;
     tr.querySelector(".sk").onchange = e => setSel(e.target.checked ? [...b.sel, f.k] : b.sel.filter(k => k !== f.k));
     tr.querySelector(".bf1").onclick = () => fuera([f]);
-    tr.querySelector(".bdesp").onclick = () => abrirDespiece(f.ruta, f.modelo);
+    tr.querySelector(".bdesp").onclick = () => agregarPiezasModelo(f.ruta || f.modelo);
     tr.querySelectorAll(".pc").forEach(cb => cb.onchange = () => { f.proc[cb.dataset.m].on = cb.checked; f.editado = true; f.pzSrc = "guardado"; guardar("bor"); renderCarga(); });
     tr.querySelectorAll(".pn").forEach(inp => inp.onchange = () => { const v = parseFloat(inp.value); f.proc[inp.dataset.m].pz = v > 0 ? v : null; f.editado = true; f.pzSrc = "guardado"; guardar("bor"); renderCarga(); });
   });
@@ -1421,14 +1797,6 @@ function renderCarga() {
     regresarDentro(x.dataset.key); toast(`Regresado a ${esc(CT.label)}.`, "ok"); renderCarga();
   });
 }
-function ultimos() {
-  const vs = progsVigentes().slice(-6).reverse();
-  if (!vs.length) return "";
-  return `<div class="card"><div class="hd">Últimos programas de ${esc(CT.label)}</div><div class="body"><div class="tw"><table><thead><tr><th>Día</th><th>Versión</th><th class="num">OPs</th>${CT.maqs.map(m => `<th>${esc(m.corto)}</th>`).join("")}<th></th></tr></thead><tbody>
-    ${vs.map(p => `<tr><td>${fechaLarga(p.dia)}</td><td>${esc(p.tipo)} v${p.version}</td><td class="num">${p.rows.length}</td>
-      ${CT.maqs.map(m => { const s = stats(p, m.id); return `<td><div class="cnt"><span class="mono">${fmt(s.h)}/${fmt(s.prog)}</span>${barra(s.pct, s.pct >= 1)}</div></td>`; }).join("")}
-      <td><button class="mini" data-ver="${p.id}">Ver</button></td></tr>`).join("")}</tbody></table></div></div></div>`;
-}
 function enlazarSubida() {
   const inp = $("#fArch"), dz = $("#dz");
   if (inp) inp.onchange = e => leerInput(e.target);
@@ -1437,15 +1805,23 @@ function enlazarSubida() {
     dz.ondragleave = () => dz.classList.remove("drag");
     dz.ondrop = e => { e.preventDefault(); e.stopPropagation(); dz.classList.remove("drag"); const f = e.dataTransfer.files[0]; if (f) f.arrayBuffer().then(b => cargarArchivo(b, f.name)); };
   }
-  document.querySelectorAll("#v-carga [data-ver]").forEach(b => b.onclick = () => { verId = b.dataset.ver; abrir("ver"); });
 }
 function leerInput(inp) { const f = inp.files[0]; inp.value = ""; if (f) f.arrayBuffer().then(b => cargarArchivo(b, f.name)); }
 
-/* ---------- Programas guardados ---------- */
+/* ---------- Programas: cargar el previo, borrador por revisar y programas guardados (una sola pantalla) ---------- */
 function renderProgs() {
-  const el = $("#v-progs"), dias = [...new Set(progsCT().map(p => p.dia))].sort().reverse();
-  if (!dias.length) { el.innerHTML = `<div class="card"><div class="empty"><b>Aún no hay programas de ${esc(CT.label)}</b>Carga un previo en «Cargar programa» y guárdalo.</div></div>`; return; }
-  let h = `<div class="card"><div class="tw"><table><thead><tr><th>Programa del día</th><th>Se trabaja</th><th>Origen</th><th class="num">OPs</th><th class="num">Muebles</th>${CT.maqs.map(m => `<th>${esc(m.corto)} (hechas / programadas)</th>`).join("")}<th>Guardado</th><th></th></tr></thead><tbody>`;
+  const el = $("#v-progs"), dias = [...new Set(progsCT().map(p => p.dia))].sort().reverse(), b = bor();
+  let top = "";
+  if (b) {
+    const inc = filasB().filter(x => !x.c.fuera), nv = inc.filter(x => x.c.nuevo).length;
+    top += `<div class="card bor"><div class="hd"><span>Borrador por revisar</span><span class="sub">${esc(b.tipo)} del ${fechaLarga(b.dia)} · ${fmt(inc.length)} OPs · ${fmt(inc.reduce((s, x) => s + x.f.cant, 0))} muebles${nv ? ` · <b class="warn-t">${nv} modelo(s) nuevo(s)</b>` : ""} · se trabaja el ${diaCorto(restarHabiles(b.dia, CT.adelanto || 0))}</span>
+      <span class="sp"></span><button class="pri" id="bRev">Revisar y guardar</button></div></div>`;
+  }
+  top += `<label class="subir linea" id="dz"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    <b>${b ? "Cargar otro archivo" : "Arrastra aquí el previo, el lanzado o el exporte de BC"}</b><span class="dim">o haz clic para elegirlo · los modelos marcados fuera se retiran solos</span><input type="file" id="fArch" accept=".xlsx,.xls" hidden></label>`;
+  const enlazarTop = () => { enlazarSubida(); if ($("#bRev")) $("#bRev").onclick = () => abrir("carga"); };
+  if (!dias.length) { el.innerHTML = top + `<div class="card"><div class="empty"><b>Aún no hay programas guardados</b>Carga el previo, revisa el borrador y pulsa «Guardar programa».</div></div>`; enlazarTop(); return; }
+  let h = top + `<div class="card"><div class="tw"><table><thead><tr><th>Programa del día</th><th>Se trabaja</th><th>Origen</th><th class="num">OPs</th><th class="num">Muebles</th>${CT.maqs.map(m => `<th>${esc(m.corto)} (hechas / programadas)</th>`).join("")}<th>Guardado</th><th></th></tr></thead><tbody>`;
   for (const d of dias) {
     progsCT().filter(p => p.dia === d).sort((a, b) => b.version - a.version).forEach((p, i) => {
       h += `<tr class="${i ? "hecho" : ""}"><td>${i ? '<span class="dim">↳ versión anterior</span>' : `<b>${fechaLarga(d)}</b>`}</td><td class="mono">${i ? "" : diaCorto(trabajoDe(p))}</td><td>${esc(p.tipo)} v${p.version}<div class="dim" style="font-size:11px">${esc(p.archivo)}</div></td>
@@ -1456,6 +1832,7 @@ function renderProgs() {
     });
   }
   el.innerHTML = h + `</tbody></table></div></div><p class="note">El avance se registra por OP: si llega una versión nueva del programa (previo corregido o lanzado), lo ya registrado se conserva.</p>`;
+  enlazarTop();
   el.querySelectorAll("[data-ver]").forEach(b => b.onclick = () => { verId = b.dataset.ver; abrir("ver"); });
   el.querySelectorAll("[data-xls]").forEach(b => b.onclick = () => exportarExcel(DB.programas.find(p => p.id === b.dataset.xls)));
   el.querySelectorAll("[data-del]").forEach(b => b.onclick = () => {
@@ -1468,19 +1845,19 @@ function renderProgs() {
 /* ---------- Ver un programa ---------- */
 function renderVer() {
   const el = $("#v-ver"), p = DB.programas.find(x => x.id === verId && x.ct === CT.id) || progsVigentes().slice(-1)[0];
-  if (!p) { el.innerHTML = `<div class="card"><div class="empty"><b>Sin programa</b>Guarda uno desde «Cargar programa».</div></div>`; return; }
+  if (!p) { el.innerHTML = `<div class="card"><div class="empty"><b>Sin programa</b>Carga el previo en «Programas» y guárdalo.</div></div>`; return; }
   verId = p.id;
   // Troqueles: primero el programa general del CT; de ahí salen, filtrados, el de Láser de cama (el que lee Nidos) y el de la dobladora
   const gen = !uniProc(CT) && (verMaq == null || verMaq === GENERAL), pzs = !uniProc(CT) && verMaq === PIEZAS;
   const m = gen || pzs ? null : CT.maqs.find(x => x.id === verMaq) || CT.maqs[0]; verMaq = gen ? GENERAL : pzs ? PIEZAS : m.id;
-  $("#pgT").innerHTML = "Programa · " + esc(fechaLarga(p.dia)) + `<span class="ctb">${esc(CT.label)}</span>`;
-  $("#pgS").textContent = `${p.tipo} v${p.version} · ${p.archivo} · guardado ${horaCorta(p.guardado)}${esVigente(p) ? "" : " · versión reemplazada"}`;
+  $("#pgT").innerHTML = "Programa · " + esc(fechaLarga(p.dia)) + ctbHTML();
+  $("#pgS").textContent = `${p.tipo} v${p.version} · se trabaja el ${diaCorto(trabajoDe(p))} · guardado ${horaCorta(p.guardado)}${esVigente(p) ? "" : " · versión reemplazada"}`;
   const una = uniProc(CT) || gen || pzs;
-  $("#acc").innerHTML = `<button id="bPr1">Imprimir${una ? "" : " " + esc(m.label)}</button>${una ? "" : '<button id="bPr2">Imprimir todas</button>'}<button id="bXls">Exportar Excel</button><button class="pri" id="bIrH">Registrar hora por hora</button>`;
+  $("#acc").innerHTML = `<button id="bVolver">← Programas</button><button id="bPr1">Imprimir${una ? "" : " " + esc(m.label)}</button>${una ? "" : '<button id="bPr2">Imprimir todas</button>'}<button id="bXls">Excel</button><button class="pri" id="bIrH">Hora por hora</button>`;
   const idx = indiceOPs();
-  let h = uniProc(CT) ? "" : `<div class="toolbar"><div class="seg"><button data-m="${GENERAL}" class="${gen ? "on" : ""}">Programa general · ${fmt(p.rows.length)} OPs</button>${CT.maqs.map(x => { const sx = stats(p, x.id);
-      return `<button data-m="${esc(x.id)}" class="${m && x.id === m.id ? "on" : ""}">${esc(x.label)} · ${fmt(sx.ops)} OPs · ${fmt(sx.prog)} pz</button>`; }).join("")}<button data-m="${PIEZAS}" class="${pzs ? "on" : ""}">Desglose de piezas</button></div>
-    <span class="dim" style="margin-left:10px;font-size:12px">${gen ? "Todas las OPs que pasan por " + esc(CT.label) + ". Los botones de la derecha filtran el programa de cada máquina." : pzs ? "Piezas de lámina a fabricar: las que comparten varios modelos se suman; las propias van por modelo." : m.id === CORTE ? "Solo las OPs con corte: es el programa que lee Nidos Láser de Cama («Desde Programas»)." : "Solo las OPs que se doblan."}</span></div>`;
+  // pestañas cortas; la explicación va en el «title» de cada botón
+  let h = uniProc(CT) ? "" : `<div class="toolbar"><div class="seg"><button data-m="${GENERAL}" class="${gen ? "on" : ""}" title="Todas las OPs que pasan por ${esc(CT.label)}">General · ${fmt(p.rows.length)}</button>${CT.maqs.map(x => { const sx = stats(p, x.id);
+      return `<button data-m="${esc(x.id)}" class="${m && x.id === m.id ? "on" : ""}" title="${x.id === CORTE ? "Solo las OPs con corte: es el que lee Nidos («Desde Programación»)" : "Solo las OPs que se doblan"}">${esc(x.label)} · ${fmt(sx.ops)} OPs · ${fmt(sx.prog)} pz</button>`; }).join("")}<button data-m="${PIEZAS}" class="${pzs ? "on" : ""}" title="Piezas de lámina a fabricar: las compartidas se suman, las propias van por modelo">Piezas a fabricar</button></div></div>`;
   const prevV = progsCT().filter(x => x.dia === p.dia && x.version < p.version).sort((a, b) => b.version - a.version)[0];
   const cambios = () => { if (!prevV) return "";
     const d = diffProgramas(prevV.rows, p.rows);
@@ -1491,6 +1868,7 @@ function renderVer() {
   const retiradas = p.retirados?.length ? `<details class="card"><summary>Retiradas al cargar <span class="sub">${p.retirados.length} OPs no pasan por ${esc(CT.label)}</span></summary><div class="body">${p.retirados.map(r => `<span class="chip">${esc(r.op)} ${esc(r.modelo)} ×${r.cant}</span>`).join("")}</div></details>` : "";
   const enlazar = () => {
     el.querySelectorAll("[data-m]").forEach(b => b.onclick = () => { verMaq = b.dataset.m; renderVer(); });
+    $("#bVolver").onclick = () => abrir("progs");
     $("#bXls").onclick = () => exportarExcel(p);
     $("#bPr1").onclick = () => imprimir(p, m ? [m] : CT.maqs.filter(x => stats(p, x.id).prog > 0));
     if ($("#bPr2")) $("#bPr2").onclick = () => imprimir(p, CT.maqs.filter(x => stats(p, x.id).prog > 0));
@@ -1500,14 +1878,14 @@ function renderVer() {
   if (pzs) {
     if (!MAQ[verPzMaq] || !CT.maqs.some(x => x.id === verPzMaq)) verPzMaq = CORTE;
     el.innerHTML = h + `<div class="toolbar"><div class="seg">${CT.maqs.map(x => `<button data-pzm="${esc(x.id)}" class="${verPzMaq === x.id ? "on" : ""}">${esc(x.label)}</button>`).join("")}</div>
-      <span class="dim" style="margin-left:10px;font-size:12px">Piezas del catálogo de lámina (biblioteca DXF de Nidos y las que captures en «Piezas compartidas»).</span></div>` + desgloseHTML(p, verPzMaq) + cambios();
-    enlazar(); enlazarPiezas(el);
+      <span class="dim" style="font-size:11.5px">Clic en el dibujo de una pieza para verla y medirla.</span></div>` + desgloseHTML(p, verPzMaq) + cambios();
+    enlazar(); enlazarPiezas(el); pintarMinis(el);
     el.querySelectorAll("[data-pzm]").forEach(b => b.onclick = () => { verPzMaq = b.dataset.pzm; renderVer(); });
     return;
   }
   const s = stats(p, m.id), filas = p.rows.filter(r => r.proc?.[m.id]?.on);
   h += `<div class="kpis">${kpi("OPs", fmt(s.ops), fmt(s.mu) + " muebles")}${kpi("Programadas", fmt(s.prog), "piezas", "info")}${kpi(esc(m.hechas), fmt(s.h), Math.round(s.pct * 100) + "% del programa", s.pct >= 1 ? "ok" : "")}
-      ${kpi("Faltan", fmt(s.falta), trabajoDe(p) < fechaTrabajo() && s.falta ? "atraso (se debió trabajar el " + fechaCorta(trabajoDe(p)) + ")" : "faltante por procesar", s.falta ? (trabajoDe(p) < fechaTrabajo() ? "err" : "warn") : "ok")}${kpi("Se trabaja", diaCorto(trabajoDe(p)), CT.adelanto + " días hábiles antes del programa")}</div>`;
+      ${kpi("Faltan", fmt(s.falta), trabajoDe(p) < fechaTrabajo() && s.falta ? "atraso (se debió trabajar el " + fechaCorta(trabajoDe(p)) + ")" : "faltante por procesar", s.falta ? (trabajoDe(p) < fechaTrabajo() ? "err" : "warn") : "ok")}</div>`;
   h += cambios();
   h += `<div class="card"><div class="tw"><table><thead><tr><th class="num">#</th><th>OP</th><th>Modelo</th><th>Ruta BC</th><th class="num">Muebles</th><th class="num">Pz x mueble</th><th class="num">Programadas</th><th class="num">${esc(m.hechas)}</th><th class="num">Faltan</th><th>Ruta de piezas · avance</th></tr></thead><tbody>`;
   let famAnt = null;
@@ -1531,7 +1909,7 @@ function generalHTML(p, idx) {
   const st = Object.fromEntries(CT.maqs.map(x => [x.id, stats(p, x.id)])), mu = p.rows.reduce((a, r) => a + r.cant, 0);
   const sinNada = p.rows.filter(r => !CT.maqs.some(x => r.proc?.[x.id]?.on)).length;
   let h = `<div class="kpis">${kpi("OPs", fmt(p.rows.length), fmt(mu) + " muebles")}${CT.maqs.map(x => kpi(esc(x.label), fmt(st[x.id].ops) + " OPs", fmt(st[x.id].prog) + " piezas · " + Math.round(st[x.id].pct * 100) + "% hecho", "info")).join("")}
-      ${kpi("Se trabaja", diaCorto(trabajoDe(p)), CT.adelanto + " días hábiles antes del programa")}${sinNada ? kpi("Sin proceso", fmt(sinNada), "OPs sin corte ni doblez marcado", "warn") : ""}</div>`;
+      ${sinNada ? kpi("Sin proceso", fmt(sinNada), "OPs sin corte ni doblez marcado", "warn") : ""}</div>`;
   h += `<div class="card"><div class="tw"><table><thead><tr><th class="num">#</th><th>OP</th><th>Modelo</th><th>Ruta BC</th><th class="num">Muebles</th>${CT.maqs.map(x => `<th class="num">${esc(x.corto)} (pz)</th>`).join("")}<th>Ruta de piezas · avance</th></tr></thead><tbody>`;
   let famAnt = null;
   p.rows.forEach((r, i) => {
@@ -1666,97 +2044,6 @@ function renderHora() {
   });
 }
 
-/* ---------- Rutas de pieza (despiece) ---------- */
-function bcRutaTxt(ruta) {
-  const x = ruta && DB.bcRutas[up(ruta)];
-  if (!x || !x.cts) return "";
-  return Object.entries(x.cts).filter(([, v]) => v.pz > 0).map(([c, v]) => `${c.toLowerCase()} ${fmt(v.pz)}`).join(" · ");
-}
-function resumenDesp(d) {
-  const t = ORDEN.map(m => [m, pzDesp(d, m)]).filter(([, s]) => s > 0).map(([m, s]) => `${MAQ[m].corto} ${fmt(s)}`).join(" → ");
-  const sd = d.piezas.filter(p => p.ruta.includes(CORTE) && !p.ruta.includes(DOBLEZ)).reduce((s, p) => s + (+p.pz || 0), 0);
-  return esc(t) + (sd ? ` · <span class="warn-t">${fmt(sd)} sin doblez</span>` : "");
-}
-function renderRutas() {
-  const el = $("#v-rutas");
-  const mapa = new Map();
-  const agrega = (ruta, modelo, familia) => { const k = keyD(ruta, modelo); const x = mapa.get(k) || { k, ruta: ruta || "", modelos: new Set(), familia: familia || "" }; if (modelo) x.modelos.add(modelo); if (!x.familia && familia) x.familia = familia; mapa.set(k, x); };
-  Object.values(DB.modelos).filter(x => x.tipo === "modelo" && x.estado === "dentro" && esCT(x.ct)).forEach(x => agrega(x.ruta, x.valor, x.familia));
-  DB.programas.filter(p => esCT(p.ct)).forEach(p => p.rows.forEach(r => agrega(r.ruta, r.modelo, r.familia)));
-  despModelos().forEach(([k, d]) => { if (!mapa.has(k)) mapa.set(k, { k, ruta: d.ruta || "", modelos: new Set([d.modelo].filter(Boolean)), familia: d.familia || "" }); });
-  const q = up(busqR);
-  let xs = [...mapa.values()].filter(x => !q || up(x.ruta).includes(q) || [...x.modelos].some(m => up(m).includes(q)) || up(x.familia).includes(q));
-  const con = xs.filter(x => DB.despiece[x.k]).length;
-  if (filtroR === "con") xs = xs.filter(x => DB.despiece[x.k]); else if (filtroR === "sin") xs = xs.filter(x => !DB.despiece[x.k]);
-  xs.sort((a, b) => (!!DB.despiece[b.k] - !!DB.despiece[a.k]) || (a.ruta || [...a.modelos][0] || "").localeCompare(b.ruta || [...b.modelos][0] || "", "es", { numeric: true }));
-  let h = `<div class="card"><div class="body" style="padding-top:14px"><ul class="avisos">
-      <li class="info">Cada pieza lleva su ruta: <span class="rt"><span class="n">Corte</span><span class="l"></span><span class="n">Doblez</span></span> o <span class="rt"><span class="n">Corte</span><span class="l off"></span><span class="fin">sin doblez</span></span>. El despiece es por ruta de BC (sirve para todas sus variantes: NI105, L105, S105…) y alimenta el programa de Troqueles.</li>
-      <li class="info">Sin despiece, el programa usa las piezas por mueble que captures en «Cargar programa». Captura primero los modelos que más se programan.</li></ul></div></div>
-    <div class="toolbar"><input type="text" id="rBus" placeholder="Buscar ruta, modelo o familia" value="${esc(busqR)}" style="width:260px">
-      <div class="seg">${[["todos", "Todas"], ["con", `Con despiece (${con})`], ["sin", "Sin despiece"]].map(([k, t]) => `<button data-fr="${k}" class="${filtroR === k ? "on" : ""}">${t}</button>`).join("")}</div>
-      <span class="sp"></span><input type="text" id="rNueva" placeholder="Ruta o modelo nuevo" style="width:170px"><button id="rAdd">Capturar despiece</button></div>
-    <div class="card"><div class="tw"><table><thead><tr><th>Ruta BC</th><th>Modelos</th><th>Familia</th><th class="num">Piezas</th><th>Ruta por proceso (pz/mueble)</th><th>BC por CT (pz/mueble)</th><th></th></tr></thead><tbody>
-    ${xs.map(x => { const d = DB.despiece[x.k], f0 = { ruta: x.ruta, modelo: [...x.modelos][0] || "" }, g = ingDe(f0); return `<tr><td><div class="mod">${fotoHTML(f0, g)}<div><b class="mono">${esc(x.ruta || "—")}</b> ${melHTML(g)}<div>${ligasIng(g)}</div></div></div></td><td>${[...x.modelos].slice(0, 6).map(m => `<span class="chip">${esc(m)}</span>`).join("")}${x.modelos.size > 6 ? `<span class="dim">+${x.modelos.size - 6}</span>` : ""}</td>
-      <td class="muted">${esc(x.familia)}</td><td class="num">${d ? d.piezas.length : '<span class="dim">—</span>'}</td><td>${d ? resumenDesp(d) : '<span class="dim">sin despiece</span>'}</td>
-      <td class="dim" style="font-size:11.5px">${esc(bcRutaTxt(x.ruta))}</td><td><button class="mini ${d ? "" : "pri"}" data-k="${esc(x.k)}">${d ? "Editar" : "Capturar"}</button></td></tr>`; }).join("")}
-    </tbody></table></div>${!xs.length ? '<div class="empty">Sin rutas todavía: aparecen al guardar programas o al capturar un despiece.</div>' : ""}</div>`;
-  el.innerHTML = h;
-  const bus = $("#rBus"); bus.oninput = () => { busqR = bus.value; clearTimeout(bus._t); bus._t = setTimeout(() => { renderRutas(); const b = $("#rBus"); b.focus(); b.setSelectionRange(b.value.length, b.value.length); }, 250); };
-  el.querySelectorAll("[data-fr]").forEach(b => b.onclick = () => { filtroR = b.dataset.fr; renderRutas(); });
-  el.querySelectorAll("button[data-k]").forEach(b => b.onclick = () => { const x = mapa.get(b.dataset.k); abrirDespiece(x.ruta, [...x.modelos][0] || ""); });
-  $("#rAdd").onclick = () => { const v = $("#rNueva").value.trim(); if (!v) return; const ruta = DB.equiv[up(v)] || EQUIV_SEED[up(v)] || (DB.bcRutas[up(v)] || ING.fichas[up(v)] ? v : ""); abrirDespiece(ruta || v, ruta ? v : ""); };
-}
-
-/** Editor del despiece de una ruta (o de un modelo sin ruta) */
-function abrirDespiece(ruta, modelo) {
-  const k = keyD(ruta, modelo), d0 = DB.despiece[k];
-  const D = d0 ? clon(d0) : { ruta: ruta || "", modelo: modelo || "", piezas: [] };
-  if (!D.piezas.length) D.piezas.push({ id: uid(), nombre: "", pz: 1, ruta: [CORTE, DOBLEZ] });
-  const modelos = [...new Set(Object.values(DB.modelos).filter(x => x.tipo === "modelo" && ruta && up(x.ruta) === up(ruta)).map(x => x.valor))];
-  const g = ingDe({ ruta, modelo });
-  $("#dlgT").innerHTML = `Despiece · ${ruta ? "ruta <span class='mono'>" + esc(ruta) + "</span>" : "modelo <span class='mono'>" + esc(modelo) + "</span>"} <span class="dim" style="font-weight:400;font-size:12px">${esc(modelos.slice(0, 8).join(", "))}</span>`;
-  const pintar = () => {
-    const bc = bcRutaTxt(ruta);
-    let h = `<div class="ficha" style="margin-bottom:10px">${g.foto ? `<img src="${g.foto}" alt="" style="width:200px">` : ""}<div style="flex:1;min-width:260px"><ul class="avisos">
-      <li class="info">Marca por cada pieza los procesos por los que pasa, en orden: <b>Corte</b> (Láser de cama) y <b>Doblez</b> (Dobladora G-Weike). Si una pieza no lleva doblez, déjalo sin marcar.</li>
-      ${bc ? `<li class="info">BC («Tiempos y Piezas», piezas por mueble): ${esc(bc)}</li>` : ""}
-      ${g.desc ? `<li class="info">${esc(g.desc)} ${melHTML(g)}</li>` : ""}<li>${ligasIng(g)}</li></ul></div></div>
-      <div class="tw"><table><thead><tr><th>Pieza</th><th class="num">Pz x mueble</th><th>Procesos</th><th>Ruta de la pieza</th><th></th></tr></thead><tbody>
-      ${D.piezas.map((p, i) => `<tr data-i="${i}"><td><input type="text" class="dn" value="${esc(p.nombre)}" placeholder="p. ej. Lateral, Fondo, Escuadra" style="min-width:200px"></td>
-        <td class="num"><input type="number" class="dp" min="0" step="1" value="${p.pz ?? ""}"></td>
-        <td><div class="cnt" style="flex-wrap:wrap">${ORDEN.map(m => `<button class="tg ${p.ruta.includes(m) ? "on" : ""}" data-m="${esc(m)}" title="${esc(MAQ[m].label)}">${esc(MAQ[m].corto)}</button>`).join("")}</div></td>
-        <td>${rutaPiezaHTML(p)}</td><td><button class="mini peligro dx">✕</button></td></tr>`).join("")}
-      </tbody></table></div>
-      <div class="toolbar" style="margin-top:10px"><button id="dA1">+ Pieza Corte → Doblez</button><button id="dA2">+ Pieza solo corte (sin doblez)</button></div>
-      <div class="mh">${ORDEN.map(m => `<div class="m" style="min-width:120px"><div class="dim" style="font-size:11px">${esc(MAQ[m].label)}</div><b class="mono">${fmt(pzDesp(D, m))}</b> <span class="dim">pz/mueble</span></div>`).join("")}</div>
-      <div class="toolbar"><span class="sp"></span>${d0 ? '<button class="peligro" id="dDel">Borrar despiece</button>' : ""}<button id="dCan">Cancelar</button><button class="pri" id="dOk">Guardar despiece</button></div>`;
-    $("#dlgB").innerHTML = h;
-    $("#dlgB").querySelectorAll("tr[data-i]").forEach(tr => {
-      const p = D.piezas[+tr.dataset.i];
-      tr.querySelector(".dn").oninput = e => { p.nombre = e.target.value; };
-      tr.querySelector(".dp").onchange = e => { const v = parseFloat(e.target.value); p.pz = v > 0 ? v : 0; pintar(); };
-      tr.querySelectorAll(".tg").forEach(b => b.onclick = () => { const m = b.dataset.m; p.ruta = p.ruta.includes(m) ? p.ruta.filter(x => x !== m) : ORDEN.filter(x => x === m || p.ruta.includes(x)); pintar(); });
-      tr.querySelector(".dx").onclick = () => { D.piezas.splice(+tr.dataset.i, 1); pintar(); };
-    });
-    const nueva = r => { D.piezas.push({ id: uid(), nombre: "", pz: 1, ruta: r }); pintar(); setTimeout(() => { const xs = $("#dlgB").querySelectorAll(".dn"); xs[xs.length - 1]?.focus(); }, 30); };
-    $("#dA1").onclick = () => nueva([CORTE, DOBLEZ]);
-    $("#dA2").onclick = () => nueva([CORTE]);
-    $("#dCan").onclick = () => $("#dlg").close();
-    if ($("#dDel")) $("#dDel").onclick = () => { if (!confirm("¿Borrar el despiece de esta ruta? Los programas ya guardados no cambian.")) return; delete DB.despiece[k]; guardar("despiece"); repreparar(); $("#dlg").close(); abrir(vista); };
-    $("#dOk").onclick = () => {
-      const piezas = D.piezas.filter(p => (p.nombre || "").trim() || p.ruta.length).map(p => ({ id: p.id || uid(), nombre: (p.nombre || "").trim(), pz: +p.pz || 0, ruta: p.ruta }));
-      if (!piezas.length) { toast("Agrega al menos una pieza.", "warn"); return; }
-      if (piezas.some(p => !p.nombre)) { toast("Ponle nombre a cada pieza.", "warn"); return; }
-      if (piezas.some(p => !(p.pz > 0) || !p.ruta.length)) { toast("Cada pieza necesita piezas por mueble y al menos un proceso.", "warn"); return; }
-      const fam = Object.values(DB.modelos).find(x => ruta && up(x.ruta) === up(ruta))?.familia || "";
-      DB.despiece[k] = { ruta: ruta || "", modelo: ruta ? "" : modelo, familia: fam, piezas, act: new Date().toISOString() };
-      guardar("despiece"); repreparar(); $("#dlg").close();
-      toast(`Despiece de ${esc(ruta || modelo)} guardado: ${piezas.length} pieza(s). Se aplica a los borradores y a los siguientes programas.`, "ok");
-      abrir(vista);
-    };
-  };
-  pintar(); $("#dlg").showModal();
-}
 
 /* ---------- Modelos fuera / dentro ---------- */
 function renderModelos() {
@@ -1768,7 +2055,7 @@ function renderModelos() {
     <input type="text" id="mBus" placeholder="Buscar modelo, ruta o familia" value="${esc(busq)}" style="width:260px"></div>`;
   if (modTab === "fuera") {
     const xs = fuera.filter(pasa).sort((a, b) => a.valor.localeCompare(b.valor));
-    h += `<div class="card"><div class="hd">Agregar a la lista <span class="sub">también puedes marcarlos desde «Cargar programa»</span></div><div class="body"><div class="params">
+    h += `<div class="card"><div class="hd">Agregar a la lista <span class="sub">también se marcan al revisar el borrador en «Programas»</span></div><div class="body"><div class="params">
         <label>Modelo o ruta<input type="text" id="mNuevo" style="width:200px" placeholder="p. ej. FA-6728 o 692"></label>
         <label>Tipo<select id="mTipo"><option value="modelo">Modelo (SKU exacto)</option><option value="ruta">Ruta (todas sus variantes)</option></select></label>
         <button class="peligro" id="mAdd">No pasa por ${esc(CT.label)}</button></div></div></div>
@@ -1890,7 +2177,7 @@ document.addEventListener("dragover", e => e.preventDefault());
 document.addEventListener("drop", e => { e.preventDefault(); const f = e.dataTransfer?.files?.[0]; if (f && /\.xlsx?$/i.test(f.name)) f.arrayBuffer().then(b => cargarArchivo(b, f.name)); });
 pintarCTs();
 LISTO = true;
-abrir(bor() ? "carga" : (progsVigentes().length ? "hora" : "carga"));
+abrir(progsVigentes().length && !bor() ? "hora" : "progs");   // con borrador por revisar, «Programas» lo muestra arriba
 // nube: al abrir trae todo; luego cada minuto, al volver a la pestaña y al recuperar internet
 $("#bNube").onclick = abrirNube;
 pintarNube();
@@ -1898,7 +2185,7 @@ if (NUBE.url) nubeTraer(true);
 setInterval(() => { if (NUBE.url && !document.hidden) nubeTraer(false); }, 60000);
 document.addEventListener("visibilitychange", () => { if (NUBE.url && !document.hidden) nubeTraer(false); });
 window.addEventListener("online", () => { if (NUBE.url) nubeTraer(false); });
-window.PT = { cargarArchivo, DB, cambiarCT, abrirDespiece, ingDe, guardarTodos, NUBE, PREF, guardar, nubeTraer, nubeEnviar, CTS, VERSION,
+window.PT = { cargarArchivo, DB, cambiarCT, ingDe, verDibujo, geometriaDXF, BIB, guardarTodos, NUBE, PREF, guardar, nubeTraer, nubeEnviar, CTS, VERSION,
   get B() { return bor(); }, get BS() { return BS; }, get CT() { return CT; },
   /** Rutina del agente: abre un previo o exporte servido por el mismo servidor (herramientas/servir.ps1 → /previo/<archivo>) */
   async cargarUrl(u) { const r = await fetch(u, { cache: "no-store" }); if (!r.ok) throw new Error(`No se pudo leer ${u} (${r.status})`); cargarArchivo(await r.arrayBuffer(), decodeURIComponent(u.split("/").pop())); },
