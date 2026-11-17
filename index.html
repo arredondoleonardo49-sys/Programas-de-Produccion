@@ -1,0 +1,1916 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Programas de producción</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- Índice de ingenieria.lineaitalia.net (fichas, especificaciones, folios, material y foto por ruta). Se regenera con el script del OS. -->
+<script src="assets/ingenieria.js"></script>
+<script src="assets/piezas-biblioteca.js"></script>
+<style>
+/* Formato visual de OEE Planta / Nidos Láser de Cama (tema oscuro, IBM Plex, menú lateral) */
+:root{--bg:#0f1117;--bg2:#181b24;--bg3:#1e2130;--border:#2a2e3f;--text:#e8eaf0;--text2:#8b8fa8;--text3:#555870;--blue:#4a9eff;--green:#3ecf8e;--amber:#f5a623;--red:#f06060;--radius:8px;--radius-lg:12px;
+  --sans:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+  --ok-bg:rgba(62,207,142,.15);--warn-bg:rgba(245,166,35,.15);--err-bg:rgba(240,96,96,.15);--info-bg:rgba(74,158,255,.15)}
+html{color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;font:13px/1.45 var(--sans);background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+@keyframes scaleIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+@keyframes rowIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)}}
+
+/* ---------- menú lateral ---------- */
+.sidebar{width:226px;min-width:226px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;transition:width .25s,min-width .25s;overflow-y:auto}
+.sidebar.collapsed{width:56px;min-width:56px}
+.sidebar-logo{padding:1.15rem 1.25rem .9rem;display:flex;align-items:center;gap:10px;white-space:nowrap;overflow:hidden}
+.sidebar.collapsed .sidebar-logo{padding:1rem 0;justify-content:center}
+.logo-box{width:34px;height:34px;flex-shrink:0;background:#fff;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:5px}
+.logo-box img{width:100%;height:100%;object-fit:contain}
+.logo-text{font-size:14.5px;font-weight:600;letter-spacing:.3px}
+.logo-sub{font-size:11px;color:var(--text2);margin-top:2px;font-family:var(--mono)}
+.ctsw{margin:0 1rem .8rem;display:flex;flex-direction:column;gap:4px;padding-bottom:.8rem;border-bottom:1px solid var(--border)}
+.ctsw button{justify-content:flex-start;width:100%;background:transparent;border:1px solid var(--border);color:var(--text2);padding:7px 10px}
+.ctsw button.on{background:var(--info-bg);border-color:var(--blue);color:var(--text);font-weight:600}
+.ctsw button b{font:600 10px var(--mono);background:var(--bg);border-radius:4px;padding:1px 5px;color:var(--text2)}
+.sidebar.collapsed .ctsw{margin:0 6px .6rem}
+.sidebar.collapsed .ctsw button{justify-content:center;padding:6px 0}
+.sidebar.collapsed .ctsw .ctl{display:none}
+.nav-section{padding:.6rem 0}
+.nav-label{font-size:10px;font-weight:600;color:var(--text3);padding:0 1.25rem .5rem;letter-spacing:1px;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 1.25rem;cursor:pointer;font-size:13px;color:var(--text2);border-left:2px solid transparent;transition:all .18s;white-space:nowrap;position:relative;user-select:none}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.on{background:var(--bg3);color:var(--text);border-left-color:var(--blue);font-weight:500}
+.nav-item svg{width:18px;height:18px;flex-shrink:0}
+.nav-item .n{margin-left:auto;font:500 10px var(--mono);background:var(--bg);color:var(--text2);padding:1px 7px;border-radius:9px}
+.nav-item[data-t=carga] svg{color:#4a9eff;filter:drop-shadow(0 0 4px rgba(74,158,255,.5))}
+.nav-item[data-t=progs] svg{color:#3ecf8e;filter:drop-shadow(0 0 4px rgba(62,207,142,.5))}
+.nav-item[data-t=hora] svg{color:#f5a623;filter:drop-shadow(0 0 4px rgba(245,166,35,.5))}
+.nav-item[data-t=rutas] svg{color:#c084fc;filter:drop-shadow(0 0 4px rgba(192,132,252,.5))}
+.nav-item[data-t=modelos] svg{color:#fb7185;filter:drop-shadow(0 0 4px rgba(251,113,133,.5))}
+.sidebar.collapsed .logo-txt,.sidebar.collapsed .nav-label,.sidebar.collapsed .nav-item span,.sidebar.collapsed .sb-txt{display:none}
+.sidebar.collapsed .nav-item{padding:10px 0;justify-content:center;border-left:none}
+.sidebar-bottom{margin-top:auto;padding:1rem 1.25rem;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:6px}
+.sidebar.collapsed .sidebar-bottom{padding:.75rem 6px}
+.sb-btn{width:100%;font:11px var(--sans);background:transparent;border:1px solid var(--border);color:var(--text3);border-radius:var(--radius);cursor:pointer;padding:5px 0;display:flex;align-items:center;justify-content:center;gap:6px}
+.sb-btn:hover{border-color:var(--blue);color:var(--text)}
+.sb-btn svg{width:14px;height:14px}
+
+/* ---------- página ---------- */
+.main{flex:1;min-width:0;overflow-y:auto;display:flex;flex-direction:column}
+.topbar{padding:1.1rem 1.5rem .7rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:sticky;top:0;z-index:5;background:var(--bg)}
+.page-title{font-size:17px;font-weight:600}
+.page-title .ctb{font:600 11px var(--mono);color:var(--blue);background:var(--info-bg);border-radius:4px;padding:2px 7px;margin-left:6px;vertical-align:3px}
+.page-sub{font-size:12px;color:var(--text2);margin-top:2px}
+.acciones{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-left:auto}
+.content{padding:1.25rem 1.5rem;flex:1}
+.pie{padding:.9rem 1.5rem;border-top:1px solid var(--border);font:11px var(--mono);color:var(--text3);display:flex;gap:12px;flex-wrap:wrap}
+.sp{flex:1}
+.hide{display:none!important}
+
+/* ---------- controles ---------- */
+button,.btn{font:500 12px var(--sans);border:1px solid var(--border);background:var(--bg3);color:var(--text2);padding:7px 14px;border-radius:var(--radius);cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;transition:all .15s}
+button:hover,.btn:hover{border-color:var(--blue);color:var(--text)}
+button.pri{background:var(--blue);color:#fff;border-color:var(--blue);font-size:13px;padding:8px 16px}
+button.pri:hover{background:#3a8ef0;box-shadow:0 4px 14px rgba(74,158,255,.4)}
+button.ok{background:rgba(62,207,142,.12);border-color:rgba(62,207,142,.4);color:var(--green)}
+button.peligro{background:rgba(240,96,96,.1);border-color:rgba(240,96,96,.3);color:var(--red)}
+button.peligro:hover{border-color:var(--red)}
+button:disabled{opacity:.45;cursor:default;box-shadow:none}
+button.mini{padding:3px 9px;font-size:11px}
+button.ico{padding:4px 8px;font:600 14px var(--mono);min-width:30px;justify-content:center}
+input[type=text],input[type=number],input[type=date],select{font:13px var(--sans);padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg3);color:var(--text)}
+input[type=number]{font-family:var(--mono)}
+input:focus,select:focus{outline:none;border-color:var(--blue)}
+input[type=checkbox]{accent-color:var(--blue);width:15px;height:15px;cursor:pointer;vertical-align:middle}
+input:disabled{opacity:.5}
+select option{background:var(--bg2)}
+.params{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
+.params label{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.6px;text-transform:uppercase;display:flex;flex-direction:column;gap:5px}
+.params label.chk{flex-direction:row;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:12px;font-weight:400;color:var(--text2)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;flex-wrap:wrap}
+.seg button{border:none;border-radius:0;background:transparent}
+.seg button+button{border-left:1px solid var(--border)}
+.seg button.on{background:var(--blue);color:#fff}
+.radio{display:inline-flex;gap:10px;align-items:center;font-size:12px;color:var(--text2)}
+.radio label{display:inline-flex;gap:4px;align-items:center;cursor:pointer}
+a{color:var(--blue)}
+a.lk{font-size:11px;text-decoration:none;margin-right:8px;white-space:nowrap}
+a.lk:hover{text-decoration:underline}
+
+/* ---------- tarjetas, KPIs ---------- */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:1.1rem;animation:scaleIn .2s ease both}
+.card>.hd{padding:12px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-weight:600}
+.card>.hd .sub{font-weight:400;color:var(--text2);font-size:12px}
+.card>.body{padding:0 16px 16px}
+details.card>summary{list-style:none;cursor:pointer;padding:12px 16px;display:flex;align-items:center;gap:8px;font-weight:600}
+details.card>summary::-webkit-details-marker{display:none}
+details.card>summary::before{content:"›";color:var(--text3);font-size:16px;width:10px;transition:transform .15s}
+details.card[open]>summary::before{transform:rotate(90deg)}
+details.card>summary .sub{font-weight:400;color:var(--text2);font-size:12px}
+.card.aviso{border-color:rgba(245,166,35,.45)}
+.card.aviso>.hd{color:var(--amber)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:1.1rem}
+.kpi{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:.85rem 1rem;animation:scaleIn .3s ease both}
+.kpi .l{font-size:11px;color:var(--text2);margin-bottom:4px;font-weight:500}
+.kpi .v{font:600 22px var(--mono);line-height:1.15}
+.kpi .ks{font-size:10.5px;color:var(--text3);margin-top:3px}
+.kpi.ok .v{color:var(--green)} .kpi.warn .v{color:var(--amber)} .kpi.err .v{color:var(--red)} .kpi.info .v{color:var(--blue)}
+.bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;min-width:70px}
+.bar>i{display:block;height:100%;background:var(--blue)}
+.bar.ok>i{background:var(--green)}
+.empty{padding:2.5rem 16px;text-align:center;color:var(--text3)}
+.empty b{display:block;color:var(--text);font-size:14px;margin-bottom:4px}
+label.subir{display:block;border:1.5px dashed var(--border);background:var(--bg3);cursor:pointer;border-radius:var(--radius-lg);padding:2rem 1rem;text-align:center;color:var(--text2);transition:border-color .15s}
+label.subir:hover,label.subir.drag{border-color:var(--blue);color:var(--text)}
+label.subir b{display:block;color:var(--text);font-size:15px;margin-bottom:4px}
+.note{font-size:12px;color:var(--text2);margin:8px 0 0}
+.avisos{margin:0;padding:0;list-style:none}
+.avisos li{padding:4px 0;font-size:12.5px}
+.avisos li.warn{color:var(--amber)} .avisos li.err{color:var(--red)} .avisos li.info{color:var(--text2)}
+
+/* ---------- tablas ---------- */
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
+th{text-align:left;padding:8px 10px;color:var(--text3);font-weight:500;font-size:10.5px;letter-spacing:.4px;text-transform:uppercase;border-bottom:1px solid var(--border);background:var(--bg3);position:sticky;top:0;white-space:nowrap}
+td{padding:7px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--bg3)}
+tbody tr{animation:rowIn .2s ease both}
+td.num,th.num{text-align:right} td.num{font-family:var(--mono);white-space:nowrap}
+td.c,th.c{text-align:center}
+tr.grupo td{background:var(--bg);color:var(--text2);font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;padding:6px 10px}
+tr.tot td{font-weight:600;background:var(--bg3)}
+tr.sel td{background:rgba(240,96,96,.07)}
+tr.hecho td{opacity:.55}
+td input[type=number]{width:58px;padding:4px 6px;font-size:12px}
+td input.ancho{width:74px}
+td select{padding:4px 6px;font-size:12px}
+.proc{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.proc .t{font:11px var(--mono);color:var(--text2);min-width:34px}
+.st{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;white-space:nowrap}
+.st.ok{background:var(--ok-bg);color:var(--green)} .st.warn{background:var(--warn-bg);color:var(--amber)}
+.st.err{background:var(--err-bg);color:var(--red)} .st.info{background:var(--info-bg);color:var(--blue)} .st.gris{background:var(--bg3);color:var(--text2)}
+.st.desp{background:rgba(192,132,252,.15);color:#c084fc}
+.st.mel{background:rgba(214,170,110,.16);color:#d6aa6e}
+.chip{display:inline-block;white-space:nowrap;background:var(--bg3);color:var(--text2);border-radius:4px;padding:1px 6px;font:11px var(--mono);margin:1px 3px 1px 0}
+.mono{font-family:var(--mono);font-size:12px}
+.muted{color:var(--text2)}
+.dim{color:var(--text3)}
+.ok-t{color:var(--green)} .warn-t{color:var(--amber)} .err-t{color:var(--red)}
+.cnt{display:flex;align-items:center;gap:4px}
+.pzs{font-size:11px;color:var(--text2);margin-top:2px}
+.mod{display:flex;align-items:center;gap:8px}
+.thumb{width:46px;height:36px;object-fit:contain;background:#fff;border-radius:5px;flex-shrink:0;cursor:zoom-in;border:1px solid var(--border)}
+.toast{position:fixed;right:18px;bottom:18px;z-index:60;display:flex;flex-direction:column;gap:8px;max-width:420px}
+.toast div{background:var(--bg3);border:1px solid var(--border);border-left:3px solid var(--blue);padding:10px 14px;border-radius:var(--radius);box-shadow:0 8px 24px rgba(0,0,0,.4);animation:scaleIn .2s ease}
+.toast div.ok{border-left-color:var(--green)} .toast div.warn{border-left-color:var(--amber)} .toast div.err{border-left-color:var(--red)}
+.mh{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.mh .m{flex:1;min-width:220px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px}
+
+/* ---------- indicador de ruta: Corte ━━━ Doblez ━━━ Estructura ---------- */
+.rt{display:inline-flex;align-items:center;white-space:nowrap;font:600 10.5px var(--sans)}
+.rt .n{padding:2px 8px;border-radius:10px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);line-height:1.4}
+.rt .n.part{border-color:var(--blue);color:var(--blue);background:var(--info-bg)}
+.rt .n.done{border-color:var(--green);color:var(--green);background:var(--ok-bg)}
+.rt .n.yo{box-shadow:0 0 0 2px rgba(245,166,35,.55)}
+.rt .l{width:38px;height:3px;background:var(--border);position:relative;margin:0 2px;border-radius:2px;overflow:hidden}
+.rt .l i{position:absolute;left:0;top:0;bottom:0;background:var(--green)}
+.rt .l.off{background:none;border-top:2px dashed var(--text3);height:0;width:26px;overflow:visible}
+.rt .fin{color:var(--text3);font-weight:500;font-style:italic}
+.rt .x{color:var(--amber);font-weight:500;margin-left:7px;font-size:10.5px}
+.tg{padding:3px 8px;font-size:11px;border-radius:12px;background:transparent;color:var(--text3)}
+.tg.on{background:var(--info-bg);border-color:var(--blue);color:var(--blue)}
+
+dialog{border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--bg2);color:var(--text);padding:0;width:min(1060px,96vw);max-height:92vh}
+dialog::backdrop{background:rgba(0,0,0,.6)}
+dialog .hd{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--border);font-weight:600}
+dialog .db{padding:14px 16px;overflow:auto;max-height:calc(92vh - 60px)}
+.ficha{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
+.ficha img{width:min(420px,100%);background:#fff;border-radius:8px}
+@media (max-width:760px){.topbar{padding:1rem}.content{padding:1rem}.sidebar{display:none}}
+
+/* ---------- impresión ---------- */
+#print{display:none}
+@media print{
+  @page{size:letter landscape;margin:9mm}
+  html{color-scheme:light}
+  body{display:block;height:auto;overflow:visible;background:#fff;color:#111}
+  body>*:not(#print){display:none!important}
+  #print{display:block;font:11px/1.35 var(--sans);color:#111}
+  #print .pg{page-break-after:always}
+  #print .pg:last-child{page-break-after:auto}
+  #print .ph{display:flex;align-items:center;gap:12px;border-bottom:2px solid #111;padding-bottom:6px;margin-bottom:8px}
+  #print .ph img{width:40px;height:40px;object-fit:contain}
+  #print .ph h1{font-size:15px;margin:0}
+  #print .ph .s{font-size:11px;color:#333}
+  #print .ph .r{margin-left:auto;text-align:right;font-size:10px;color:#333}
+  #print table{font-size:10.5px;border:1px solid #999}
+  #print th{background:#eee;color:#111;border:1px solid #999;position:static;padding:4px 6px;font-size:9.5px}
+  #print td{border:1px solid #bbb;padding:4px 6px;color:#111;background:#fff!important}
+  #print tr.grupo td{background:#f3f3f3!important;font-weight:600}
+  #print tr.tot td{background:#eee!important;font-weight:700}
+  #print .pzs{color:#444;font-size:9.5px}
+  #print .pf{margin-top:8px;font-size:9.5px;color:#555;display:flex;justify-content:space-between}
+  #print .firmas{display:flex;gap:40px;margin-top:22px}
+  #print .firmas div{flex:1;border-top:1px solid #333;text-align:center;padding-top:3px;font-size:10px}
+}
+</style>
+</head>
+<body>
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-box"><img src="assets/logo-li.png" alt="LI" onerror="this.style.display='none'"></div>
+    <div class="logo-txt"><div class="logo-text">Programas de producción</div><div class="logo-sub" id="logoSub">Troqueles</div></div>
+  </div>
+  <div class="ctsw" id="ctsw"></div>
+  <div class="nav-section">
+    <div class="nav-label">Planeación</div>
+    <div class="nav-item" data-t="carga"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span>Cargar programa</span><span class="n" id="nCarga">–</span></div>
+    <div class="nav-item" data-t="progs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg><span>Programas</span><span class="n" id="nProgs">0</span></div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Operación</div>
+    <div class="nav-item" data-t="hora"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg><span>Hora por hora</span><span class="n" id="nHora">0</span></div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Catálogo</div>
+    <div class="nav-item" data-t="piezas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 17.5h7M17.5 14v7"/></svg><span>Piezas compartidas</span><span class="n" id="nPiezas">0</span></div>
+    <div class="nav-item" data-t="rutas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="12" r="2.5"/><circle cx="19" cy="12" r="2.5"/><line x1="7.5" y1="12" x2="16.5" y2="12"/><polyline points="13.5 9 16.5 12 13.5 15"/></svg><span>Rutas de pieza</span><span class="n" id="nRutas">0</span></div>
+    <div class="nav-item" data-t="modelos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><line x1="5.6" y1="5.6" x2="18.4" y2="18.4"/></svg><span>Modelos fuera / dentro</span><span class="n" id="nFuera">0</span></div>
+  </div>
+  <div class="sidebar-bottom">
+    <button class="sb-btn" id="bNube" title="Conectar con Google Sheets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/></svg><span class="sb-txt">Nube</span></button>
+    <button class="sb-btn" id="bResp" title="Descarga un respaldo con modelos, despieces, programas y registros"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span class="sb-txt">Respaldo</span></button>
+    <label class="sb-btn" title="Restaura un respaldo (.json)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg><span class="sb-txt">Restaurar</span><input type="file" id="fResp" accept=".json" hidden></label>
+    <button class="sb-btn" id="bMenu" title="Ocultar o mostrar el menú"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg><span class="sb-txt">Ocultar menú</span></button>
+  </div>
+</nav>
+
+<div class="main">
+  <div class="topbar">
+    <div><div class="page-title" id="pgT">Cargar programa</div><div class="page-sub" id="pgS"></div></div>
+    <div class="acciones" id="acc"></div>
+  </div>
+  <div class="content">
+    <section id="v-carga"></section>
+    <section id="v-progs" class="hide"></section>
+    <section id="v-ver" class="hide"></section>
+    <section id="v-hora" class="hide"></section>
+    <section id="v-rutas" class="hide"></section>
+    <section id="v-modelos" class="hide"></section>
+    <section id="v-piezas" class="hide"></section>
+  </div>
+  <div class="pie"><span>Línea Italia · Ingeniería de Procesos</span><span class="sp"></span><span id="pieInfo"></span></div>
+</div>
+<dialog id="dlg"><div class="hd"><span id="dlgT"></span><span class="sp"></span><button id="dlgX" class="mini">✕</button></div><div class="db" id="dlgB"></div></dialog>
+<div class="toast" id="toast"></div>
+<div id="print"></div>
+
+<script>
+"use strict";
+/* ============================== CONFIGURACIÓN ============================== */
+const VERSION = "2026-11-17b";
+const T1 = ["8AM–9AM","9AM–10AM","10AM–11AM","11AM–12PM","12PM–12:30PM ⏸ Comida","12:30PM–1:30PM","1:30PM–2:30PM","2:30PM–3:30PM","3:30PM–4:30PM","4:30PM–5PM"];
+/* Mismas franjas que el hora por hora de la OEE Planta */
+const FRANJAS = {
+  "Turno 1 (8:00–17:00)": T1,
+  "Turno 2 (17:00–01:40)": ["5PM–6PM","6PM–7PM","7PM–8PM","8PM–9PM","9PM–10PM","10PM–11PM","11PM–12AM","12AM–1AM"],
+  "Turno 3 (23:00–07:00)": ["11PM–12AM","12AM–1AM","1AM–2AM","2AM–3AM","3AM–4AM","4AM–5AM","5AM–6AM","6AM–7AM"],
+  "Turno único (8:00–17:00)": T1
+};
+/* Centros de trabajo. Troqueles: corte en Láser de cama y doblez en la Dobladora G-Weike (nombres de la OEE Planta).
+   Estructura · Muebles: solo interesa si el mueble pasa o no por el CT (hay muebles 100 % de melamina), así que es un solo proceso. */
+const CTS = [
+  /* adelanto = días hábiles antes de la fecha del programa en que el CT lo trabaja (Leonardo, 2026-11-12:
+     el jue 12-nov Troqueles trabaja el programa del 18 y Estructura el del 17; el lun 16-nov es festivo) */
+  { id: "TROQUELES", label: "Troqueles", corto: "TRQ", slug: "troqueles", bc: "TROQUELES", adelanto: 3,
+    turnos: ["Turno 1 (8:00–17:00)", "Turno 2 (17:00–01:40)", "Turno 3 (23:00–07:00)"],
+    maqs: [ { id: "Laser de Cama", label: "Láser de cama", corto: "Corte", hechas: "Cortadas", def: true },
+            { id: "Dobladora G-Weike", label: "Dobladora G-Weike", corto: "Doblez", hechas: "Dobladas", def: true } ] },
+  { id: "EST. MUEBLES", label: "Estructura · Muebles", corto: "EST", slug: "estructura-muebles", bc: "ESTRUCTURA MUEBLES", adelanto: 2,
+    turnos: ["Turno único (8:00–17:00)"],
+    excluirFamilias: ["MAMPARA"],   // las mamparas no van en el programa de Estructura · Muebles (Leonardo, 2026-11-12)
+    maqs: [ { id: "Estructura Muebles", label: "Estructura · Muebles", corto: "Estructura", hechas: "Procesadas", def: true } ] }
+];
+const MAQ = {}; CTS.forEach(c => c.maqs.forEach(m => { MAQ[m.id] = { ...m, ct: c.id }; }));
+const ORDEN = CTS.flatMap(c => c.maqs.map(m => m.id));        // orden de la ruta: corte → doblez → estructura
+const CORTE = "Laser de Cama", DOBLEZ = "Dobladora G-Weike";
+const ctDe = id => CTS.find(c => c.id === id) || CTS[0];
+const CAUSAS = ["Error en dibujo de corte (Ingeniería)", "Error de operación (Estructura)", "Material rayado", "Material oxidado", "Material fuera de especificación"];
+const MOTIVOS_FP = ["Prototipo (vacuna)", "Muestra", "Pedido urgente", "Reposición"];
+const K = { mod: "pt_modelos_v1", desp: "pt_despiece_v1", eq: "pt_equiv_v1", bc: "pt_bcrutas_v1", prog: "pt_programas_v1", reg: "pt_registros_v1", bor: "pt_borradores_v2", pref: "pt_prefs_v1" };
+/* Modelo (Cód. procedencia) → Nº ruta, de los exportes «Órdenes producción planificadas» de BC (oct–nov 2026). Se amplía solo con cada exporte. */
+const EQUIV_SEED = {"LINDT7230-ESP":"LINDT7230","LINBK5S-ESP":"LINBK5S","N692ZI":"692","L106":"106","A681GR":"681","B123S":"123S","S210S":"210S","S226":"226","L120S":"120S","NH1202":"1202","NH1203":"1203","NH1206":"1206","S796":"796","D138A":"138A","D138B":"133B","#SI1112":"1112","I106":"106","#SI1020":"1020","I650":"650","I901":"901","POST-120V":"POST-120V","IL-S12075MA-MA":"IL-12075","#SI1002":"1002","#SI1006":"1006","#SI1012":"1012","#SI1102":"1102","D149S":"149S","D810":"810","I103S":"103S","NE803":"803","S103S":"103S","S719":"719","SI-CUBZIG150":"CUBZIG150","D133A":"133A","D133B":"133B","STRCST-RT":"STRCST","LINDT7230-FWN":"LINDT7230","LINDRBBF-FWN":"LINDRBBF","LINH66-FWN":"LINH66","LINH72-FWN":"LINH72","#ACT1093":"1093","BL279":"279","YXIW120120":"IW120120","YXIW12060":"IW12060","IL-V14075BA-R-BA-R":"IL-14075","BL273":"273","SD2021":"2021","L901":"901","D803":"803","BE1203":"1203","BLE217":"217","YL118":"118","C103S":"103S","C2-2210A":"2210A","C2-2210B":"2210B","C2-2210C":"2210C","FA-6731":"1101","#BE1109":"1109","#AAN1099":"1099","FC-6738":"808","C2-2204":"2204","AP120120B":"P120120","NP105":"105","YW678":"305","A617AT":"617","T527-D":"527","NP798":"798","VP808":"808","CUBP15060W":"CUBP15060","D145":"145","S106":"106","D238B":"236B","P106":"106","#AI1096":"1096","LE914PA-R":"914","2374-MJV-PVS":"2374","PA-N929X":"929","PA-N917ME":"917","PA-N911ME":"911","PA-N923ME":"923","22501007":"22501007","22101009":"CUBIERTA919/929","LINCLBBF-FWN":"LINCLBBF","BLP12060BA-R":"P12060","BL298":"298","BLIW160120BA":"IW160120","BLPIW12060BA":"PIW12060","SD2006":"2006","#BI1020":"1020","N-NS509":"509","BLP120120BA-R":"P120120","YIW12060PA-R":"IW12060","A279":"279","D238A":"236A","NL803":"803","CUBP12060P":"CUBP12060","S149S":"149S","S150":"150","IWMSIBL":"IWMI","CUB12060S":"CUB12060","LL153S":"153","L111":"111","#AI1097":"1097","FC-6678":"1097","FA-6752":"1055","FA-4269":"1012","FA-4273":"1012","FA-4756":"1062","L105":"105","S305":"305","MD470G":"470","S678":"305","A320":"320","BLS304":"304","BLS547":"547","#S_1090":"1090","I719":"719","S138A":"138A","S138B":"133B","IWPHDA":"IWPH","IWPHIA":"IWPH","FA-6751":"CUBP12060","FA-6750":"1000","I183":"183","I129":"129","W103S":"103S","W105":"105","C149S":"149S","C305":"305","P120S":"120S","CUBP9060S":"CUBP9060","22401013":"22401013","22120004":"22120004","22901004":"22901004"};
+/* ingenieria.lineaitalia.net: fichas[RUTA] = [ficha, especificación, metal (1 sí / 0 melamina / -1 ?), descripción, foto (1/0)]; folios[número] = ruta del PDF */
+const ING = window.INGENIERIA || { fichas: {}, folios: {}, gen: "" };
+const ING_URL = "https://ingenieria.lineaitalia.net/files/";
+
+/* ============================== UTILIDADES ============================== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmt = (n, d = 0) => Number(n || 0).toLocaleString("es-MX", { minimumFractionDigits: d, maximumFractionDigits: d });
+const up = s => String(s ?? "").trim().toUpperCase();
+const normH = s => String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toUpperCase().replace(/[^A-Z0-9 ]+/g, " ").replace(/\s+/g, " ").trim();
+const pad = n => String(n).padStart(2, "0");
+const isoDe = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const hoyISO = () => isoDe(new Date());
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const DIAS = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+const MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+const fechaDe = iso => { const [y, m, d] = String(iso).split("-").map(Number); return new Date(y, m - 1, d); };
+const fechaLarga = iso => { if (!iso) return "—"; const d = fechaDe(iso); return `${DIAS[d.getDay()].replace(/^./, c => c.toUpperCase())} ${d.getDate()} de ${MESES[d.getMonth()]} de ${d.getFullYear()}`; };
+const fechaCorta = iso => { if (!iso) return "—"; const [y, m, d] = String(iso).split("-"); return `${d}/${m}/${y}`; };
+const horaCorta = ts => { const d = new Date(ts); return `${pad(d.getDate())}/${pad(d.getMonth() + 1)} ${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+const serialISO = n => { const d = XLSX.SSF.parse_date_code(n); return d ? `${d.y}-${pad(d.m)}-${pad(d.d)}` : ""; };
+const pzEf = v => (Number(v) > 0 ? Number(v) : 1);
+const clon = o => JSON.parse(JSON.stringify(o));
+const b64 = s => btoa(unescape(encodeURIComponent(s)));
+function toast(msg, tipo = "") {
+  const d = document.createElement("div"); d.className = tipo; d.innerHTML = msg; $("#toast").appendChild(d);
+  setTimeout(() => d.remove(), tipo === "err" ? 9000 : 5500);
+}
+function descargar(nombre, contenido, tipo) {
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([contenido], { type: tipo })); a.download = nombre;
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+
+/* ============================== DATOS (navegador) ============================== */
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { toast("No se pudo guardar en este navegador: " + esc(e.message), "err"); return false; } }
+};
+const DB = {
+  modelos: store.get(K.mod, {}),      // "<CT>|M:<modelo>" o "<CT>|R:<ruta>" → {estado:'fuera'|'dentro', proc:{proceso:{on,pz}}, …}
+  despiece: store.get(K.desp, {}),    // "R:<ruta>" o "M:<modelo>" → {piezas:[{id,nombre,pz,ruta:[procesos]}]} (compartido entre CT)
+  equiv: store.get(K.eq, {}),         // modelo → ruta aprendido de BC
+  bcRutas: store.get(K.bc, {}),       // ruta → {cant, cts:{CT:{pz,h}}, fecha} del último previo («Tiempos y Piezas»)
+  programas: store.get(K.prog, []),   // programas guardados (todas las versiones, todos los CT)
+  registros: store.get(K.reg, [])     // hora por hora
+};
+let BS = store.get(K.bor, {});        // borradores por CT
+const PREF = Object.assign({ ct: CTS[0].id, operador: "", maq: {}, menu: "0", siguiente: false, porRuta: false }, store.get(K.pref, {}));
+if (typeof PREF.maq !== "object" || !PREF.maq) PREF.maq = {};
+function guardarLocal(...q) {
+  const m = { modelos: K.mod, despiece: K.desp, equiv: K.eq, bcRutas: K.bc, programas: K.prog, registros: K.reg };
+  for (const x of q) { if (x === "pref") store.set(K.pref, PREF); else if (x === "bor" || x === "borradores") store.set(K.bor, BS); else if (m[x]) store.set(m[x], DB[x]); }
+  if (q.includes("despiece")) CAT = null;   // el catálogo de piezas se rehace con los cambios
+}
+/** Guarda en este navegador y, si hay nube, encola lo que cambió para mandarlo a Google Sheets */
+function guardar(...q) {
+  guardarLocal(...q);
+  nubeMarcar(q.map(x => x === "bor" ? "borradores" : x).filter(x => SINC.includes(x)));
+  if (LISTO) contadores();
+}
+let LISTO = false;   // los contadores del menú se pintan hasta que la página terminó de arrancar
+
+/* ============================== NUBE (Google Sheets vía Apps Script, apps-script/Code.gs) ==============================
+   Cada documento (un modelo, un despiece, un programa, un registro, un borrador…) se manda por separado.
+   Lo local se guarda siempre primero; sin internet, los cambios esperan aquí y se envían al volver.
+   Cada minuto (y al volver a la pestaña) se traen los cambios de otros navegadores. */
+const NUBE_URL_DEF = "https://script.google.com/macros/s/AKfycbz2FkhVj77SGb93Se7AHrgryIVF01W9flBsvqpB_PxsZWdhGERtzMxCNTmTXGd-b7OqTA/exec";   // Apps Script del Sheet «Programas de producción · Troqueles y Estructura» (se cambia con el botón «Nube»)
+const KN = { url: "pt_nube_url", hash: "pt_nube_hash", pend: "pt_nube_pend", env: "pt_nube_env", desde: "pt_nube_desde" };
+const SINC = ["modelos", "despiece", "equiv", "bcRutas", "programas", "registros", "borradores"];
+const NUBE = { url: store.get(KN.url, null) ?? NUBE_URL_DEF, hash: store.get(KN.hash, {}), pend: store.get(KN.pend, {}), env: store.get(KN.env, {}), desde: store.get(KN.desde, 0),
+               cargado: false, enviando: false, trayendo: false, error: "", ultimo: 0, timer: null, porAplicar: false };
+const hashTxt = s => { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36) + "." + s.length; };
+const nkey = (col, clave) => col + "\u0001" + clave;
+function docsDe(col) {
+  if (col === "borradores") return BS;
+  if (col === "equiv" || col === "bcRutas") return { todo: DB[col] };
+  if (col === "programas" || col === "registros") return Object.fromEntries(DB[col].map(x => [x.id, x]));
+  return DB[col];
+}
+function ponerDoc(col, clave, valor) {   // valor undefined = borrar
+  if (col === "borradores") { if (valor === undefined) delete BS[clave]; else BS[clave] = valor; return; }
+  if (col === "equiv" || col === "bcRutas") { if (clave === "todo") DB[col] = valor || {}; return; }
+  if (col === "programas" || col === "registros") { const i = DB[col].findIndex(x => x.id === clave); if (valor === undefined) { if (i >= 0) DB[col].splice(i, 1); } else if (i >= 0) DB[col][i] = valor; else DB[col].push(valor); return; }
+  if (valor === undefined) delete DB[col][clave]; else DB[col][clave] = valor;
+}
+function nubeEstado() { store.set(KN.hash, NUBE.hash); store.set(KN.pend, NUBE.pend); store.set(KN.env, NUBE.env); store.set(KN.desde, NUBE.desde); }
+/** Detecta qué documentos cambiaron o se borraron en estas colecciones y los encola para enviarlos */
+function nubeMarcar(cols) {
+  if (!NUBE.url || !cols.length) return;
+  let n = 0;
+  for (const col of cols) {
+    const docs = docsDe(col), vistos = new Set();
+    for (const [clave, v] of Object.entries(docs)) {
+      const k = nkey(col, clave), h = hashTxt(JSON.stringify(v)); vistos.add(k);
+      if (NUBE.hash[k] !== h) { NUBE.hash[k] = h; NUBE.pend[k] = { col, clave, h }; n++; }
+    }
+    for (const k of Object.keys(NUBE.hash)) if (k.startsWith(col + "\u0001") && !vistos.has(k)) { delete NUBE.hash[k]; NUBE.pend[k] = { col, clave: k.slice(col.length + 1), borrar: true }; n++; }
+  }
+  if (n) { nubeEstado(); clearTimeout(NUBE.timer); NUBE.timer = setTimeout(nubeEnviar, 900); pintarNube(); }
+}
+async function nubeEnviar() {
+  if (!NUBE.url || NUBE.enviando || !NUBE.cargado) return;
+  const items = Object.entries(NUBE.pend); if (!items.length) return;
+  NUBE.enviando = true; pintarNube();
+  try {
+    const lotes = []; let lote = [], tam = 0;
+    for (const [k, p] of items) {
+      const v = p.borrar ? undefined : docsDe(p.col)[p.clave];
+      const c = v === undefined ? { col: p.col, clave: p.clave, borrar: true } : { col: p.col, clave: p.clave, json: JSON.stringify(v) };
+      const s = JSON.stringify(c).length;
+      if (tam + s > 700000 && lote.length) { lotes.push(lote); lote = []; tam = 0; }
+      lote.push([k, c, p.h]); tam += s;
+    }
+    if (lote.length) lotes.push(lote);
+    for (const l of lotes) {
+      await fetch(NUBE.url, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
+                              body: JSON.stringify({ accion: "guardar", por: PREF.operador || "", cambios: l.map(x => x[1]) }) });
+      const t = Date.now();
+      for (const [k, c, h] of l) { if (NUBE.pend[k] && NUBE.pend[k].h === h) delete NUBE.pend[k]; NUBE.env[k] = { h: c.borrar ? "" : h, t }; }
+    }
+    NUBE.error = "";
+  } catch (e) { NUBE.error = "Sin conexión: los cambios esperan en este navegador"; }
+  NUBE.enviando = false; nubeEstado(); pintarNube();
+  clearTimeout(NUBE.timer);
+  NUBE.timer = setTimeout(Object.keys(NUBE.pend).length ? nubeEnviar : () => nubeTraer(false), Object.keys(NUBE.pend).length ? 30000 : 4000);
+}
+function jsonp(params, ms = 90000) {
+  return new Promise((ok, ko) => {
+    const cb = "ptNube" + uid().replace(/\W/g, ""), s = document.createElement("script");
+    const fin = () => { clearTimeout(t); delete window[cb]; s.remove(); };
+    const t = setTimeout(() => { fin(); ko(new Error("La nube no respondió")); }, ms);
+    window[cb] = d => { fin(); d && d.ok ? ok(d) : ko(new Error((d && d.error) || "Respuesta inválida de la nube")); };
+    s.onerror = () => { fin(); ko(new Error("No se pudo conectar con la nube")); };
+    s.src = NUBE.url + (NUBE.url.includes("?") ? "&" : "?") + new URLSearchParams({ ...params, callback: cb, _: Date.now() });
+    document.head.appendChild(s);
+  });
+}
+/** Trae de la nube todo (al abrir) o solo lo que cambió desde la última vez. Lo pendiente de este navegador manda sobre lo que llega. */
+async function nubeTraer(todo) {
+  if (!NUBE.url || NUBE.trayendo) return;
+  NUBE.trayendo = true; pintarNube();
+  try {
+    const primera = !NUBE.cargado || todo;
+    const d = await jsonp(primera ? { accion: "todo" } : { accion: "cambios", desde: NUBE.desde });
+    const vacia = SINC.every(c => !Object.keys(d.datos[c] || {}).length);
+    let cambio = 0;
+    for (const col of SINC) {
+      const llegan = d.datos[col] || {}, borr = new Set(d.borrados[col] || []);
+      for (const [clave, v] of Object.entries(llegan)) {
+        const k = nkey(col, clave), h = hashTxt(JSON.stringify(v));
+        if (NUBE.env[k]) delete NUBE.env[k];                       // llegó la versión de la nube (la nuestra o una más nueva)
+        if (NUBE.pend[k]) continue;                                // cambio de este navegador aún sin enviar: manda lo local
+        if (NUBE.hash[k] === h) continue;
+        const loc = docsDe(col)[clave];
+        if (primera && NUBE.hash[k] === undefined && clave === "todo" && loc && typeof loc === "object" && Object.keys(loc).length) {
+          // primera vez de este navegador: equivalencias y rutas de BC se juntan, así no se pierde lo aprendido aquí
+          const junto = { ...loc, ...v }, hj = hashTxt(JSON.stringify(junto));
+          ponerDoc(col, clave, junto); NUBE.hash[k] = hj; cambio++;
+          if (hj !== h) NUBE.pend[k] = { col, clave, h: hj };
+          continue;
+        }
+        ponerDoc(col, clave, v); NUBE.hash[k] = h; cambio++;
+      }
+      for (const clave of borr) {
+        const k = nkey(col, clave);
+        if (NUBE.env[k]) delete NUBE.env[k];
+        if (NUBE.pend[k]) continue;
+        if (docsDe(col)[clave] !== undefined) { ponerDoc(col, clave, undefined); cambio++; }
+        delete NUBE.hash[k];
+      }
+      if (primera) {   // lo de este navegador que la nube no tiene (ni borró) se sube
+        for (const [clave, v] of Object.entries(docsDe(col))) {
+          const k = nkey(col, clave);
+          if (!(clave in llegan) && !borr.has(clave) && !NUBE.pend[k]) { const h = hashTxt(JSON.stringify(v)); NUBE.hash[k] = h; NUBE.pend[k] = { col, clave, h }; }
+        }
+      }
+    }
+    // lo enviado que la nube no confirmó en 2 minutos se vuelve a mandar
+    for (const [k, x] of Object.entries(NUBE.env)) if (Date.now() - x.t > 120000 && !NUBE.pend[k]) {
+      const i = k.indexOf("\u0001"), col = k.slice(0, i), clave = k.slice(i + 1);
+      NUBE.pend[k] = x.h ? { col, clave, h: x.h } : { col, clave, borrar: true }; delete NUBE.env[k];
+    }
+    NUBE.desde = d.ahora - 15000; NUBE.cargado = true; NUBE.error = ""; NUBE.ultimo = Date.now();
+    if (cambio) { guardarLocal(...SINC); refrescarPorNube(); }
+    nubeEstado();
+    if (vacia && primera) toast("Nube conectada: se suben los datos de este navegador.", "ok");
+    if (Object.keys(NUBE.pend).length) { clearTimeout(NUBE.timer); NUBE.timer = setTimeout(nubeEnviar, 300); }
+  } catch (e) { NUBE.error = e.message; }
+  NUBE.trayendo = false; pintarNube();
+}
+/** Repinta con lo que llegó, salvo que alguien esté capturando (entonces avisa y espera) */
+function refrescarPorNube() {
+  if (!LISTO) return;
+  const capturando = $("#dlg").open || ["INPUT", "SELECT", "TEXTAREA"].includes(document.activeElement?.tagName) ||
+    [...document.querySelectorAll("#v-hora .hpz, #v-hora .hdan")].some(i => i.value);
+  if (capturando) { NUBE.porAplicar = true; pintarNube(); return; }
+  NUBE.porAplicar = false; contadores(); abrir(vista);
+}
+function pintarNube() {
+  const b = $("#bNube"); if (!b) return;
+  const np = Object.keys(NUBE.pend).length, ne = Object.keys(NUBE.env).length;
+  let t, c = "";
+  if (!NUBE.url) { t = "Sin nube · solo este navegador"; c = "dim"; }
+  else if (NUBE.porAplicar) { t = "Hay cambios nuevos · actualizar"; c = "warn-t"; }
+  else if (NUBE.error) { t = (np ? np + " por enviar · " : "") + "sin conexión"; c = "err-t"; }
+  else if (NUBE.enviando || NUBE.trayendo || !NUBE.cargado) { t = "Sincronizando…"; }
+  else if (np) { t = np + " cambio(s) por enviar"; c = "warn-t"; }
+  else { t = "Nube al día" + (NUBE.ultimo ? " · " + new Date(NUBE.ultimo).toTimeString().slice(0, 5) : ""); c = "ok-t"; }
+  b.querySelector(".sb-txt").textContent = t; b.querySelector(".sb-txt").className = "sb-txt " + c;
+  b.title = NUBE.url ? `Google Sheets · ${np} por enviar · ${ne} por confirmar${NUBE.error ? " · " + NUBE.error : ""}` : "Conectar con Google Sheets";
+}
+function abrirNube() {
+  if (NUBE.porAplicar) { NUBE.porAplicar = false; contadores(); abrir(vista); pintarNube(); return; }
+  $("#dlgT").textContent = "Nube · Google Sheets";
+  $("#dlgB").innerHTML = `<ul class="avisos"><li class="info">Con la nube, programas, modelos fuera/dentro, despieces y el hora por hora se ven igual en cualquier navegador y la rutina del agente puede subir el previo.</li>
+      <li class="info">Pega la URL de la aplicación web del Apps Script (termina en <span class="mono">/exec</span>).</li></ul>
+    <div class="params" style="margin-top:10px"><label style="flex:1">URL del Apps Script<input type="text" id="nUrl" value="${esc(NUBE.url)}" placeholder="https://script.google.com/macros/s/…/exec"></label>
+      <button id="nProbar">Probar</button><button class="pri" id="nGuardar">Guardar y sincronizar</button></div>
+    <p class="note" id="nMsg">${NUBE.url ? `Estado: ${esc($("#bNube .sb-txt").textContent)} · ${Object.keys(NUBE.pend).length} por enviar · ${Object.keys(NUBE.env).length} por confirmar` : "Sin nube: los datos viven solo en este navegador."}</p>
+    <div class="toolbar" style="margin-top:10px">${NUBE.url ? '<button id="nAhora">Sincronizar ahora</button><button class="peligro" id="nQuitar">Desconectar este navegador</button>' : ""}</div>`;
+  $("#dlg").showModal();
+  const url = () => $("#nUrl").value.trim();
+  $("#nProbar").onclick = async () => { const u0 = NUBE.url; NUBE.url = url(); try { const d = await jsonp({ accion: "ping" }, 30000); $("#nMsg").innerHTML = `<span class="ok-t">Conectado a «${esc(d.libro)}» · ${fmt(d.filas)} renglones</span>`; } catch (e) { $("#nMsg").innerHTML = `<span class="err-t">${esc(e.message)}</span>`; } NUBE.url = u0; };
+  $("#nGuardar").onclick = () => { const u = url(); if (!/^https:\/\/script\.google(usercontent)?\.com\//.test(u)) { $("#nMsg").innerHTML = '<span class="err-t">La URL debe ser de script.google.com</span>'; return; }
+    if (u !== NUBE.url) { NUBE.url = u; NUBE.hash = {}; NUBE.pend = {}; NUBE.env = {}; NUBE.desde = 0; NUBE.cargado = false; store.set(KN.url, u); nubeEstado(); }
+    $("#dlg").close(); nubeTraer(true); };
+  if ($("#nAhora")) $("#nAhora").onclick = () => { $("#dlg").close(); nubeTraer(true); };
+  if ($("#nQuitar")) $("#nQuitar").onclick = () => { if (!confirm("¿Desconectar este navegador de la nube? Los datos se quedan en la hoja y en este navegador.")) return;
+    NUBE.url = ""; store.set(KN.url, ""); NUBE.hash = {}; NUBE.pend = {}; NUBE.env = {}; NUBE.desde = 0; NUBE.cargado = false; nubeEstado(); $("#dlg").close(); pintarNube(); };
+}
+/** Datos de la primera versión (solo Troqueles, corte/doblez fijos) → formato por CT y proceso */
+function migrar() {
+  let c = false;
+  const pv = x => ({ [CORTE]: { on: x.corte !== false, pz: x.pzCorte ?? null }, [DOBLEZ]: { on: x.doblez !== false, pz: x.pzDoblez ?? null } });
+  for (const [k, x] of Object.entries(DB.modelos)) {
+    if (k.includes("|")) continue;
+    const nk = "TROQUELES|" + k; x.key = nk; x.ct = "TROQUELES"; if (!x.proc && x.estado === "dentro") x.proc = pv(x);
+    delete DB.modelos[k]; DB.modelos[nk] = x; c = true;
+  }
+  for (const p of DB.programas) if (!p.ct) { p.ct = "TROQUELES"; p.rows.forEach(r => { if (!r.proc) r.proc = pv(r); }); c = true; }
+  for (const r of DB.registros) if (!r.ct) { r.ct = MAQ[r.maquina]?.ct || "TROQUELES"; c = true; }
+  if (c) guardar("modelos", "programas", "registros");
+  try { localStorage.removeItem("pt_borrador_v1"); } catch (e) {}
+}
+migrar();
+let CT = ctDe(PREF.ct);
+
+/* ============================== LECTURA DE ARCHIVOS ============================== */
+function leerLibro(buf, nombre) {
+  if (typeof XLSX === "undefined") throw new Error("No cargó la librería de Excel (revisa la conexión a internet)");
+  const wb = XLSX.read(buf, { type: "array" });
+  const hp = wb.SheetNames.find(n => normH(n) === "PROGRAMA") || wb.SheetNames.find(n => /PROGRAMA/i.test(n));
+  if (hp) { const b = leerPrevio(wb, hp, nombre); if (b) return b; }
+  for (const n of wb.SheetNames) { const b = leerBC(wb, n, nombre); if (b) return b; }
+  throw new Error("No reconocí el archivo. Usa el previo / lanzado (hoja PROGRAMA) o el exporte de BC «Órdenes producción planificadas».");
+}
+const filasDe = ws => XLSX.utils.sheet_to_json(ws, { header: 1, raw: true, defval: null, blankrows: true });
+const col = (H, ...re) => H.findIndex(h => re.some(r => r.test(h)));
+
+/** Previo o lanzado F-PCP-02: hoja PROGRAMA (FAMILIA | ORDEN PRODUCCION | MODELO | PT UDS | HORAS | … | Nº PEDIDO) y hoja Tiempos y Piezas */
+function leerPrevio(wb, hoja, nombre) {
+  const filas = filasDe(wb.Sheets[hoja]);
+  const hi = filas.findIndex(f => f && f.some(c => normH(c) === "MODELO") && f.some(c => /PT UDS/.test(normH(c))));
+  if (hi < 0) return null;
+  const H = filas[hi].map(normH);
+  const cFam = col(H, /^FAMILIA$/), cOp = col(H, /ORDEN/), cMod = col(H, /^MODELO$/), cCant = col(H, /PT UDS/), cHor = col(H, /^HORAS$/),
+        cPed = col(H, /PEDIDO/), cCT = col(H, /CENTROS DE TRABAJO/), cCTt = col(H, /TOTAL TIEMPO/), cCTp = col(H, /TOTAL PIEZA/);
+  let fam = ""; const ops = [], ct = {};
+  for (let i = hi + 1; i < filas.length; i++) {
+    const f = filas[i]; if (!f) continue;
+    if (cCT >= 0 && f[cCT] != null && String(f[cCT]).trim()) ct[normH(f[cCT])] = { h: +f[cCTt] || 0, pz: +f[cCTp] || 0 };
+    const famC = cFam >= 0 ? String(f[cFam] ?? "").trim() : "";
+    if (/^TOTAL/i.test(famC)) continue;
+    if (famC) fam = famC;
+    const mod = cMod >= 0 ? String(f[cMod] ?? "").trim() : "", opC = cOp >= 0 ? String(f[cOp] ?? "").trim() : "", cant = Number(f[cCant]);
+    if (!mod || /TOTAL/i.test(opC) || !(cant > 0)) continue;
+    ops.push({ op: opC, modelo: mod, familia: fam, cant, horas: +f[cHor] || 0, pedido: cPed >= 0 ? String(f[cPed] ?? "").trim() : "", fila: i + 1 });
+  }
+  if (!ops.length) throw new Error("La hoja PROGRAMA no trae renglones con MODELO y PT UDS");
+  let dia = "";
+  const mN = String(nombre).match(/(\d{1,2})[-_. ](\d{1,2})[-_. ](\d{4})/);
+  if (mN) dia = `${mN[3]}-${pad(mN[2])}-${pad(mN[1])}`;
+  if (!dia) for (const f of filas.slice(0, hi)) for (const c of f || []) {
+    const m = normH(c).match(/(\d{1,2}) ([A-Z]+) DEL? (\d{4})/); const mi = m ? MESES.findIndex(x => normH(x) === m[2]) : -1;
+    if (mi >= 0) dia = `${m[3]}-${pad(mi + 1)}-${pad(m[1])}`;
+  }
+  const tipo = /LANZAD/i.test(nombre) ? "LANZADO" : /PREVIO/i.test(nombre) ? "PREVIO" : "PROGRAMA";
+  const bcRutas = leerTiempos(wb);
+  if (bcRutas) { for (const [r, x] of Object.entries(bcRutas)) DB.bcRutas[r] = { ...x, fecha: dia }; guardar("bcRutas"); }
+  return { origen: "previo", tipo, archivo: nombre, dia: dia || hoyISO(), cargado: new Date().toISOString(), ops, ctBC: ct, bcRutas };
+}
+
+/** Hoja «Tiempos y Piezas»: Ruta | Centro de Trabajo | Tiempo | Pieza | Cantidad → piezas y horas por mueble de cada CT, por ruta */
+function leerTiempos(wb) {
+  const n = wb.SheetNames.find(x => /TIEMPOS/.test(normH(x)));
+  if (!n) return null;
+  const filas = filasDe(wb.Sheets[n]);
+  const hi = filas.findIndex(f => f && f.some(c => normH(c) === "RUTA") && f.some(c => /CENTRO/.test(normH(c))));
+  if (hi < 0) return null;
+  const H = filas[hi].map(normH);
+  const cR = col(H, /^RUTA$/), cCT = col(H, /CENTRO/), cT = col(H, /^TIEMPO$/), cP = col(H, /^PIEZA$/), cQ = col(H, /^CANTIDAD$/);
+  const out = {};
+  for (const f of filas.slice(hi + 1)) {
+    if (!f || f[cR] == null) continue;
+    const r = up(String(f[cR]).replace(/\.0+$/, "")); if (!r) continue;
+    const x = out[r] || (out[r] = { ruta: String(f[cR]).trim(), cant: 0, cts: {} });
+    x.cant = Math.max(x.cant, +f[cQ] || 0);
+    const pz = +f[cP] || 0, h = +f[cT] || 0;
+    if (pz || h) x.cts[normH(f[cCT])] = { pz, h };
+  }
+  return out;
+}
+
+/** Exporte de BC «Órdenes producción planificadas»: Nº | … | Cód. procedencia mov. | Cantidad | Descripción | Nº ruta | Fecha-hora inicial … */
+function leerBC(wb, hoja, nombre) {
+  const filas = filasDe(wb.Sheets[hoja]);
+  const hi = filas.slice(0, 6).findIndex(f => f && f.some(c => normH(c) === "N RUTA") && f.some(c => /PROCEDENCIA/.test(normH(c))));
+  if (hi < 0) return null;
+  const H = filas[hi].map(normH);
+  const cOp = col(H, /^N$/, /^NO$/), cMod = col(H, /PROCEDENCIA/), cCant = col(H, /^CANTIDAD$/), cDesc = col(H, /^DESCRIPCION$/), cRuta = col(H, /^N RUTA$/),
+        cIni = col(H, /FECHA HORA INICIAL/), cVen = col(H, /FECHA VENCIMIENTO/), cGr = col(H, /GRUPO CONTABLE PROD/), cPed = col(H, /PEDIDOS QUE CUBRE/);
+  const ops = [], dias = {};
+  for (const f of filas.slice(hi + 1)) {
+    if (!f) continue;
+    const mod = String(f[cMod] ?? "").trim(), cant = Number(f[cCant]);
+    if (!mod || !(cant > 0)) continue;
+    let ini = "";
+    if (cIni >= 0 && typeof f[cIni] === "number") { const d = XLSX.SSF.parse_date_code(f[cIni]); ini = `${d.y}-${pad(d.m)}-${pad(d.d)}T${pad(d.H)}:${pad(d.M)}`; }
+    if (cVen >= 0 && typeof f[cVen] === "number") { const v = serialISO(f[cVen]); dias[v] = (dias[v] || 0) + 1; }
+    const ruta = cRuta >= 0 ? String(f[cRuta] ?? "").trim().replace(/\.0+$/, "") : "";
+    ops.push({ op: cOp >= 0 ? String(f[cOp] ?? "").trim() : "", modelo: mod, cant, desc: cDesc >= 0 ? String(f[cDesc] ?? "").trim() : "", ruta, rutaSrc: ruta ? "BC" : "",
+               familia: cGr >= 0 ? String(f[cGr] ?? "").trim().replace(/^P[T]?-(PR )?/i, "") : "", ini, pedido: cPed >= 0 ? String(f[cPed] ?? "").trim() : "" });
+    if (ruta) DB.equiv[up(mod)] = ruta;
+  }
+  if (!ops.length) throw new Error("El exporte de BC no trae órdenes con cantidad");
+  guardar("equiv");
+  const dia = Object.entries(dias).sort((a, b) => b[1] - a[1])[0]?.[0] || hoyISO();
+  return { origen: "bc", tipo: "BC", archivo: nombre, dia, cargado: new Date().toISOString(), ops, ctBC: {}, bcRutas: null };
+}
+
+/* ============================== RUTA (BC) DE CADA MODELO ============================== */
+function variantes(r) {
+  const R = up(r).replace(/\s+/g, ""), out = [R], m = R.match(/^([A-Z]+)\/([A-Z]+)(.*)$/);
+  if (m) out.push(m[1] + m[3], m[2] + m[3]);
+  return out;
+}
+/** Liga el modelo con su ruta por nombre: NI105 → 105, #SS1010-1 → 1010, LINDFLL-FWN → LINDFLL, FD-6061 → F6061 */
+function rutaPorNombre(modelo, rutas) {
+  const M = up(modelo).replace(/^#+/, "").replace(/\s+/g, ""), fm = M.match(/^F[A-Z]-(\d{3,5})/);
+  let best = "", bs = -1;
+  for (const r of rutas) for (const v of variantes(r)) {
+    if (v.length < 3) continue;
+    if (fm && v === "F" + fm[1]) { if (100 + v.length > bs) { bs = 100 + v.length; best = r; } continue; }
+    const i = M.indexOf(v); if (i < 0) continue;
+    const pre = M.slice(0, i), suf = M.slice(i + v.length);
+    if (!/^[A-Z_]*$/.test(pre)) continue;
+    if (!(suf === "" || /^[-_]/.test(suf) || /^[A-Z]{1,2}$/.test(suf))) continue;
+    const s = v.length * 10 - pre.length - suf.length;
+    if (s > bs) { bs = s; best = r; }
+  }
+  return best;
+}
+function rutasConocidas(b) {
+  if (b && b.bcRutas && Object.keys(b.bcRutas).length) return Object.values(b.bcRutas).map(x => x.ruta);
+  return [...new Set([...Object.values(EQUIV_SEED), ...Object.values(DB.equiv), ...Object.values(DB.modelos).map(x => x.ruta).filter(Boolean)])];
+}
+function asignarRuta(f, rutas) {
+  if (f.rutaSrc === "BC" && f.ruta) return;
+  const M = up(f.modelo), e = DB.equiv[M] || EQUIV_SEED[M];
+  if (e) { f.ruta = e; f.rutaSrc = "BC"; return; }
+  const r = rutaPorNombre(f.modelo, rutas);
+  f.ruta = r || ""; f.rutaSrc = r ? "nombre" : "";
+}
+const bcDe = (f, b) => f.ruta ? ((b && b.bcRutas && b.bcRutas[up(f.ruta)]) || DB.bcRutas[up(f.ruta)] || null) : null;
+const bcPz = (f, b, ct) => bcDe(f, b)?.cts?.[ct.bc]?.pz || 0;
+
+/* ============================== INGENIERÍA: ficha técnica, especificación, folio y foto ============================== */
+const fotoKey = r => up(r).replace(/[^A-Z0-9-]+/g, "-");
+/** Datos de ingenieria.lineaitalia.net para un renglón: por ruta (105 → 105F.pdf / 105E.pdf) o por folio de especiales (FA-6728 → F6728…FP.pdf) */
+/** Imagen del mueble (sacada de su ficha técnica) y si la ficha menciona estructura metálica. Busca por la ruta, su modelo base (133A → 133) o por el nombre del modelo. */
+let FOTO_KEYS = null;
+function ingDe(f) {
+  const out = { metal: -1, desc: "", foto: "" };
+  const cand = f.ruta ? variantes(f.ruta) : [];
+  for (const r of [...cand]) { const m = r.match(/^(\d{3,5})-?[A-Z]$/); if (m) cand.push(m[1]); }
+  for (const r of cand) {
+    const x = ING.fichas[r]; if (!x) continue;
+    [out.metal, out.desc] = [x[2] ?? -1, x[3] || ""];
+    if (x[4]) { out.foto = `assets/modelos/${fotoKey(r)}.jpg`; break; }
+  }
+  if (!out.foto && f.modelo) {
+    // especiales FA/FB/FC/FD-6779 → dibujo de su folio (F6779) o, si no trae, la imagen de su modelo base
+    const fm = String(f.modelo).toUpperCase().match(/^#?F[A-Z]?-?(\d{3,5})/), fk = fm ? "F" + fm[1] : "";
+    const al = (ING.alias || {})[fk];
+    for (const k of [fk, al]) if (k && ING.fichas[k] && ING.fichas[k][4]) { out.foto = `assets/modelos/${fotoKey(k)}.jpg`; out.desc = ING.fichas[k][3] || out.desc; break; }
+  }
+  if (!out.foto && !f.ruta && f.modelo) {
+    FOTO_KEYS = FOTO_KEYS || Object.keys(ING.fichas).filter(k => ING.fichas[k][4]);
+    const r = rutaPorNombre(f.modelo, FOTO_KEYS);
+    if (r) { const x = ING.fichas[r]; out.foto = `assets/modelos/${fotoKey(r)}.jpg`; out.metal = x[2] ?? -1; out.desc = x[3] || ""; }
+  }
+  return out;
+}
+const ligasIng = () => "";   // solo la imagen del mueble (Leonardo no necesita ficha ni especificación)
+const fotoHTML = (f, g = ingDe(f)) => g.foto ? `<img class="thumb" src="${g.foto}" alt="" title="${esc(g.desc || "Ver imagen")}" loading="lazy" data-foto="${esc(f.ruta || "")}" data-mod="${esc(f.modelo || "")}" onerror="this.remove()">` : "";
+const melHTML = g => g.metal === 0 ? '<span class="st mel" title="La ficha técnica no menciona estructura metálica">melamina</span>' : "";
+function modeloHTML(f, extra = "") {
+  const g = ingDe(f);
+  return `<div class="mod">${fotoHTML(f, g)}<div><b>${esc(f.modelo)}</b> ${melHTML(g)}${extra}${f.desc ? `<div class="dim" style="font-size:11px">${esc(f.desc)}</div>` : ""}<div>${ligasIng(g)}</div></div></div>`;
+}
+function verFoto(ruta, modelo) {
+  const f = { ruta, modelo }, g = ingDe(f);
+  $("#dlgT").innerHTML = `${esc(modelo || ruta)} <span class="dim mono" style="font-weight:400">ruta ${esc(ruta || "—")}</span>`;
+  $("#dlgB").innerHTML = `<div class="ficha">${g.foto ? `<img src="${g.foto}" alt="">` : '<span class="dim">Sin imagen</span>'}<div style="flex:1;min-width:200px">
+      ${g.desc ? `<p>${esc(g.desc)}</p>` : ""}<p>${g.metal === 1 ? '<span class="st info">Lleva estructura metálica</span>' : g.metal === 0 ? '<span class="st mel">Sin estructura metálica (melamina)</span>' : ""}</p></div></div>`;
+  $("#dlg").showModal();
+}
+document.addEventListener("click", e => { const t = e.target.closest("img.thumb"); if (t) verFoto(t.dataset.foto, t.dataset.mod); });
+
+/* ============================== DESPIECE (rutas de pieza) ============================== */
+const keyD = (ruta, modelo) => ruta ? "R:" + up(ruta) : "M:" + up(modelo);
+const despieceDe = f => (f.ruta && DB.despiece["R:" + up(f.ruta)]) || DB.despiece["M:" + up(f.modelo)] || null;
+const pzDesp = (d, mid) => d.piezas.filter(p => p.ruta.includes(mid)).reduce((s, p) => s + (+p.pz || 0), 0);
+
+/* ============================== MODELOS FUERA / DENTRO (por CT) ============================== */
+const keyM = (ct, m) => `${ct}|M:${up(m)}`, keyR = (ct, r) => `${ct}|R:${up(r)}`;
+/** Familia excluida del CT (p. ej. MAMPARA en Estructura · Muebles): MAMPARA, MAMPARAS, PT-MAMPARA… */
+const famExcluida = (f, ct) => (ct.excluirFamilias || []).find(x => normH(f.familia).replace(/^PT /, "").startsWith(normH(x))) || "";
+function clasificar(f, ct = CT) {
+  const fx = famExcluida(f, ct);
+  if (fx) return { fuera: true, por: "familia", key: "", fam: fx };
+  const m = DB.modelos[keyM(ct.id, f.modelo)];
+  if (m && m.estado === "fuera") return { fuera: true, por: "modelo", key: m.key };
+  const r = f.ruta ? DB.modelos[keyR(ct.id, f.ruta)] : null;
+  if (r && r.estado === "fuera") return { fuera: true, por: "ruta", key: r.key };
+  return { fuera: false, nuevo: !m };
+}
+const procVacio = ct => Object.fromEntries(ct.maqs.map(m => [m.id, { on: false, pz: null }]));
+const procDeCT = (proc, ct) => Object.fromEntries(ct.maqs.map(m => [m.id, { on: !!proc?.[m.id]?.on, pz: proc?.[m.id]?.pz ?? null }]));
+/** Procesos y piezas por mueble: despiece → lo guardado del modelo → otro modelo de la misma ruta → BC («Tiempos y Piezas») → por definir */
+function procDe(f, b, ct) {
+  const d = despieceDe(f);
+  if (d) { const pr = procVacio(ct); for (const m of ct.maqs) { const s = pzDesp(d, m.id); pr[m.id] = { on: s > 0, pz: s || null }; } return { proc: pr, pzSrc: "despiece" }; }
+  const m = DB.modelos[keyM(ct.id, f.modelo)];
+  if (m && m.estado === "dentro" && m.proc) return { proc: procDeCT(m.proc, ct), pzSrc: "guardado" };
+  if (ct.id === "TROQUELES") {     // piezas reales del catálogo de lámina: corte = todas sus piezas; doblez = las que se doblan (si ya están definidas)
+    const L = piezasCat(f);
+    if (L.length) {
+      const pr = procVacio(ct), sC = L.reduce((s, x) => s + (+x.pz || 0), 0);
+      pr[CORTE] = { on: sC > 0, pz: sC || null };
+      if (L.every(x => x.p.doblez != null)) { const sD = L.filter(x => x.p.doblez).reduce((s, x) => s + (+x.pz || 0), 0); pr[DOBLEZ] = { on: sD > 0, pz: sD || null }; }
+      else { const bp = bcPz(f, b, ct); pr[DOBLEZ] = { on: true, pz: bp > 0 ? bp : null }; }
+      return { proc: pr, pzSrc: "catálogo de piezas" };
+    }
+  }
+  if (f.ruta) {
+    const h = Object.values(DB.modelos).find(x => x.ct === ct.id && x.estado === "dentro" && x.tipo === "modelo" && x.proc && up(x.ruta) === up(f.ruta));
+    if (h) return { proc: procDeCT(h.proc, ct), pzSrc: `ruta ${h.ruta} (${h.valor})` };
+  }
+  const pz = bcPz(f, b, ct), pr = {};
+  for (const mm of ct.maqs) pr[mm.id] = { on: mm.def, pz: mm.def && pz > 0 ? pz : null };
+  return { proc: pr, pzSrc: pz > 0 ? "BC" : "" };
+}
+function marcarFuera(filas, porRuta, origen, ct = CT) {
+  const now = new Date().toISOString(); let sinRuta = 0;
+  for (const f of filas) {
+    const usaRuta = porRuta && f.ruta; if (porRuta && !f.ruta) sinRuta++;
+    const key = usaRuta ? keyR(ct.id, f.ruta) : keyM(ct.id, f.modelo);
+    DB.modelos[key] = { key, ct: ct.id, tipo: usaRuta ? "ruta" : "modelo", valor: usaRuta ? f.ruta : f.modelo, estado: "fuera", ruta: f.ruta || "", desc: f.desc || "",
+                        familia: f.familia || "", alta: DB.modelos[key]?.alta || now, act: now, origen: origen || "" };
+  }
+  guardar("modelos");
+  return sinRuta;
+}
+function regresarDentro(key) {
+  const x = DB.modelos[key]; if (!x) return;
+  if (x.tipo === "ruta") delete DB.modelos[key];
+  else { x.estado = "dentro"; x.act = new Date().toISOString(); }
+  guardar("modelos");
+}
+
+/* ============================== BORRADORES (archivo cargado, aún sin guardar) ============================== */
+const bor = (ct = CT) => BS[ct.id] || null;
+function prepararBorrador(b, ct, mantener) {
+  const rutas = rutasConocidas(b), usadas = new Set();
+  b.ops.forEach((f, i) => {
+    asignarRuta(f, rutas);
+    let k = f.op || "FILA-" + (f.fila || i + 1); while (usadas.has(k)) k += "*"; usadas.add(k); f.k = k;
+    const d = despieceDe(f);
+    if (d || !(mantener && f.editado && f.proc)) Object.assign(f, procDe(f, b, ct));
+  });
+  b.sel = b.sel || [];
+  return b;
+}
+function repreparar() { for (const c of CTS) if (BS[c.id]) prepararBorrador(BS[c.id], c, true); guardar("bor"); }
+function filasB(ct = CT) { const b = bor(ct); return b ? b.ops.map(f => ({ f, c: clasificar(f, ct) })) : []; }
+function cargarArchivo(buf, nombre) {
+  try {
+    const nb = leerLibro(buf, nombre);
+    // exporte de BC encima de un previo con las mismas OPs: solo completa rutas y descripciones (en todos los CT)
+    if (nb.origen === "bc" && CTS.some(c => BS[c.id]?.origen === "previo")) {
+      const porOp = new Map(nb.ops.map(o => [up(o.op), o])); let n = 0;
+      for (const c of CTS) { const b = BS[c.id]; if (!b || b.origen !== "previo") continue; let nc = 0;
+        for (const f of b.ops) { const o = porOp.get(up(f.op)); if (o) { if (o.ruta) { f.ruta = o.ruta; f.rutaSrc = "BC"; } f.desc = o.desc; f.ini = o.ini; nc++; } }
+        n = Math.max(n, nc); prepararBorrador(b, c, true); }
+      if (n) { guardar("bor"); toast(`Rutas y descripciones de BC tomadas para <b>${n}</b> OPs del previo.`, "ok"); abrir("carga"); return; }
+    }
+    // un archivo arma de una vez el borrador de todos los CT; cada uno retira sus modelos «fuera» y sus familias excluidas
+    const res = [];
+    for (const c of CTS) { BS[c.id] = prepararBorrador(clon(nb), c); const fs = filasB(c); res.push(`${c.label}: ${fs.filter(x => !x.c.fuera).length} OPs (${fs.filter(x => x.c.fuera).length} retiradas)`); }
+    guardar("bor");
+    toast(`${esc(nb.tipo)} del <b>${fechaCorta(nb.dia)}</b> desglosado: ${res.join(" · ")}. Revisa y pulsa <b>Guardar los dos programas</b>.`, "ok");
+    abrir("carga");
+  } catch (e) { console.error(e); toast(esc(e.message), "err"); }
+}
+
+/* ============================== PIEZAS DE LÁMINA · catálogo de piezas compartidas entre modelos (Troqueles) ==============================
+   Base: assets/piezas-biblioteca.js (herramientas/catalogo-piezas.ps1 lee la biblioteca DXF de Nidos). Una pieza = mismo nombre,
+   calibre, medidas y trazos del DXF, aunque esté en varias carpetas de modelo: así se sabe qué modelos la comparten.
+   Lo que cambia Leonardo (nombre, si se dobla, modelos agregados o quitados, piezas unidas, piezas nuevas) va en DB.despiece["P:<id>"]
+   (misma colección de la nube que los despieces). En el programa, las piezas compartidas se suman («4 cajones a fabricar»)
+   y las propias de cada modelo se desglosan por modelo (Leonardo, 2026-11-17). */
+var PZB = window.PIEZAS_BIBLIO || { piezas: [], sinDxf: [], gen: "" };
+const esP = k => String(k).startsWith("P:");
+const despModelos = () => Object.entries(DB.despiece).filter(([k]) => !esP(k));
+var CAT = null;                                   // catálogo efectivo (base + cambios); se rehace al cambiar DB.despiece
+const mm = n => n == null ? "" : fmt(n, Number(n) % 1 ? 1 : 0);
+const medTxt = p => p.w ? `${mm(p.w)} × ${mm(p.h)} mm` : "";
+function catalogo() {
+  if (CAT) return CAT;
+  const piezas = new Map();
+  for (const s of PZB.piezas) piezas.set(s.id, { id: s.id, nombre: s.n, alt: s.alt || [], cal: s.c ?? null, w: s.w ?? null, h: s.h ?? null, g: s.g || "", dibujo: s.f || "",
+    lineas: s.l || [], base: Object.fromEntries(Object.entries(s.m || {}).map(([r, n]) => [up(r), n])), modelos: Object.fromEntries(Object.entries(s.m || {}).map(([r, n]) => [up(r), n])),
+    esBase: true, doblez: null, notas: "", unir: "", unidas: [] });
+  for (const [k, e] of Object.entries(DB.despiece)) {
+    if (!esP(k) || !e) continue;
+    const id = k.slice(2); let p = piezas.get(id);
+    if (!p) { if (!e.manual) continue; p = { id, nombre: "", alt: [], cal: null, w: null, h: null, g: "", dibujo: "", lineas: [], base: {}, modelos: {}, esBase: false, doblez: null, notas: "", unir: "", unidas: [] }; piezas.set(id, p); }
+    if (e.nombre) p.nombre = e.nombre;
+    if (e.manual) { p.cal = e.cal ?? null; p.w = e.w ?? null; p.h = e.h ?? null; }
+    if (e.doblez === true || e.doblez === false) p.doblez = e.doblez;
+    for (const r of e.quitar || []) delete p.modelos[up(r)];
+    for (const [r, n] of Object.entries(e.agregar || {})) p.modelos[up(r)] = +n || 1;
+    p.notas = e.notas || ""; p.unir = e.unir || ""; p.editado = e.act || "";
+  }
+  for (const p of piezas.values()) {             // pieza unida a otra: sus modelos pasan a la otra y deja de mostrarse
+    if (!p.unir || p.unir === p.id) continue;
+    let d = piezas.get(p.unir), n = 0; while (d && d.unir && d.unir !== d.id && piezas.has(d.unir) && n++ < 10) d = piezas.get(d.unir);
+    if (!d || d === p) continue;
+    for (const [r, c] of Object.entries(p.modelos)) if (!(r in d.modelos)) d.modelos[r] = c;
+    d.unidas.push(p.nombre + (p.cal ? " cal " + p.cal : "")); p.oculta = true;
+  }
+  const lista = [...piezas.values()].filter(p => !p.oculta && (Object.keys(p.modelos).length || !p.esBase));
+  const porRuta = new Map();
+  for (const p of lista) for (const [r, n] of Object.entries(p.modelos)) { if (!porRuta.has(r)) porRuta.set(r, []); porRuta.get(r).push({ p, pz: n }); }
+  for (const L of porRuta.values()) L.sort((a, b) => (a.p.cal ?? 99) - (b.p.cal ?? 99) || a.p.nombre.localeCompare(b.p.nombre));
+  CAT = { piezas, lista, porRuta };
+  return CAT;
+}
+/** Piezas de lámina de una OP o modelo: por Nº ruta y, si no, por modelo */
+const piezasCat = f => (f.ruta && catalogo().porRuta.get(up(f.ruta))) || catalogo().porRuta.get(up(f.modelo)) || [];
+const nModelos = p => Object.keys(p.modelos).length;
+function guardarPieza(id, cambios) {
+  const k = "P:" + id;
+  DB.despiece[k] = { ...(DB.despiece[k] || { tipo: "pieza", id }), ...cambios, act: new Date().toISOString() };
+  guardar("despiece");
+}
+/** Cambia las piezas por mueble de un modelo en una pieza (n = 0 lo quita) respetando lo que viene de la biblioteca */
+function ponerModeloPieza(p, ruta, n) {
+  const r = up(ruta), e = DB.despiece["P:" + p.id] || {}, agregar = { ...(e.agregar || {}) }, quitar = new Set((e.quitar || []).map(up));
+  if (n > 0) { if (p.base[r] === n) delete agregar[r]; else agregar[r] = n; quitar.delete(r); }
+  else { delete agregar[r]; if (r in p.base) quitar.add(r); }
+  guardarPieza(p.id, { agregar, quitar: [...quitar] });
+}
+const chipPieza = p => `${p.cal ? `<span class="chip">cal ${p.cal}</span>` : ""}${p.w ? `<span class="chip">${medTxt(p)}</span>` : ""}${p.doblez === true ? '<span class="chip ok-t">se dobla</span>' : p.doblez === false ? '<span class="chip">sin doblez</span>' : ""}`;
+
+/* ---------- Desglose de piezas de un programa ---------- */
+function desglosePiezas(p, mid) {
+  const acc = new Map(), sin = [];
+  for (const r of p.rows) {
+    if (!r.proc?.[mid]?.on) continue;
+    const L = piezasCat(r);
+    if (!L.length) { sin.push(r); continue; }
+    const mk = up(r.ruta || r.modelo);
+    for (const { p: pc, pz } of L) {
+      if (mid === DOBLEZ && pc.doblez === false) continue;
+      let a = acc.get(pc.id); if (!a) acc.set(pc.id, a = { p: pc, total: 0, muebles: 0, mods: new Map() });
+      const n = (+r.cant || 0) * (+pz || 0); a.total += n; a.muebles += +r.cant || 0;
+      let m = a.mods.get(mk); if (!m) a.mods.set(mk, m = { mk, ruta: r.ruta || r.modelo, modelos: new Set(), pz, muebles: 0, total: 0, ops: [] });
+      m.modelos.add(r.modelo); m.muebles += +r.cant || 0; m.total += n; m.ops.push(r.op);
+    }
+  }
+  const orden = (a, b) => (a.p.cal ?? 99) - (b.p.cal ?? 99) || b.total - a.total || a.p.nombre.localeCompare(b.p.nombre);
+  const compartidas = [...acc.values()].filter(a => a.mods.size > 1).sort(orden);
+  const propias = new Map();
+  for (const a of [...acc.values()].sort(orden)) {
+    const enComp = a.mods.size > 1;
+    for (const m of a.mods.values()) {
+      let g = propias.get(m.mk); if (!g) propias.set(m.mk, g = { mk: m.mk, ruta: m.ruta, modelos: m.modelos, muebles: m.muebles, ops: m.ops, piezas: [], compartidas: [] });
+      (enComp ? g.compartidas : g.piezas).push({ p: a.p, pz: m.pz, total: m.total });
+    }
+  }
+  const porModelo = [...propias.values()].filter(g => g.piezas.length).sort((a, b) => a.ruta.localeCompare(b.ruta, "es", { numeric: true }));
+  return { compartidas, porModelo, sin, total: [...acc.values()].reduce((s, a) => s + a.total, 0), tipos: acc.size,
+           totalComp: compartidas.reduce((s, a) => s + a.total, 0), sinDef: mid === DOBLEZ ? [...acc.values()].filter(a => a.p.doblez == null).length : 0 };
+}
+function desgloseHTML(p, mid) {
+  const D = desglosePiezas(p, mid), m = MAQ[mid];
+  let h = `<div class="kpis">${kpi("Piezas a " + (mid === CORTE ? "cortar" : "doblar"), fmt(D.total), D.tipos + " tipos de pieza", "info")}
+      ${kpi("Compartidas", fmt(D.compartidas.length), fmt(D.totalComp) + " pz que se fabrican juntas", D.compartidas.length ? "ok" : "")}
+      ${kpi("Modelos con piezas propias", fmt(D.porModelo.length), "se desglosan por modelo")}
+      ${kpi("Sin piezas en el catálogo", fmt(D.sin.length), D.sin.length ? "OPs: usan las pz por mueble del programa" : "todas las OPs tienen piezas", D.sin.length ? "warn" : "ok")}</div>`;
+  if (D.sinDef) h += `<div class="card aviso"><div class="body" style="padding-top:12px"><ul class="avisos"><li class="warn">${D.sinDef} pieza(s) aún sin definir si se doblan: aparecen aquí con «¿se dobla?». Márcalas una vez en <b>Piezas compartidas</b> y aplica a todos los modelos.</li></ul></div></div>`;
+  if (D.compartidas.length) {
+    h += `<div class="card"><div class="hd">Piezas compartidas · se fabrican juntas <span class="sub">la misma pieza en varios modelos: se suma el total</span></div><div class="tw"><table><thead><tr><th class="num">#</th><th>Pieza</th><th>Modelos (pz x mueble × muebles)</th><th class="num">Muebles</th><th class="num">Total a ${mid === CORTE ? "cortar" : "doblar"}</th></tr></thead><tbody>`;
+    let calAnt = null;
+    D.compartidas.forEach((a, i) => {
+      if (a.p.cal !== calAnt) { h += `<tr class="grupo"><td colspan="5">${a.p.cal ? "Calibre " + a.p.cal : "Sin calibre"}</td></tr>`; calAnt = a.p.cal; }
+      h += `<tr><td class="num dim">${i + 1}</td><td><b>${esc(a.p.nombre)}</b> ${chipPieza(a.p)}${mid === DOBLEZ && a.p.doblez == null ? ' <span class="chip warn-t">¿se dobla?</span>' : ""}</td>
+        <td>${[...a.mods.values()].map(x => `<span class="chip" title="${esc([...x.modelos].join(", ") + " · " + x.ops.join(", "))}">${esc(x.ruta)} · ${fmt(x.pz)}×${fmt(x.muebles)} = ${fmt(x.total)}</span>`).join("")}</td>
+        <td class="num">${fmt(a.muebles)}</td><td class="num"><b>${fmt(a.total)}</b></td></tr>`;
+    });
+    h += `<tr class="tot"><td colspan="4">Total piezas compartidas</td><td class="num">${fmt(D.totalComp)}</td></tr></tbody></table></div></div>`;
+  }
+  if (D.porModelo.length) {
+    h += `<div class="card"><div class="hd">Piezas por modelo <span class="sub">piezas propias de cada modelo, desglosadas completas</span></div><div class="tw"><table><thead><tr><th>Pieza</th><th class="num">Pz x mueble</th><th class="num">Muebles</th><th class="num">Total</th></tr></thead><tbody>`;
+    for (const g of D.porModelo) {
+      h += `<tr class="grupo"><td colspan="4">Modelo ${esc(g.ruta)}${g.modelos.size && ![...g.modelos].every(x => up(x) === up(g.ruta)) ? " · " + esc([...g.modelos].join(", ")) : ""} · ${g.ops.length} OP(s) · ${fmt(g.muebles)} muebles</td></tr>`;
+      for (const x of g.piezas) h += `<tr><td><b>${esc(x.p.nombre)}</b> ${chipPieza(x.p)}${mid === DOBLEZ && x.p.doblez == null ? ' <span class="chip warn-t">¿se dobla?</span>' : ""}</td><td class="num">${fmt(x.pz)}</td><td class="num">${fmt(g.muebles)}</td><td class="num"><b>${fmt(x.total)}</b></td></tr>`;
+      if (g.compartidas.length) h += `<tr><td colspan="4" class="dim" style="font-size:11.5px">También lleva (van en compartidas): ${g.compartidas.map(x => `${esc(x.p.nombre)} ×${fmt(x.pz)}`).join(" · ")}</td></tr>`;
+    }
+    h += `</tbody></table></div></div>`;
+  }
+  if (D.sin.length) {
+    h += `<div class="card"><div class="hd">Sin piezas en el catálogo <span class="sub">${D.sin.length} OP(s): sus dibujos no están en la biblioteca de Nidos ni se capturaron a mano</span></div><div class="tw"><table><thead><tr><th>OP</th><th>Modelo</th><th>Ruta BC</th><th class="num">Muebles</th><th class="num">Pz x mueble (programa)</th><th></th></tr></thead><tbody>`;
+    for (const r of D.sin) h += `<tr><td class="mono">${esc(r.op)}</td><td>${esc(r.modelo)}</td><td class="mono">${esc(r.ruta || "—")}</td><td class="num">${fmt(r.cant)}</td><td class="num">${r.proc[mid]?.pz > 0 ? fmt(r.proc[mid].pz) : '<span class="warn-t">por definir</span>'}</td>
+      <td><button class="mini" data-pzmod="${esc(r.ruta || r.modelo)}">Agregar piezas</button></td></tr>`;
+    h += `</tbody></table></div></div>`;
+  }
+  return h;
+}
+
+/* ---------- Vista «Piezas compartidas» ---------- */
+let pzTab = "comp", pzBusq = "";
+function posiblesIguales() {     // mismo calibre y medidas, distinta pieza (otro nombre o distintos trazos)
+  const g = new Map();
+  for (const p of catalogo().lista) { if (!p.w) continue; const k = `${p.cal}|${Math.round(p.w)}|${Math.round(p.h)}`; if (!g.has(k)) g.set(k, []); g.get(k).push(p); }
+  return [...g.values()].filter(x => x.length > 1).sort((a, b) => b.reduce((s, p) => s + nModelos(p), 0) - a.reduce((s, p) => s + nModelos(p), 0));
+}
+function renderPiezas() {
+  const el = $("#v-piezas"), C = catalogo(), q = up(pzBusq);
+  const comp = C.lista.filter(p => nModelos(p) > 1), mods = C.porRuta.size, pos = posiblesIguales();
+  $("#acc").innerHTML = `<button id="bPzNueva">+ Pieza nueva</button><button id="bPzXls">Exportar Excel</button>`;
+  let h = `<div class="kpis">${kpi("Piezas en el catálogo", fmt(C.lista.length), "de la biblioteca DXF de Nidos" + (PZB.gen ? " (" + esc(PZB.gen.slice(0, 10)) + ")" : "") + " y capturadas")}
+      ${kpi("Compartidas", fmt(comp.length), "piezas que llevan 2 o más modelos", "ok")}${kpi("Modelos con piezas", fmt(mods), "rutas con su despiece de lámina", "info")}
+      ${kpi("Posibles iguales", fmt(pos.length), "mismas medidas y calibre: revisar", pos.length ? "warn" : "")}</div>
+    <div class="toolbar"><div class="seg">${[["comp", "Compartidas"], ["todas", "Todas"], ["modelo", "Por modelo"], ["iguales", "Posibles iguales"]].map(([v, t]) => `<button data-pzt="${v}" class="${pzTab === v ? "on" : ""}">${t}</button>`).join("")}</div>
+      <input type="text" id="pzBusq" placeholder="${pzTab === "modelo" ? "Modelo o ruta (105, 2300, AC-120120…)" : "Buscar pieza o modelo"}" value="${esc(pzBusq)}" style="min-width:260px"></div>`;
+  if (pzTab === "comp" || pzTab === "todas") {
+    let xs = (pzTab === "comp" ? comp : C.lista).filter(p => !q || up(p.nombre).includes(q) || Object.keys(p.modelos).some(r => r.includes(q)) || String(p.cal) === q.replace(/^CAL\s*/, ""));
+    xs = xs.sort((a, b) => nModelos(b) - nModelos(a) || (a.cal ?? 99) - (b.cal ?? 99) || a.nombre.localeCompare(b.nombre));
+    h += `<div class="card"><div class="tw"><table><thead><tr><th>Pieza</th><th class="num">Modelos</th><th>Modelos que la llevan (pz x mueble)</th><th>¿Se dobla?</th><th></th></tr></thead><tbody>`;
+    for (const p of xs.slice(0, 400)) {
+      const rs = Object.entries(p.modelos).sort((a, b) => a[0].localeCompare(b[0], "es", { numeric: true }));
+      h += `<tr><td><b>${esc(p.nombre)}</b> ${chipPieza(p)}${p.esBase ? "" : ' <span class="chip">capturada</span>'}${p.unidas.length ? `<div class="dim" style="font-size:11px">Unida con: ${esc(p.unidas.join(", "))}</div>` : ""}</td>
+        <td class="num">${fmt(rs.length)}</td><td>${rs.slice(0, 14).map(([r, n]) => `<span class="chip">${esc(r)}${n !== 1 ? " ×" + n : ""}</span>`).join("")}${rs.length > 14 ? `<span class="dim"> +${rs.length - 14}</span>` : ""}</td>
+        <td><select data-pzd="${p.id}"><option value="" ${p.doblez == null ? "selected" : ""}>Sin definir</option><option value="si" ${p.doblez === true ? "selected" : ""}>Sí</option><option value="no" ${p.doblez === false ? "selected" : ""}>No</option></select></td>
+        <td><button class="mini" data-pze="${p.id}">Editar</button></td></tr>`;
+    }
+    h += `</tbody></table></div>${xs.length > 400 ? `<p class="note">Se muestran 400 de ${xs.length}: usa la búsqueda.</p>` : ""}${!xs.length ? '<div class="empty">Sin piezas con ese filtro.</div>' : ""}</div>`;
+  } else if (pzTab === "modelo") {
+    const rutas = [...C.porRuta.keys()].filter(r => !q || r.includes(q)).sort((a, b) => a.localeCompare(b, "es", { numeric: true }));
+    const exacta = rutas.find(r => r === q);
+    const ver = exacta ? [exacta] : rutas.slice(0, q ? 12 : 0);
+    if (!q) h += `<div class="card"><div class="body" style="padding-top:14px"><p class="note" style="margin:0">Escribe un modelo o ruta para ver sus piezas de lámina, con qué modelos comparte cada una y qué modelos son compatibles. ${fmt(C.porRuta.size)} modelos tienen piezas.</p></div></div>`;
+    else if (!ver.length) h += `<div class="card"><div class="empty"><b>${esc(pzBusq)} no tiene piezas en el catálogo</b>Sus dibujos no están en la biblioteca de Nidos. Agrégale piezas existentes (por ejemplo, el mismo cajón de otro modelo) o una pieza nueva.<div style="margin-top:10px"><button class="pri" data-pzmod="${esc(q)}">Agregar piezas a ${esc(q)}</button></div></div></div>`;
+    for (const r of ver) {
+      const L = C.porRuta.get(r) || [], compat = new Map();
+      for (const { p } of L) for (const r2 of Object.keys(p.modelos)) if (r2 !== r) compat.set(r2, (compat.get(r2) || 0) + 1);
+      const top = [...compat].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "es", { numeric: true }));
+      const f0 = { ruta: r, modelo: r };
+      h += `<div class="card"><div class="hd" style="display:flex;align-items:center;gap:10px">${fotoHTML(f0)}<span>Modelo ${esc(r)} <span class="sub">${L.length} pieza(s) de lámina · ${fmt(L.reduce((s, x) => s + x.pz, 0))} pz por mueble</span></span><span class="sp" style="flex:1"></span><button class="mini" data-pzmod="${esc(r)}">Agregar pieza</button></div>
+        <div class="tw"><table><thead><tr><th>Pieza</th><th class="num">Pz x mueble</th><th>También la llevan</th><th></th></tr></thead><tbody>
+        ${L.map(({ p, pz }) => { const otros = Object.keys(p.modelos).filter(x => x !== r).sort((a, b) => a.localeCompare(b, "es", { numeric: true }));
+          return `<tr><td><b>${esc(p.nombre)}</b> ${chipPieza(p)}</td><td class="num">${fmt(pz)}</td><td>${otros.length ? otros.slice(0, 16).map(x => `<span class="chip">${esc(x)}</span>`).join("") + (otros.length > 16 ? `<span class="dim"> +${otros.length - 16}</span>` : "") : '<span class="dim">solo este modelo</span>'}</td><td><button class="mini" data-pze="${p.id}">Editar</button></td></tr>`; }).join("")}
+        </tbody></table></div>
+        ${top.length ? `<div class="body"><p class="note" style="margin:0">Modelos compatibles (comparten piezas): ${top.slice(0, 20).map(([x, n]) => `<span class="chip">${esc(x)} · ${n} de ${L.length}</span>`).join("")}</p></div>` : ""}</div>`;
+    }
+    if (!exacta && rutas.length > 12) h += `<p class="note">${rutas.length} modelos coinciden; escribe el modelo completo.</p>`;
+  } else {
+    h += `<div class="card"><div class="body" style="padding-top:14px"><p class="note" style="margin:0">Piezas con el mismo calibre y las mismas medidas pero distinto nombre o dibujo. Si son la misma pieza, únelas: sus modelos se suman en una sola y el programa las fabrica juntas.</p></div></div>`;
+    for (const grupo of pos.filter(g => !q || g.some(p => up(p.nombre).includes(q) || Object.keys(p.modelos).some(r => r.includes(q))))) {
+      h += `<div class="card"><div class="tw"><table><thead><tr><th>Pieza</th><th class="num">Modelos</th><th>Modelos</th><th></th></tr></thead><tbody>
+        ${grupo.map((p, i) => `<tr><td><b>${esc(p.nombre)}</b> ${chipPieza(p)}</td><td class="num">${nModelos(p)}</td><td>${Object.keys(p.modelos).slice(0, 12).map(x => `<span class="chip">${esc(x)}</span>`).join("")}${nModelos(p) > 12 ? `<span class="dim"> +${nModelos(p) - 12}</span>` : ""}</td>
+          <td style="white-space:nowrap">${grupo.filter(o => o !== p).slice(0, 3).map(o => `<button class="mini" data-pzu="${p.id}" data-pzu2="${o.id}">Unir con ${esc(o.nombre)}${nModelos(o) !== nModelos(p) ? ` (${nModelos(o)})` : ""}</button>`).join(" ")}</td></tr>`).join("")}
+        </tbody></table></div></div>`;
+    }
+    if (!pos.length) h += `<div class="card"><div class="empty">No hay piezas con medidas repetidas.</div></div>`;
+  }
+  el.innerHTML = h;
+  el.querySelectorAll("[data-pzt]").forEach(b => b.onclick = () => { pzTab = b.dataset.pzt; renderPiezas(); });
+  const bq = $("#pzBusq"); bq.oninput = () => { pzBusq = bq.value; clearTimeout(bq._t); bq._t = setTimeout(() => { renderPiezas(); const n = $("#pzBusq"); n.focus(); n.setSelectionRange(n.value.length, n.value.length); }, 250); };
+  enlazarPiezas(el);
+  $("#bPzNueva").onclick = () => editarPieza(null);
+  $("#bPzXls").onclick = exportarPiezas;
+}
+function enlazarPiezas(el) {
+  el.querySelectorAll("[data-pzd]").forEach(s => s.onchange = () => { guardarPieza(s.dataset.pzd, { doblez: s.value === "si" ? true : s.value === "no" ? false : null }); toast("Guardado: aplica a todos los modelos que llevan esta pieza.", "ok"); });
+  el.querySelectorAll("[data-pze]").forEach(b => b.onclick = () => editarPieza(b.dataset.pze));
+  el.querySelectorAll("[data-pzmod]").forEach(b => b.onclick = () => agregarPiezasModelo(b.dataset.pzmod));
+  el.querySelectorAll("[data-pzu]").forEach(b => b.onclick = () => {
+    const C = catalogo(), a = C.piezas.get(b.dataset.pzu), d = C.piezas.get(b.dataset.pzu2);
+    if (!confirm(`¿${a.nombre} (${nModelos(a)} modelos) es la misma pieza que ${d.nombre} (${nModelos(d)} modelos)? Sus modelos pasan a «${d.nombre}» y en el programa se fabrican juntas.`)) return;
+    guardarPieza(a.id, { unir: d.id }); renderPiezas();
+  });
+}
+/** Editar una pieza (id null = nueva, capturada a mano) */
+function editarPieza(id, rutaInicial) {
+  const C = catalogo(), p = id ? C.piezas.get(id) : null, nueva = !p;
+  const mods = p ? Object.entries(p.modelos).sort((a, b) => a[0].localeCompare(b[0], "es", { numeric: true })) : (rutaInicial ? [[up(rutaInicial), 1]] : []);
+  $("#dlgT").textContent = nueva ? "Pieza nueva" : `Pieza · ${p.nombre}`;
+  $("#dlgB").innerHTML = `<div class="params"><label style="flex:1">Nombre<input type="text" id="pzN" value="${esc(p ? p.nombre : "")}" placeholder="CAJÓN, CANALETA, TAPA PATA…"></label>
+      <label>Calibre<input type="number" id="pzC" value="${p?.cal ?? ""}" ${p?.esBase ? "disabled" : ""} style="width:80px"></label>
+      <label>Largo (mm)<input type="number" id="pzW" value="${p?.w ?? ""}" ${p?.esBase ? "disabled" : ""} style="width:100px"></label>
+      <label>Ancho (mm)<input type="number" id="pzH" value="${p?.h ?? ""}" ${p?.esBase ? "disabled" : ""} style="width:100px"></label>
+      <label>¿Se dobla?<select id="pzD"><option value="">Sin definir</option><option value="si" ${p?.doblez === true ? "selected" : ""}>Sí</option><option value="no" ${p?.doblez === false ? "selected" : ""}>No</option></select></label></div>
+    ${p?.esBase ? `<p class="note">De la biblioteca de Nidos: <span class="mono">${esc(p.dibujo)}</span>${p.alt.length ? " · también se llama " + esc(p.alt.join(", ")) : ""}. Calibre y medidas salen del DXF.</p>` : ""}
+    <div class="hd" style="padding:12px 0 6px">Modelos que la llevan <span class="sub">pz por mueble</span></div>
+    <div class="tw" style="max-height:260px;overflow:auto"><table><tbody id="pzMods">${mods.map(([r, n]) => `<tr><td class="mono">${esc(r)}</td><td><input type="number" min="0" step="1" data-r="${esc(r)}" value="${n}" style="width:80px"></td><td class="dim" style="font-size:11px">${p && r in p.base ? "biblioteca" : "agregado"}</td></tr>`).join("")}</tbody></table></div>
+    <div class="params" style="margin-top:8px"><label>Agregar modelo<input type="text" id="pzR" placeholder="105" style="width:140px"></label><label>Pz x mueble<input type="number" id="pzRn" value="1" min="1" style="width:80px"></label><button id="pzRadd">Agregar</button></div>
+    <p class="note">Pz = 0 quita el modelo de esta pieza. Agrega aquí los modelos que llevan la misma pieza aunque su dibujo no esté en la biblioteca (por ejemplo, el mismo cajón del 105 en el 106).</p>
+    <div class="params"><label style="flex:1">Notas<input type="text" id="pzNotas" value="${esc(p?.notas || "")}"></label></div>
+    <div class="toolbar" style="margin-top:12px"><button class="pri" id="pzOk">Guardar</button>${p && !p.esBase ? '<button class="peligro" id="pzDel">Borrar pieza</button>' : ""}</div>`;
+  $("#dlg").showModal();
+  $("#pzRadd").onclick = () => { const r = up($("#pzR").value), n = +$("#pzRn").value || 1; if (!r) return;
+    const ex = $("#pzMods").querySelector(`input[data-r="${CSS.escape(r)}"]`); if (ex) { ex.value = n; return; }
+    $("#pzMods").insertAdjacentHTML("beforeend", `<tr><td class="mono">${esc(r)}</td><td><input type="number" min="0" step="1" data-r="${esc(r)}" value="${n}" style="width:80px"></td><td class="dim" style="font-size:11px">nuevo</td></tr>`); $("#pzR").value = ""; };
+  $("#pzOk").onclick = () => {
+    const nombre = $("#pzN").value.trim(); if (!nombre) { toast("Ponle nombre a la pieza.", "warn"); return; }
+    const pid = p ? p.id : "m" + uid(), base = p ? p.base : {}, agregar = {}, quitar = [];
+    const vals = Object.fromEntries([...$("#pzMods").querySelectorAll("input[data-r]")].map(i => [up(i.dataset.r), Math.max(0, Math.round(+i.value || 0))]));
+    for (const [r, n] of Object.entries(vals)) { if (n > 0 && base[r] !== n) agregar[r] = n; if (n === 0 && r in base) quitar.push(r); }
+    for (const r of Object.keys(base)) if (!(r in vals)) quitar.push(r);
+    const d = $("#pzD").value, cambios = { nombre: p?.esBase && nombre === PZB.piezas.find(s => s.id === p.id)?.n ? "" : nombre, doblez: d === "si" ? true : d === "no" ? false : null, agregar, quitar, notas: $("#pzNotas").value.trim() };
+    if (!p || !p.esBase) Object.assign(cambios, { manual: true, cal: +$("#pzC").value || null, w: +$("#pzW").value || null, h: +$("#pzH").value || null });
+    guardarPieza(pid, cambios); $("#dlg").close(); toast(`Pieza «${esc(nombre)}» guardada.`, "ok"); abrir(vista);
+  };
+  if ($("#pzDel")) $("#pzDel").onclick = () => { if (!confirm("¿Borrar esta pieza capturada?")) return; delete DB.despiece["P:" + p.id]; guardar("despiece"); $("#dlg").close(); abrir(vista); };
+}
+/** Agregar piezas a un modelo: elegir piezas existentes del catálogo (la misma pieza de otro modelo) o crear una nueva */
+function agregarPiezasModelo(ruta) {
+  const r = up(ruta), C = catalogo(), ya = new Set((C.porRuta.get(r) || []).map(x => x.p.id));
+  $("#dlgT").textContent = `Piezas del modelo ${r}`;
+  $("#dlgB").innerHTML = `<p class="note" style="margin-top:0">Busca la pieza que este modelo comparte con otros (por nombre o por otro modelo que la lleve) y ponle las piezas por mueble. Si es una pieza que no existe, créala.</p>
+    <div class="params"><label style="flex:1">Buscar pieza o modelo<input type="text" id="apB" placeholder="CAJON, 106XL, CANALETA…"></label><button id="apNueva">+ Pieza nueva para ${esc(r)}</button></div>
+    <div class="tw" style="max-height:380px;overflow:auto;margin-top:8px"><table><thead><tr><th>Pieza</th><th>Modelos que la llevan</th><th class="num">Pz x mueble</th><th></th></tr></thead><tbody id="apL"></tbody></table></div>`;
+  $("#dlg").showModal();
+  const pintar = () => {
+    const q = up($("#apB").value);
+    const xs = C.lista.filter(p => !q || up(p.nombre).includes(q) || Object.keys(p.modelos).some(x => x.includes(q))).sort((a, b) => ya.has(b.id) - ya.has(a.id) || nModelos(b) - nModelos(a)).slice(0, 80);
+    $("#apL").innerHTML = xs.map(p => `<tr><td><b>${esc(p.nombre)}</b> ${chipPieza(p)}</td><td>${Object.keys(p.modelos).slice(0, 8).map(x => `<span class="chip">${esc(x)}</span>`).join("")}${nModelos(p) > 8 ? `<span class="dim"> +${nModelos(p) - 8}</span>` : ""}</td>
+      <td class="num"><input type="number" min="0" value="${p.modelos[r] ?? 1}" data-apn="${p.id}" style="width:70px"></td><td><button class="mini ${ya.has(p.id) ? "" : "pri"}" data-apa="${p.id}">${ya.has(p.id) ? "Actualizar" : "Agregar"}</button></td></tr>`).join("") || '<tr><td colspan="4" class="dim">Sin coincidencias</td></tr>';
+    $("#apL").querySelectorAll("[data-apa]").forEach(b => b.onclick = () => { const p = C.piezas.get(b.dataset.apa), n = Math.max(0, Math.round(+$("#apL").querySelector(`[data-apn="${p.id}"]`).value || 0));
+      ponerModeloPieza(p, r, n); n > 0 ? ya.add(p.id) : ya.delete(p.id); toast(n > 0 ? `${esc(p.nombre)} ×${n} agregada a ${esc(r)}.` : `${esc(p.nombre)} quitada de ${esc(r)}.`, "ok"); b.textContent = n > 0 ? "Actualizar" : "Agregar"; b.classList.toggle("pri", !(n > 0)); });
+  };
+  $("#apB").oninput = pintar; pintar();
+  $("#apNueva").onclick = () => editarPieza(null, r);
+  $("#dlg").addEventListener("close", () => { if (vista === "piezas" || vista === "ver") abrir(vista); }, { once: true });
+}
+/** Excel del catálogo: piezas con sus modelos y un renglón por modelo-pieza */
+function exportarPiezas() {
+  const C = catalogo(), wb = XLSX.utils.book_new();
+  const a = [["Pieza", "Calibre", "Largo (mm)", "Ancho (mm)", "¿Se dobla?", "Modelos", "Lista de modelos", "Dibujo (biblioteca Nidos)", "Notas"]];
+  for (const p of C.lista.slice().sort((x, y) => nModelos(y) - nModelos(x))) a.push([p.nombre, p.cal ?? "", p.w ?? "", p.h ?? "", p.doblez == null ? "" : p.doblez ? "Sí" : "No", nModelos(p), Object.keys(p.modelos).join(", "), p.dibujo, p.notas]);
+  const b = [["Modelo / ruta", "Pieza", "Calibre", "Largo (mm)", "Ancho (mm)", "Pz x mueble", "Compartida con"]];
+  for (const [r, L] of [...C.porRuta].sort((x, y) => x[0].localeCompare(y[0], "es", { numeric: true }))) for (const { p, pz } of L) b.push([r, p.nombre, p.cal ?? "", p.w ?? "", p.h ?? "", pz, Object.keys(p.modelos).filter(x => x !== r).join(", ")]);
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(a), "Piezas");
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(b), "Piezas por modelo");
+  XLSX.writeFile(wb, `${hoyISO()}-piezas-lamina-troqueles.xlsx`);
+}
+/** Hoja de Excel con el desglose de piezas de un programa (formato tipo programa de láser: compartidas, por modelo, sin piezas) */
+function hojaDesglose(p, mid) {
+  const D = desglosePiezas(p, mid), ct = ctDe(p.ct);
+  const aoa = [[`F-PROGRAMA DE PRODUCCIÓN ${ct.label.toUpperCase()} · DESGLOSE DE PIEZAS · ${MAQ[mid].label.toUpperCase()}`], [fechaLarga(p.dia).toUpperCase() + ` · ${p.tipo} v${p.version} · SE TRABAJA EL ${fechaLarga(trabajoDe(p)).toUpperCase()}`], [],
+               ["No.", "Pieza", "Calibre", "Medidas (mm)", "Modelo(s)", "OP(s)", "Pz x mueble", "Muebles", "Total piezas", "Dibujo", "Observaciones"]];
+  let i = 0;
+  if (D.compartidas.length) { aoa.push(["PIEZAS COMPARTIDAS (se fabrican juntas)"]);
+    for (const a of D.compartidas) aoa.push([++i, a.p.nombre, a.p.cal ?? "", a.p.w ? `${a.p.w} x ${a.p.h}` : "", [...a.mods.values()].map(x => `${x.ruta} (${x.pz}x${x.muebles})`).join(", "), [...a.mods.values()].flatMap(x => x.ops).join(", "), "", a.muebles, a.total, a.p.dibujo || "", ""]); }
+  if (D.porModelo.length) { aoa.push([], ["PIEZAS POR MODELO"]);
+    for (const g of D.porModelo) for (const x of g.piezas) aoa.push([++i, x.p.nombre, x.p.cal ?? "", x.p.w ? `${x.p.w} x ${x.p.h}` : "", g.ruta, g.ops.join(", "), x.pz, g.muebles, x.total, x.p.dibujo || "", ""]); }
+  if (D.sin.length) { aoa.push([], ["SIN PIEZAS EN EL CATÁLOGO (pz por mueble del programa)"]);
+    for (const r of D.sin) aoa.push([++i, "(sin despiece)", "", "", r.modelo + (r.ruta ? ` / ${r.ruta}` : ""), r.op, r.proc[mid]?.pz || "", r.cant, programadas(r, mid), "", ""]); }
+  aoa.push([], ["", "TOTAL", "", "", "", "", "", "", D.total + D.sin.reduce((s, r) => s + programadas(r, mid), 0)]);
+  const ws = XLSX.utils.aoa_to_sheet(aoa); ws["!cols"] = [{ wch: 5 }, { wch: 30 }, { wch: 8 }, { wch: 16 }, { wch: 36 }, { wch: 30 }, { wch: 10 }, { wch: 9 }, { wch: 12 }, { wch: 40 }, { wch: 24 }];
+  return ws;
+}
+
+/* ============================== PROGRAMAS Y AVANCE ============================== */
+const progsCT = (ct = CT) => DB.programas.filter(p => p.ct === ct.id);
+const vigente = (dia, ct = CT) => progsCT(ct).filter(p => p.dia === dia).sort((a, b) => b.version - a.version)[0] || null;
+const esVigente = p => vigente(p.dia, ctDe(p.ct))?.id === p.id;
+const progsVigentes = (ct = CT) => [...new Set(progsCT(ct).map(p => p.dia))].map(d => vigente(d, ct)).filter(Boolean).sort((a, b) => a.dia.localeCompare(b.dia));
+const programadas = (r, mid) => r.proc?.[mid]?.on ? r.cant * pzEf(r.proc[mid].pz) : 0;
+/** El avance se lleva por OP (si la OP cambia de día, lo registrado la sigue); los renglones sin OP, por día */
+const rkey = (dia, k) => /^OP/i.test(k) ? up(k) : dia + "|" + k;
+function hechas(mid, rk) { let s = 0; for (const x of DB.registros) if (!x.fp && x.maquina === mid && rkey(x.dia, x.k) === rk) s += x.pz; return s; }
+function stats(p, mid) {
+  let prog = 0, h = 0, ops = 0, mu = 0;
+  for (const r of p.rows) { const pr = programadas(r, mid); if (!pr) continue; ops++; mu += r.cant; prog += pr; h += Math.min(pr, hechas(mid, rkey(p.dia, r.k))); }
+  return { prog, h, falta: Math.max(0, prog - h), ops, mu, pct: prog ? h / prog : 0 };
+}
+function diffProgramas(antes, ahora) {
+  const a = new Map(antes.map(r => [r.k, r])), b = new Map(ahora.map(r => [r.k, r]));
+  return { nuevas: ahora.filter(r => !a.has(r.k)), quitadas: antes.filter(r => !b.has(r.k)),
+           cambio: ahora.filter(r => a.has(r.k) && a.get(r.k).cant !== r.cant).map(r => ({ r, antes: a.get(r.k).cant })) };
+}
+/** Índice de los programas vigentes de todos los CT: clave de avance → {CT: renglón}. Sirve para ver la ruta completa de una OP. */
+function indiceOPs() {
+  const idx = {};
+  for (const c of CTS) for (const p of progsVigentes(c)) for (const r of p.rows) { const k = rkey(p.dia, r.k); (idx[k] = idx[k] || {})[c.id] = r; }
+  return idx;
+}
+/** Guarda el borrador de un CT como programa (nueva versión si ya hay uno ese día). Devuelve el programa o null. */
+function guardarCT(ct, dia) {
+  const b = bor(ct); if (!b) return null;
+  dia = dia || b.dia;
+  const fs = filasB(ct), incl = fs.filter(x => !x.c.fuera).map(x => x.f), ret = fs.filter(x => x.c.fuera);
+  if (!incl.length) return null;
+  const prev = vigente(dia, ct), now = new Date().toISOString();
+  const rows = incl.map(f => { const d = despieceDe(f);
+    return { k: f.k, op: f.op, modelo: f.modelo, desc: f.desc || "", familia: f.familia || "", ruta: f.ruta || "", cant: f.cant, pedido: f.pedido || "", ini: f.ini || "",
+             proc: procDeCT(f.proc, ct), piezas: d ? clon(d.piezas) : null }; });
+  const p = { id: uid(), ct: ct.id, dia, trabajo: restarHabiles(dia, ct.adelanto || 0), tipo: b.tipo, archivo: b.archivo, version: prev ? prev.version + 1 : 1, cargado: b.cargado, guardado: now, rows,
+              retirados: ret.map(x => ({ op: x.f.op, modelo: x.f.modelo, cant: x.f.cant, ruta: x.f.ruta || "", por: x.c.por === "familia" ? "familia " + x.c.fam : x.c.por })), ctBC: b.ctBC || {} };
+  DB.programas.push(p);
+  for (const f of incl) {   // lo que queda se recuerda como «dentro» con sus procesos y piezas por mueble
+    const key = keyM(ct.id, f.modelo), x = DB.modelos[key];
+    if (x && x.estado === "fuera") continue;
+    DB.modelos[key] = { key, ct: ct.id, tipo: "modelo", valor: f.modelo, estado: "dentro", ruta: f.ruta || x?.ruta || "", desc: f.desc || x?.desc || "", familia: f.familia || x?.familia || "",
+                        proc: procDeCT(f.proc, ct), alta: x?.alta || now, act: now, visto: dia };
+  }
+  delete BS[ct.id];
+  return p;
+}
+function guardarPrograma() {
+  const dia = $("#bDia")?.value || bor()?.dia, p = guardarCT(CT, dia);
+  if (!p) { toast(`No hay OPs en ${esc(CT.label)} para guardar.`, "warn"); return; }
+  guardar("programas", "modelos", "bor");
+  toast(`Programa de ${esc(CT.label)} del <b>${fechaCorta(p.dia)}</b> guardado (versión ${p.version}). Ya aparece en Hora por hora.`, "ok");
+  verId = p.id; abrir("ver");
+}
+/** Un solo paso: guarda Troqueles y Estructura · Muebles del mismo archivo, cada uno con sus filtros */
+function guardarTodos() {
+  const dia = $("#bDia")?.value || bor()?.dia, hechos = [];
+  for (const c of CTS) { const p = guardarCT(c, dia); if (p) hechos.push(`${c.label} v${p.version}: ${p.rows.length} OPs`); }
+  if (!hechos.length) { toast("No hay OPs para guardar.", "warn"); return; }
+  guardar("programas", "modelos", "bor");
+  toast(`Programas del <b>${fechaCorta(dia)}</b> guardados · ${hechos.join(" · ")}. Ya aparecen en Hora por hora.`, "ok");
+  abrir("progs");
+}
+
+/* ============================== INDICADOR DE RUTA ============================== */
+/** Pasos de la ruta de una OP en orden (Corte → Doblez → Estructura): los de este CT, los de la misma OP en el otro CT y, si no hay, los del despiece */
+function pasosRuta(r, ctId, otros) {
+  const fuentes = { ...(otros || {}), [ctId]: r }, d = despieceDe(r), out = [];
+  for (const mid of ORDEN) {
+    const src = fuentes[MAQ[mid].ct]; let on = false, pz = null;
+    if (src && src.proc && src.proc[mid]) { on = !!src.proc[mid].on; pz = src.proc[mid].pz; }
+    else if (d) { pz = pzDesp(d, mid); on = pz > 0; }
+    if (on) out.push({ mid, pz: pzEf(pz), prog: r.cant * pzEf(pz) });
+  }
+  return out;
+}
+/** Corte ━━━ Doblez: gris = pendiente, azul = en proceso (%), verde = completo. «sin doblez» cuando la pieza no pasa a la dobladora. */
+function rutaHTML(r, ctId, otros, opt = {}) {
+  const ps = pasosRuta(r, ctId, otros), rk = opt.rk;
+  if (!ps.length) return '<span class="dim">—</span>';
+  const pct = p => rk && p.prog ? Math.min(1, hechas(p.mid, rk) / p.prog) : 0;
+  const tieneDob = ps.some(p => p.mid === DOBLEZ);
+  let h = '<span class="rt">';
+  ps.forEach((p, i) => {
+    if (i) h += `<span class="l"><i style="width:${Math.round(pct(ps[i - 1]) * 100)}%"></i></span>`;
+    const q = pct(p), cls = q >= 1 ? "done" : q > 0 ? "part" : "";
+    const tip = rk ? `${MAQ[p.mid].label}: ${fmt(hechas(p.mid, rk))} de ${fmt(p.prog)} pz` : `${MAQ[p.mid].label}: ${fmt(p.pz)} pz por mueble · ${fmt(p.prog)} pz`;
+    h += `<span class="n ${cls} ${opt.yo === p.mid ? "yo" : ""}" title="${esc(tip)}">${esc(MAQ[p.mid].corto)}${q >= 1 ? " ✓" : q > 0 ? " " + Math.round(q * 100) + "%" : ""}</span>`;
+    if (p.mid === CORTE && !tieneDob) h += `<span class="l off"></span><span class="fin">sin doblez</span>` + (i < ps.length - 1 ? '<span class="l off"></span>' : "");
+  });
+  const c = ps.find(p => p.mid === CORTE), dd = ps.find(p => p.mid === DOBLEZ);
+  if (c && dd && dd.pz < c.pz) h += `<span class="x" title="Piezas que se cortan y no pasan a la dobladora">${fmt((c.pz - dd.pz) * r.cant)} pz sin doblez</span>`;
+  return h + "</span>";
+}
+/** Ruta de una sola pieza del despiece */
+function rutaPiezaHTML(p) {
+  const ps = ORDEN.filter(m => p.ruta.includes(m));
+  if (!ps.length) return '<span class="dim">sin ruta</span>';
+  let h = '<span class="rt">';
+  ps.forEach((m, i) => {
+    if (i) h += '<span class="l"></span>';
+    h += `<span class="n">${esc(MAQ[m].corto)}</span>`;
+    if (m === CORTE && !ps.includes(DOBLEZ)) h += `<span class="l off"></span><span class="fin">sin doblez</span>` + (i < ps.length - 1 ? '<span class="l off"></span>' : "");
+  });
+  return h + "</span>";
+}
+const rutaTexto = (r, ctId, otros) => { const ps = pasosRuta(r, ctId, otros); const t = ps.map(p => MAQ[p.mid].corto).join(" → ");
+  return ps.some(p => p.mid === CORTE) && !ps.some(p => p.mid === DOBLEZ) ? t.replace("Corte", "Corte (sin doblez)") : t; };
+const piezasDe = (r, mid) => (r.piezas || []).filter(p => p.ruta.includes(mid));
+const piezasTxt = (r, mid) => piezasDe(r, mid).map(p => `${p.nombre || "Pieza"} ×${p.pz}`).join(" · ");
+
+/* ============================== HORA POR HORA ============================== */
+function parseHora(h) { const m = String(h).trim().match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)$/i); if (!m) return null; let hh = parseInt(m[1]) % 12; if (/pm/i.test(m[3])) hh += 12; return hh * 60 + parseInt(m[2] || "0"); }
+function rangos(turno) {
+  let prev = -1;
+  return (FRANJAS[turno] || []).map((f, i) => {
+    const [a0, b0] = f.replace(/\s*⏸.*$/, "").split("–").map(parseHora); let a = a0, b = b0;
+    while (a < prev) a += 1440; while (b <= a) b += 1440; prev = a; return { i, s: a, e: b, comida: f.includes("Comida") };
+  });
+}
+function turnoActual(ct, d = new Date()) { if (ct.turnos.length === 1) return ct.turnos[0]; const h = d.getHours(); return h >= 7 && h < 17 ? ct.turnos[0] : h >= 17 && h < 23 ? ct.turnos[1] : ct.turnos[2]; }
+function franjaActual(turno, d = new Date()) {
+  const rs = rangos(turno), m = d.getHours() * 60 + d.getMinutes();
+  for (const mm of [m, m + 1440]) { const r = rs.find(x => mm >= x.s && mm < x.e); if (r) return r.comida ? Math.max(0, r.i - 1) : r.i; }
+  return 0;
+}
+const franjaTxt = (turno, i) => String((FRANJAS[turno] || [])[i] || "").replace(/\s*⏸.*$/, "");
+function fechaTrabajo(d = new Date()) { const x = new Date(d); if (x.getHours() < 7) x.setDate(x.getDate() - 1); return isoDe(x); }
+/* ---------- días hábiles: sin sábados, domingos, descansos obligatorios de la LFT ni días que agregue Leonardo (PREF.inhabiles) ---------- */
+const _fest = {};
+function festivosLFT(y) {
+  if (_fest[y]) return _fest[y];
+  const lunes = (m, n) => { const d = new Date(y, m, 1); let c = 0; while (true) { if (d.getDay() === 1 && ++c === n) return isoDe(d); d.setDate(d.getDate() + 1); } };
+  const out = [`${y}-01-01`, lunes(1, 1), lunes(2, 3), `${y}-05-01`, `${y}-09-16`, lunes(10, 3), `${y}-12-25`];   // 1-ene, 1er lun feb, 3er lun mar, 1-may, 16-sep, 3er lun nov, 25-dic
+  if ((y - 2024) % 6 === 0) out.push(`${y}-10-01`);                                                          // transmisión del Ejecutivo
+  return (_fest[y] = out);
+}
+const inhabil = iso => { const d = fechaDe(iso), w = d.getDay(); return w === 0 || w === 6 || festivosLFT(d.getFullYear()).includes(iso) || (PREF.inhabiles || []).includes(iso); };
+function restarHabiles(iso, n) { const d = fechaDe(iso); let k = 0; while (k < n) { d.setDate(d.getDate() - 1); if (!inhabil(isoDe(d))) k++; } return isoDe(d); }
+/** Día en que el CT trabaja un programa: su fecha menos el adelanto del CT en días hábiles (Troqueles 3, Estructura 2) */
+const trabajoDe = p => p.trabajo || restarHabiles(p.dia, ctDe(p.ct).adelanto || 0);
+const diaCorto = iso => { const d = fechaDe(iso); return `${DIAS[d.getDay()].slice(0, 3)} ${d.getDate()}/${d.getMonth() + 1}`; };
+const H = { fecha: fechaTrabajo(), turno: turnoActual(CT), franja: franjaActual(turnoActual(CT)), completas: false };
+const maqActual = () => CT.maqs.find(m => m.id === PREF.maq[CT.id]) || CT.maqs[0];
+
+/* ============================== VISTAS ============================== */
+const TITULOS = {
+  carga: ["Cargar programa", "Previo, lanzado o exporte de BC → OPs del CT, sin los modelos que no pasan por él"],
+  progs: ["Programas", "Programas guardados por día, con su avance"],
+  ver: ["Programa", "Piezas programadas"],
+  hora: ["Hora por hora", "Registro de piezas por franja, contra el programa"],
+  rutas: ["Rutas de pieza", "Despiece por ruta: qué piezas se cortan, cuáles se doblan y si siguen a Estructura (compartido entre CT)"],
+  modelos: ["Modelos fuera / dentro", "Base que se aplica sola a cada programa nuevo de este CT"],
+  piezas: ["Piezas compartidas", "Piezas de lámina por modelo y qué modelos comparten la misma pieza (de la biblioteca DXF de Nidos y capturadas)"]
+};
+let vista = "carga", verId = null, verMaq = null, modTab = "fuera", filtroCarga = "todos", busq = "", busqR = "", filtroR = "todos";
+function abrir(v) {
+  vista = v;
+  for (const s of ["carga", "progs", "ver", "hora", "rutas", "modelos", "piezas"]) $("#v-" + s).classList.toggle("hide", s !== v);
+  document.querySelectorAll(".nav-item[data-t]").forEach(n => n.classList.toggle("on", n.dataset.t === (v === "ver" ? "progs" : v)));
+  $("#pgT").innerHTML = esc(TITULOS[v][0]) + (v !== "rutas" && v !== "piezas" ? `<span class="ctb">${esc(CT.label)}</span>` : "");
+  $("#pgS").textContent = TITULOS[v][1]; $("#acc").innerHTML = "";
+  ({ carga: renderCarga, progs: renderProgs, ver: renderVer, hora: renderHora, rutas: renderRutas, modelos: renderModelos, piezas: renderPiezas })[v]();
+  contadores();
+}
+function cambiarCT(id) {
+  CT = ctDe(id); PREF.ct = CT.id; guardar("pref");
+  H.turno = turnoActual(CT); H.franja = franjaActual(H.turno);
+  if (vista === "ver") { const p = DB.programas.find(x => x.id === verId); if (!p || p.ct !== CT.id) vista = "progs"; }
+  pintarCTs(); abrir(vista);
+}
+function pintarCTs() {
+  $("#ctsw").innerHTML = CTS.map(c => `<button data-ct="${esc(c.id)}" class="${c.id === CT.id ? "on" : ""}" title="${esc(c.label)}"><b>${c.corto}</b><span class="ctl">${esc(c.label)}</span></button>`).join("");
+  $("#ctsw").querySelectorAll("[data-ct]").forEach(b => b.onclick = () => cambiarCT(b.dataset.ct));
+  $("#logoSub").textContent = CT.label;
+}
+function contadores() {
+  $("#nCarga").textContent = bor() ? bor().ops.length : "–";
+  $("#nProgs").textContent = new Set(progsCT().map(p => p.dia)).size;
+  $("#nFuera").textContent = Object.values(DB.modelos).filter(x => x.ct === CT.id && x.estado === "fuera").length;
+  $("#nRutas").textContent = despModelos().length;
+  $("#nPiezas").textContent = catalogo().lista.filter(p => nModelos(p) > 1).length;
+  const hoy = fechaTrabajo(); $("#nHora").textContent = fmt(DB.registros.filter(x => x.ct === CT.id && x.fecha === hoy).reduce((s, x) => s + x.pz, 0));
+  $("#pieInfo").textContent = `v${VERSION} · ${DB.programas.length} programas · ${despModelos().length} despieces · ${catalogo().lista.length} piezas · ${DB.registros.length} registros · ingeniería: ${Object.keys(ING.fichas).length} rutas · ${NUBE.url ? "datos en Google Sheets" : "datos en este navegador"}`;
+}
+const kpi = (l, v, s = "", cls = "") => `<div class="kpi ${cls}"><div class="l">${l}</div><div class="v">${v}</div>${s ? `<div class="ks">${s}</div>` : ""}</div>`;
+const barra = (p, ok) => `<div class="bar ${ok ? "ok" : ""}"><i style="width:${Math.min(100, Math.round(p * 100))}%"></i></div>`;
+const otrosDeBorrador = f => { const o = {}; for (const c of CTS) { if (c.id === CT.id) continue; const b = bor(c); const g = b && b.ops.find(x => x.k === f.k); if (g && !clasificar(g, c).fuera) o[c.id] = g; } return o; };
+const otrosDeIdx = (idx, rk) => { const o = { ...(idx[rk] || {}) }; delete o[CT.id]; return o; };
+const uniProc = CT => CT.maqs.length === 1;
+
+/* ---------- Cargar programa ---------- */
+function renderCarga() {
+  const el = $("#v-carga"), b = bor();
+  const subir = `<label class="subir" id="dz"><b>Arrastra aquí el previo, el lanzado o el exporte de BC</b>
+      PRPCP-06- DD-MM-AAAA PREVIO.xlsx · LANZADO · «Órdenes producción planificadas».xlsx<br><span class="dim">Un archivo arma el borrador de Troqueles y de Estructura · Muebles. Si ya cargaste un previo, el exporte de BC solo le completa las rutas.</span>
+      <input type="file" id="fArch" accept=".xlsx,.xls" hidden></label>`;
+  if (!b) {
+    el.innerHTML = `<div class="card"><div class="body" style="padding-top:16px">${subir}
+      <p class="note">Los modelos guardados como <b>fuera de ${esc(CT.label)}</b> se retiran solos. Los que nunca has clasificado salen como <span class="st warn">Nuevo</span> para que decidas si pasan o no.</p></div></div>${ultimos()}`;
+    enlazarSubida(); return;
+  }
+  const todas = filasB(), incl = todas.filter(x => !x.c.fuera), ret = todas.filter(x => x.c.fuera), nuevos = incl.filter(x => x.c.nuevo);
+  const sel = new Set(b.sel), mu = incl.reduce((s, x) => s + x.f.cant, 0);
+  const sinPz = incl.filter(x => CT.maqs.some(m => x.f.proc?.[m.id]?.on && !(x.f.proc[m.id].pz > 0))).length;
+  const mel = incl.filter(x => ingDe(x.f).metal === 0 && !(bcPz(x.f, b, CT) > 0));   // la ficha no menciona metal y BC tampoco le da piezas en este CT
+  const bcT = b.ctBC && b.ctBC[CT.bc];
+  $("#acc").innerHTML = `<button id="bDesc" class="peligro">Descartar</button><label class="btn">Cargar otro<input type="file" id="fArch2" accept=".xlsx,.xls" hidden></label>`;
+  const prev = vigente(b.dia);
+  let h = `<div class="mh">
+      <div class="m"><div class="dim" style="font-size:11px">${esc(b.tipo)} · ${esc(b.archivo)}</div><div style="font-size:15px;font-weight:600">${fechaLarga(b.dia)}</div></div>
+      <div class="m" style="flex:0 1 auto"><div class="params"><label>Día del programa<input type="date" id="bDia" value="${b.dia}"></label>
+        <button class="pri" id="bTodos" title="Guarda de una vez Troqueles y Estructura · Muebles de este archivo, cada uno con sus filtros">Guardar los dos programas</button>
+        <button id="bGuardar" title="Guarda solo el programa de ${esc(CT.label)}">Solo ${esc(CT.label)}</button></div></div></div>
+    <div class="mh">${CTS.map(c => { const bc = bor(c);
+      if (!bc) return `<div class="m"><b>${esc(c.label)}</b><div class="dim" style="font-size:12px">Ya guardado (o sin archivo cargado)</div></div>`;
+      const fs = filasB(c), dentro = fs.filter(x => !x.c.fuera), fam = fs.filter(x => x.c.por === "familia"), nv = dentro.filter(x => x.c.nuevo);
+      return `<div class="m" style="${c.id === CT.id ? "border-color:var(--blue)" : ""}"><div style="display:flex;gap:8px;align-items:center"><b>${esc(c.label)}</b><span class="sp"></span>${c.id === CT.id ? '<span class="st info">viendo</span>' : `<button class="mini" data-vct="${esc(c.id)}">Revisar</button>`}</div>
+        <div style="font-size:12.5px;margin-top:4px"><b class="mono">${dentro.length}</b> OPs · ${fmt(dentro.reduce((s, x) => s + x.f.cant, 0))} muebles${nv.length ? ` · <span class="warn-t">${nv.length} nuevas</span>` : ""}</div>
+        <div class="dim" style="font-size:11.5px">${fs.length - dentro.length} retiradas${fam.length ? ` (${fam.length} de mamparas)` : ""} · se trabaja el <b>${diaCorto(restarHabiles(b.dia, c.adelanto || 0))}</b></div></div>`; }).join("")}</div>
+    <div class="kpis">
+      ${kpi("OPs en el archivo", fmt(b.ops.length), fmt(b.ops.reduce((s, f) => s + f.cant, 0)) + " muebles")}
+      ${kpi("Retiradas solas", fmt(ret.length), "fuera de " + esc(CT.label), ret.length ? "ok" : "")}
+      ${kpi("Pasan por " + esc(CT.label), fmt(incl.length), fmt(mu) + " muebles", "info")}
+      ${kpi("Nuevas por revisar", fmt(nuevos.length), "sin clasificar todavía", nuevos.length ? "warn" : "ok")}
+      ${CT.maqs.map(m => kpi(uniProc(CT) ? "Piezas a procesar" : "Pz " + esc(m.corto.toLowerCase()), fmt(incl.reduce((s, x) => s + programadas(x.f, m.id), 0)), esc(m.label))).join("")}
+      ${bcT ? kpi("BC · " + esc(CT.label), fmt(bcT.pz), fmt(bcT.h, 1) + " h según el previo") : ""}
+    </div>`;
+  const av = [];
+  if (nuevos.length) av.push(`<li class="warn">${nuevos.length} modelo(s) nuevos en ${esc(CT.label)}: revisa si pasan por el CT (la foto y la ficha técnica ayudan). Los que no, selecciónalos y pulsa <b>Marcar fuera</b>; se quedan guardados para los siguientes programas.</li>`);
+  if (mel.length) av.push(`<li class="warn">${mel.length} OP(s) con ficha técnica <b>sin estructura metálica</b> (melamina): ${mel.slice(0, 10).map(x => `<span class="chip">${esc(x.f.modelo)}</span>`).join("")}. Usa «Seleccionar melamina según ficha» y confirma con Marcar fuera.</li>`);
+  if (sinPz && !uniProc(CT)) av.push(`<li class="warn">${sinPz} OP(s) sin piezas por mueble: se programan como 1 pieza por mueble hasta que captures el dato o su despiece (se recuerda por modelo).</li>`);
+  if (b.origen === "previo" && !b.bcRutas) av.push(`<li class="info">El archivo no trae la hoja «Tiempos y Piezas»: no hay sugerencia de BC por ruta.</li>`);
+  if (b.origen === "previo") av.push(`<li class="info">Para rutas exactas por OP, arrastra también el exporte de BC «Órdenes producción planificadas» del mismo día.</li>`);
+  if (prev) {
+    const d = diffProgramas(prev.rows, incl.map(x => x.f));
+    const partes = [d.nuevas.length ? `<b class="warn-t">${d.nuevas.length} OP(s) nuevas</b>: ${d.nuevas.slice(0, 12).map(r => `<span class="chip">${esc(r.op)} ${esc(r.modelo)} ×${r.cant}</span>`).join("")}` : "",
+      d.quitadas.length ? `<b>${d.quitadas.length} OP(s) ya no vienen</b>: ${d.quitadas.slice(0, 12).map(r => `<span class="chip">${esc(r.op)} ${esc(r.modelo)}</span>`).join("")}` : "",
+      d.cambio.length ? `<b>${d.cambio.length} cambio(s) de cantidad</b>: ${d.cambio.slice(0, 12).map(x => `<span class="chip">${esc(x.r.op)} ${x.antes}→${x.r.cant}</span>`).join("")}` : ""].filter(Boolean);
+    av.push(`<li class="${partes.length ? "warn" : "info"}">Ya hay un programa de ${esc(CT.label)} guardado para este día (${esc(prev.tipo)} v${prev.version}, ${horaCorta(prev.guardado)}). ${partes.length ? "Cambios contra esa versión: " + partes.join(" · ") + ". Al guardar queda como versión " + (prev.version + 1) + " y el avance registrado se conserva por OP." : "Sin cambios de OPs ni cantidades."}</li>`);
+  }
+  if (av.length) h += `<div class="card"><div class="body" style="padding-top:12px"><ul class="avisos">${av.join("")}</ul></div></div>`;
+
+  const lista = incl.filter(x => filtroCarga === "todos" || (filtroCarga === "nuevos" ? x.c.nuevo : !x.c.nuevo));
+  const nc = 11 + CT.maqs.length;
+  h += `<div class="card"><div class="hd">OPs que pasan por ${esc(CT.label)} <span class="sub">${incl.length} OPs · ${fmt(mu)} muebles</span><span class="sp"></span>
+        <div class="seg">${[["todos", "Todas"], ["nuevos", `Nuevas (${nuevos.length})`], ["conocidos", "Conocidas"]].map(([k, t]) => `<button data-fc="${k}" class="${filtroCarga === k ? "on" : ""}">${t}</button>`).join("")}</div></div>
+    <div class="body"><div class="toolbar">
+      <button id="sNuevos">Seleccionar nuevas</button>
+      ${b.bcRutas ? `<button id="sBC" title="Selecciona las OPs cuya ruta no tiene piezas de ${esc(CT.bc)} en «Tiempos y Piezas». Tú confirmas con Marcar fuera.">Seleccionar sin ${esc(CT.label)} según BC</button>` : ""}
+      ${mel.length ? `<button id="sMel" title="Selecciona las OPs cuya ficha técnica no menciona estructura metálica. Tú confirmas con Marcar fuera.">Seleccionar melamina según ficha (${mel.length})</button>` : ""}
+      <button id="sNada">Quitar selección</button><span class="sp"></span>
+      <span class="radio">Retirar por: <label><input type="radio" name="por" value="modelo" ${!PREF.porRuta ? "checked" : ""}>Modelo</label><label title="Retira todas las variantes de la ruta (NI105, L105, S105…)"><input type="radio" name="por" value="ruta" ${PREF.porRuta ? "checked" : ""}>Ruta (todas sus variantes)</label></span>
+      <button class="peligro" id="bFuera" ${sel.size ? "" : "disabled"}>Marcar fuera de ${esc(CT.label)} (${sel.size})</button></div>
+    <div class="tw"><table><thead><tr><th class="c"><input type="checkbox" id="selTodo"></th><th>OP</th><th>Modelo</th><th>Familia</th><th>Ruta BC</th><th class="num">Muebles</th><th class="num" title="Piezas de ${esc(CT.bc)} por mueble según «Tiempos y Piezas»">BC pz</th>
+      ${CT.maqs.map(m => `<th title="${esc(m.label)}: ¿pasa? · piezas por mueble = total">${uniProc(CT) ? "Piezas por mueble" : esc(m.corto) + " · pz/mueble"}</th>`).join("")}<th>Ruta de piezas</th><th>Estado</th><th></th></tr></thead><tbody>`;
+  let famAnt = null;
+  for (const { f, c } of lista) {
+    if (f.familia !== famAnt) { h += `<tr class="grupo"><td colspan="${nc}">${esc(f.familia || "Sin familia")}</td></tr>`; famAnt = f.familia; }
+    const bp = bcPz(f, b, CT), desp = f.pzSrc === "despiece";
+    h += `<tr data-k="${esc(f.k)}" class="${sel.has(f.k) ? "sel" : ""}"><td class="c"><input type="checkbox" class="sk" ${sel.has(f.k) ? "checked" : ""}></td>
+      <td class="mono">${esc(f.op)}</td><td>${modeloHTML(f)}</td><td class="muted">${esc(f.familia)}</td>
+      <td class="mono" title="${f.rutaSrc === "BC" ? "de BC" : f.rutaSrc === "nombre" ? "ligada por el nombre del modelo" : ""}">${f.ruta ? esc(f.ruta) : '<span class="dim">—</span>'}${f.rutaSrc === "nombre" ? ' <span class="dim">~</span>' : ""}</td>
+      <td class="num">${fmt(f.cant)}</td><td class="num">${bcDe(f, b) ? (bp > 0 ? fmt(bp) : '<span class="err-t">0</span>') : '<span class="dim">—</span>'}</td>
+      ${CT.maqs.map(m => { const x = f.proc?.[m.id] || {}; return `<td><span class="proc">${uniProc(CT) ? "" : `<input type="checkbox" class="pc" data-m="${esc(m.id)}" ${x.on ? "checked" : ""} ${desp ? "disabled" : ""}>`}<input type="number" min="0" step="1" class="pn" data-m="${esc(m.id)}" value="${x.pz ?? ""}" placeholder="1" ${x.on && !desp ? "" : "disabled"}><span class="t">${x.on ? "= " + fmt(programadas(f, m.id)) : ""}</span></span></td>`; }).join("")}
+      <td>${rutaHTML(f, CT.id, otrosDeBorrador(f))}</td>
+      <td>${c.nuevo ? '<span class="st warn">Nuevo</span>' : '<span class="st ok">Conocido</span>'}${desp ? ' <span class="st desp">despiece</span>' : f.pzSrc && f.pzSrc !== "guardado" ? ` <span class="dim" style="font-size:10.5px">pz: ${esc(f.pzSrc)}</span>` : ""}</td>
+      <td style="white-space:nowrap"><button class="mini bdesp" title="Piezas del modelo y su ruta">Despiece</button> <button class="mini peligro bf1" title="No pasa por ${esc(CT.label)}">Fuera</button></td></tr>`;
+  }
+  h += `</tbody></table></div>${!lista.length ? '<div class="empty">Nada en este filtro.</div>' : ""}
+    <p class="note">BC pz = piezas de ${esc(CT.bc)} por mueble en «Tiempos y Piezas» (solo sugerencia). «~» = ruta ligada por el nombre del modelo. Foto, ficha y especificación vienen de ingenieria.lineaitalia.net (clic en la foto para verla grande).${uniProc(CT) ? "" : " Con <span class=\"st desp\">despiece</span> las piezas salen de la ruta de cada pieza."}</p></div></div>`;
+
+  h += `<details class="card" ${ret.length && !incl.length ? "open" : ""}><summary>Retiradas automáticamente <span class="sub">${ret.length} OPs · ${fmt(ret.reduce((s, x) => s + x.f.cant, 0))} muebles · no pasan por ${esc(CT.label)}</span></summary><div class="body">
+    ${ret.length ? `<div class="tw"><table><thead><tr><th>OP</th><th>Modelo</th><th>Familia</th><th>Ruta</th><th class="num">Muebles</th><th>Motivo</th><th></th></tr></thead><tbody>
+    ${ret.map(({ f, c }) => `<tr><td class="mono">${esc(f.op)}</td><td>${modeloHTML(f)}</td><td class="muted">${esc(f.familia)}</td><td class="mono">${esc(f.ruta || "—")}</td><td class="num">${fmt(f.cant)}</td>
+      <td>${c.por === "familia" ? `<span class="st gris">Familia ${esc(c.fam)}: no va en ${esc(CT.label)}</span>` : c.por === "ruta" ? `<span class="st gris">Ruta ${esc(f.ruta)} fuera</span>` : '<span class="st gris">Modelo fuera</span>'}</td>
+      <td>${c.key ? `<button class="mini ok breg" data-key="${esc(c.key)}" data-por="${c.por}">Regresar a ${esc(CT.label)}</button>` : ""}</td></tr>`).join("")}</tbody></table></div>` : '<div class="empty">Ninguna todavía. Conforme marques modelos fuera, aquí aparecerán solos en cada programa.</div>'}
+    </div></details>`;
+  el.innerHTML = h + `<div class="card"><div class="body" style="padding-top:16px">${subir}</div></div>`;
+  enlazarSubida();
+
+  $("#bDesc").onclick = () => { if (confirm(`¿Descartar el archivo cargado en ${CT.label}? (no borra nada guardado)`)) { delete BS[CT.id]; guardar("bor"); abrir("carga"); } };
+  $("#fArch2").onchange = e => leerInput(e.target);
+  $("#bGuardar").onclick = guardarPrograma;
+  $("#bTodos").onclick = guardarTodos;
+  el.querySelectorAll("[data-vct]").forEach(x => x.onclick = () => cambiarCT(x.dataset.vct));
+  // el día aplica a los borradores de todos los CT que vienen del mismo archivo
+  $("#bDia").onchange = e => { for (const c of CTS) { const bc = bor(c); if (bc && bc.archivo === b.archivo) bc.dia = e.target.value; } guardar("bor"); renderCarga(); };
+  el.querySelectorAll("[data-fc]").forEach(x => x.onclick = () => { filtroCarga = x.dataset.fc; renderCarga(); });
+  const setSel = ks => { b.sel = [...new Set(ks)]; guardar("bor"); renderCarga(); };
+  $("#sNuevos").onclick = () => setSel([...b.sel, ...nuevos.map(x => x.f.k)]);
+  if ($("#sBC")) $("#sBC").onclick = () => { const ks = incl.filter(x => { const bc = bcDe(x.f, b); return bc && !bc.cts?.[CT.bc]; }).map(x => x.f.k); toast(`${ks.length} OP(s) seleccionadas: BC no les da piezas de ${esc(CT.bc)}. Revisa y confirma con <b>Marcar fuera</b>.`, "warn"); setSel([...b.sel, ...ks]); };
+  if ($("#sMel")) $("#sMel").onclick = () => { toast(`${mel.length} OP(s) seleccionadas: su ficha técnica no menciona estructura metálica. Revisa la foto y confirma con <b>Marcar fuera</b>.`, "warn"); setSel([...b.sel, ...mel.map(x => x.f.k)]); };
+  $("#sNada").onclick = () => setSel([]);
+  $("#selTodo").onchange = e => setSel(e.target.checked ? lista.map(x => x.f.k) : []);
+  el.querySelectorAll("input[name=por]").forEach(r => r.onchange = () => { PREF.porRuta = r.value === "ruta"; guardar("pref"); });
+  const fuera = filas => {
+    const porRuta = !!PREF.porRuta, sinRuta = marcarFuera(filas, porRuta, `${b.tipo} ${fechaCorta(b.dia)}`);
+    b.sel = []; guardar("bor");
+    toast(`${filas.length} marcada(s) fuera de ${esc(CT.label)}${porRuta ? " por ruta" : ""}. Se retirarán solas en los siguientes programas.${sinRuta ? ` (${sinRuta} sin ruta: se guardaron por modelo)` : ""}`, "ok");
+    renderCarga();
+  };
+  $("#bFuera").onclick = () => fuera(incl.filter(x => sel.has(x.f.k)).map(x => x.f));
+  el.querySelectorAll("tr[data-k]").forEach(tr => {
+    const f = b.ops.find(o => o.k === tr.dataset.k); if (!f) return;
+    tr.querySelector(".sk").onchange = e => setSel(e.target.checked ? [...b.sel, f.k] : b.sel.filter(k => k !== f.k));
+    tr.querySelector(".bf1").onclick = () => fuera([f]);
+    tr.querySelector(".bdesp").onclick = () => abrirDespiece(f.ruta, f.modelo);
+    tr.querySelectorAll(".pc").forEach(cb => cb.onchange = () => { f.proc[cb.dataset.m].on = cb.checked; f.editado = true; f.pzSrc = "guardado"; guardar("bor"); renderCarga(); });
+    tr.querySelectorAll(".pn").forEach(inp => inp.onchange = () => { const v = parseFloat(inp.value); f.proc[inp.dataset.m].pz = v > 0 ? v : null; f.editado = true; f.pzSrc = "guardado"; guardar("bor"); renderCarga(); });
+  });
+  el.querySelectorAll(".breg").forEach(x => x.onclick = () => {
+    const m = DB.modelos[x.dataset.key];
+    if (x.dataset.por === "ruta" && !confirm(`La ruta ${m?.valor} está fuera completa (todas sus variantes). ¿Regresarla a ${CT.label}?`)) return;
+    regresarDentro(x.dataset.key); toast(`Regresado a ${esc(CT.label)}.`, "ok"); renderCarga();
+  });
+}
+function ultimos() {
+  const vs = progsVigentes().slice(-6).reverse();
+  if (!vs.length) return "";
+  return `<div class="card"><div class="hd">Últimos programas de ${esc(CT.label)}</div><div class="body"><div class="tw"><table><thead><tr><th>Día</th><th>Versión</th><th class="num">OPs</th>${CT.maqs.map(m => `<th>${esc(m.corto)}</th>`).join("")}<th></th></tr></thead><tbody>
+    ${vs.map(p => `<tr><td>${fechaLarga(p.dia)}</td><td>${esc(p.tipo)} v${p.version}</td><td class="num">${p.rows.length}</td>
+      ${CT.maqs.map(m => { const s = stats(p, m.id); return `<td><div class="cnt"><span class="mono">${fmt(s.h)}/${fmt(s.prog)}</span>${barra(s.pct, s.pct >= 1)}</div></td>`; }).join("")}
+      <td><button class="mini" data-ver="${p.id}">Ver</button></td></tr>`).join("")}</tbody></table></div></div></div>`;
+}
+function enlazarSubida() {
+  const inp = $("#fArch"), dz = $("#dz");
+  if (inp) inp.onchange = e => leerInput(e.target);
+  if (dz) {
+    dz.ondragover = e => { e.preventDefault(); dz.classList.add("drag"); };
+    dz.ondragleave = () => dz.classList.remove("drag");
+    dz.ondrop = e => { e.preventDefault(); e.stopPropagation(); dz.classList.remove("drag"); const f = e.dataTransfer.files[0]; if (f) f.arrayBuffer().then(b => cargarArchivo(b, f.name)); };
+  }
+  document.querySelectorAll("#v-carga [data-ver]").forEach(b => b.onclick = () => { verId = b.dataset.ver; abrir("ver"); });
+}
+function leerInput(inp) { const f = inp.files[0]; inp.value = ""; if (f) f.arrayBuffer().then(b => cargarArchivo(b, f.name)); }
+
+/* ---------- Programas guardados ---------- */
+function renderProgs() {
+  const el = $("#v-progs"), dias = [...new Set(progsCT().map(p => p.dia))].sort().reverse();
+  if (!dias.length) { el.innerHTML = `<div class="card"><div class="empty"><b>Aún no hay programas de ${esc(CT.label)}</b>Carga un previo en «Cargar programa» y guárdalo.</div></div>`; return; }
+  let h = `<div class="card"><div class="tw"><table><thead><tr><th>Programa del día</th><th>Se trabaja</th><th>Origen</th><th class="num">OPs</th><th class="num">Muebles</th>${CT.maqs.map(m => `<th>${esc(m.corto)} (hechas / programadas)</th>`).join("")}<th>Guardado</th><th></th></tr></thead><tbody>`;
+  for (const d of dias) {
+    progsCT().filter(p => p.dia === d).sort((a, b) => b.version - a.version).forEach((p, i) => {
+      h += `<tr class="${i ? "hecho" : ""}"><td>${i ? '<span class="dim">↳ versión anterior</span>' : `<b>${fechaLarga(d)}</b>`}</td><td class="mono">${i ? "" : diaCorto(trabajoDe(p))}</td><td>${esc(p.tipo)} v${p.version}<div class="dim" style="font-size:11px">${esc(p.archivo)}</div></td>
+        <td class="num">${p.rows.length}</td><td class="num">${fmt(p.rows.reduce((s, r) => s + r.cant, 0))}</td>
+        ${CT.maqs.map(m => { const s = stats(p, m.id); return `<td><div class="cnt"><span class="mono">${fmt(s.h)} / ${fmt(s.prog)}</span>${barra(s.pct, s.pct >= 1)}<span class="mono dim">${Math.round(s.pct * 100)}%</span></div></td>`; }).join("")}
+        <td class="mono">${horaCorta(p.guardado)}</td>
+        <td style="white-space:nowrap"><button class="mini" data-ver="${p.id}">Ver</button> <button class="mini" data-xls="${p.id}">Excel</button> <button class="mini peligro" data-del="${p.id}">Borrar</button></td></tr>`;
+    });
+  }
+  el.innerHTML = h + `</tbody></table></div></div><p class="note">El avance se registra por OP: si llega una versión nueva del programa (previo corregido o lanzado), lo ya registrado se conserva.</p>`;
+  el.querySelectorAll("[data-ver]").forEach(b => b.onclick = () => { verId = b.dataset.ver; abrir("ver"); });
+  el.querySelectorAll("[data-xls]").forEach(b => b.onclick = () => exportarExcel(DB.programas.find(p => p.id === b.dataset.xls)));
+  el.querySelectorAll("[data-del]").forEach(b => b.onclick = () => {
+    const p = DB.programas.find(x => x.id === b.dataset.del);
+    if (!confirm(`¿Borrar el programa de ${CT.label} del ${fechaCorta(p.dia)} (${p.tipo} v${p.version})? Los registros de hora por hora no se borran.`)) return;
+    DB.programas = DB.programas.filter(x => x.id !== p.id); guardar("programas"); renderProgs();
+  });
+}
+
+/* ---------- Ver un programa ---------- */
+function renderVer() {
+  const el = $("#v-ver"), p = DB.programas.find(x => x.id === verId && x.ct === CT.id) || progsVigentes().slice(-1)[0];
+  if (!p) { el.innerHTML = `<div class="card"><div class="empty"><b>Sin programa</b>Guarda uno desde «Cargar programa».</div></div>`; return; }
+  verId = p.id;
+  // Troqueles: primero el programa general del CT; de ahí salen, filtrados, el de Láser de cama (el que lee Nidos) y el de la dobladora
+  const gen = !uniProc(CT) && (verMaq == null || verMaq === GENERAL), pzs = !uniProc(CT) && verMaq === PIEZAS;
+  const m = gen || pzs ? null : CT.maqs.find(x => x.id === verMaq) || CT.maqs[0]; verMaq = gen ? GENERAL : pzs ? PIEZAS : m.id;
+  $("#pgT").innerHTML = "Programa · " + esc(fechaLarga(p.dia)) + `<span class="ctb">${esc(CT.label)}</span>`;
+  $("#pgS").textContent = `${p.tipo} v${p.version} · ${p.archivo} · guardado ${horaCorta(p.guardado)}${esVigente(p) ? "" : " · versión reemplazada"}`;
+  const una = uniProc(CT) || gen || pzs;
+  $("#acc").innerHTML = `<button id="bPr1">Imprimir${una ? "" : " " + esc(m.label)}</button>${una ? "" : '<button id="bPr2">Imprimir todas</button>'}<button id="bXls">Exportar Excel</button><button class="pri" id="bIrH">Registrar hora por hora</button>`;
+  const idx = indiceOPs();
+  let h = uniProc(CT) ? "" : `<div class="toolbar"><div class="seg"><button data-m="${GENERAL}" class="${gen ? "on" : ""}">Programa general · ${fmt(p.rows.length)} OPs</button>${CT.maqs.map(x => { const sx = stats(p, x.id);
+      return `<button data-m="${esc(x.id)}" class="${m && x.id === m.id ? "on" : ""}">${esc(x.label)} · ${fmt(sx.ops)} OPs · ${fmt(sx.prog)} pz</button>`; }).join("")}<button data-m="${PIEZAS}" class="${pzs ? "on" : ""}">Desglose de piezas</button></div>
+    <span class="dim" style="margin-left:10px;font-size:12px">${gen ? "Todas las OPs que pasan por " + esc(CT.label) + ". Los botones de la derecha filtran el programa de cada máquina." : pzs ? "Piezas de lámina a fabricar: las que comparten varios modelos se suman; las propias van por modelo." : m.id === CORTE ? "Solo las OPs con corte: es el programa que lee Nidos Láser de Cama («Desde Programas»)." : "Solo las OPs que se doblan."}</span></div>`;
+  const prevV = progsCT().filter(x => x.dia === p.dia && x.version < p.version).sort((a, b) => b.version - a.version)[0];
+  const cambios = () => { if (!prevV) return "";
+    const d = diffProgramas(prevV.rows, p.rows);
+    return d.nuevas.length || d.quitadas.length || d.cambio.length ? `<div class="card aviso"><div class="hd">Cambios contra la versión ${prevV.version}</div><div class="body"><ul class="avisos">
+      ${d.nuevas.length ? `<li class="warn">Nuevas: ${d.nuevas.map(r => `<span class="chip">${esc(r.op)} ${esc(r.modelo)} ×${r.cant}</span>`).join("")}</li>` : ""}
+      ${d.quitadas.length ? `<li class="info">Ya no vienen: ${d.quitadas.map(r => `<span class="chip">${esc(r.op)} ${esc(r.modelo)}</span>`).join("")}</li>` : ""}
+      ${d.cambio.length ? `<li class="info">Cantidad: ${d.cambio.map(x => `<span class="chip">${esc(x.r.op)} ${esc(x.r.modelo)} ${x.antes}→${x.r.cant}</span>`).join("")}</li>` : ""}</ul></div></div>` : ""; };
+  const retiradas = p.retirados?.length ? `<details class="card"><summary>Retiradas al cargar <span class="sub">${p.retirados.length} OPs no pasan por ${esc(CT.label)}</span></summary><div class="body">${p.retirados.map(r => `<span class="chip">${esc(r.op)} ${esc(r.modelo)} ×${r.cant}</span>`).join("")}</div></details>` : "";
+  const enlazar = () => {
+    el.querySelectorAll("[data-m]").forEach(b => b.onclick = () => { verMaq = b.dataset.m; renderVer(); });
+    $("#bXls").onclick = () => exportarExcel(p);
+    $("#bPr1").onclick = () => imprimir(p, m ? [m] : CT.maqs.filter(x => stats(p, x.id).prog > 0));
+    if ($("#bPr2")) $("#bPr2").onclick = () => imprimir(p, CT.maqs.filter(x => stats(p, x.id).prog > 0));
+    $("#bIrH").onclick = () => { if (m) { PREF.maq[CT.id] = m.id; guardar("pref"); } abrir("hora"); };
+  };
+  if (gen) { el.innerHTML = h + generalHTML(p, idx) + cambios() + retiradas; enlazar(); return; }
+  if (pzs) {
+    if (!MAQ[verPzMaq] || !CT.maqs.some(x => x.id === verPzMaq)) verPzMaq = CORTE;
+    el.innerHTML = h + `<div class="toolbar"><div class="seg">${CT.maqs.map(x => `<button data-pzm="${esc(x.id)}" class="${verPzMaq === x.id ? "on" : ""}">${esc(x.label)}</button>`).join("")}</div>
+      <span class="dim" style="margin-left:10px;font-size:12px">Piezas del catálogo de lámina (biblioteca DXF de Nidos y las que captures en «Piezas compartidas»).</span></div>` + desgloseHTML(p, verPzMaq) + cambios();
+    enlazar(); enlazarPiezas(el);
+    el.querySelectorAll("[data-pzm]").forEach(b => b.onclick = () => { verPzMaq = b.dataset.pzm; renderVer(); });
+    return;
+  }
+  const s = stats(p, m.id), filas = p.rows.filter(r => r.proc?.[m.id]?.on);
+  h += `<div class="kpis">${kpi("OPs", fmt(s.ops), fmt(s.mu) + " muebles")}${kpi("Programadas", fmt(s.prog), "piezas", "info")}${kpi(esc(m.hechas), fmt(s.h), Math.round(s.pct * 100) + "% del programa", s.pct >= 1 ? "ok" : "")}
+      ${kpi("Faltan", fmt(s.falta), trabajoDe(p) < fechaTrabajo() && s.falta ? "atraso (se debió trabajar el " + fechaCorta(trabajoDe(p)) + ")" : "faltante por procesar", s.falta ? (trabajoDe(p) < fechaTrabajo() ? "err" : "warn") : "ok")}${kpi("Se trabaja", diaCorto(trabajoDe(p)), CT.adelanto + " días hábiles antes del programa")}</div>`;
+  h += cambios();
+  h += `<div class="card"><div class="tw"><table><thead><tr><th class="num">#</th><th>OP</th><th>Modelo</th><th>Ruta BC</th><th class="num">Muebles</th><th class="num">Pz x mueble</th><th class="num">Programadas</th><th class="num">${esc(m.hechas)}</th><th class="num">Faltan</th><th>Ruta de piezas · avance</th></tr></thead><tbody>`;
+  let famAnt = null;
+  filas.forEach((r, i) => {
+    if (r.familia !== famAnt) { h += `<tr class="grupo"><td colspan="10">${esc(r.familia || "Sin familia")}</td></tr>`; famAnt = r.familia; }
+    const rk = rkey(p.dia, r.k), pr = programadas(r, m.id), he = hechas(m.id, rk), pt = piezasTxt(r, m.id);
+    h += `<tr class="${he >= pr ? "hecho" : ""}"><td class="num dim">${i + 1}</td><td class="mono">${esc(r.op)}</td><td>${modeloHTML({ ...r, desc: pt || r.desc })}</td>
+      <td class="mono">${esc(r.ruta || "—")}</td><td class="num">${fmt(r.cant)}</td><td class="num">${r.proc[m.id].pz > 0 ? fmt(r.proc[m.id].pz) : '1 <span class="warn-t" title="Pz por mueble por definir">*</span>'}</td>
+      <td class="num"><b>${fmt(pr)}</b></td><td class="num">${fmt(he)}</td><td class="num ${pr - he > 0 ? "" : "ok-t"}">${fmt(Math.max(0, pr - he))}</td>
+      <td>${rutaHTML(r, CT.id, otrosDeIdx(idx, rk), { rk, yo: m.id })}</td></tr>`;
+  });
+  h += `<tr class="tot"><td colspan="4">Total</td><td class="num">${fmt(s.mu)}</td><td></td><td class="num">${fmt(s.prog)}</td><td class="num">${fmt(s.h)}</td><td class="num">${fmt(s.falta)}</td><td>${barra(s.pct, s.pct >= 1)}</td></tr></tbody></table></div>
+    ${!filas.length ? `<div class="empty">Ninguna OP de este programa pasa por ${esc(m.label)}.</div>` : ""}</div>`;
+  el.innerHTML = h + retiradas;
+  enlazar();
+}
+const GENERAL = "GENERAL", PIEZAS = "PIEZAS";
+let verPzMaq = CORTE;
+/** Programa general del CT (Troqueles): todas las OPs con lo que lleva cada una en cada máquina */
+function generalHTML(p, idx) {
+  const st = Object.fromEntries(CT.maqs.map(x => [x.id, stats(p, x.id)])), mu = p.rows.reduce((a, r) => a + r.cant, 0);
+  const sinNada = p.rows.filter(r => !CT.maqs.some(x => r.proc?.[x.id]?.on)).length;
+  let h = `<div class="kpis">${kpi("OPs", fmt(p.rows.length), fmt(mu) + " muebles")}${CT.maqs.map(x => kpi(esc(x.label), fmt(st[x.id].ops) + " OPs", fmt(st[x.id].prog) + " piezas · " + Math.round(st[x.id].pct * 100) + "% hecho", "info")).join("")}
+      ${kpi("Se trabaja", diaCorto(trabajoDe(p)), CT.adelanto + " días hábiles antes del programa")}${sinNada ? kpi("Sin proceso", fmt(sinNada), "OPs sin corte ni doblez marcado", "warn") : ""}</div>`;
+  h += `<div class="card"><div class="tw"><table><thead><tr><th class="num">#</th><th>OP</th><th>Modelo</th><th>Ruta BC</th><th class="num">Muebles</th>${CT.maqs.map(x => `<th class="num">${esc(x.corto)} (pz)</th>`).join("")}<th>Ruta de piezas · avance</th></tr></thead><tbody>`;
+  let famAnt = null;
+  p.rows.forEach((r, i) => {
+    if (r.familia !== famAnt) { h += `<tr class="grupo"><td colspan="${6 + CT.maqs.length}">${esc(r.familia || "Sin familia")}</td></tr>`; famAnt = r.familia; }
+    const rk = rkey(p.dia, r.k);
+    h += `<tr><td class="num dim">${i + 1}</td><td class="mono">${esc(r.op)}</td><td>${modeloHTML(r)}</td><td class="mono">${esc(r.ruta || "—")}</td><td class="num">${fmt(r.cant)}</td>
+      ${CT.maqs.map(x => { const pr = programadas(r, x.id); return `<td class="num">${pr ? fmt(pr) : '<span class="dim">—</span>'}</td>`; }).join("")}
+      <td>${rutaHTML(r, CT.id, otrosDeIdx(idx, rk), { rk })}</td></tr>`;
+  });
+  h += `<tr class="tot"><td colspan="4">Total</td><td class="num">${fmt(mu)}</td>${CT.maqs.map(x => `<td class="num">${fmt(st[x.id].prog)}</td>`).join("")}<td></td></tr></tbody></table></div></div>`;
+  return h;
+}
+
+/* ---------- Hora por hora ---------- */
+function pendientes(mid) {
+  const out = [], vistos = new Map();
+  for (const p of progsVigentes()) {
+    const t = trabajoDe(p);   // el CT trabaja el programa unos días hábiles antes de su fecha (Troqueles 3, Estructura 2)
+    if (t > H.fecha && !PREF.siguiente) continue;
+    const grupo = t < H.fecha ? "atraso" : t === H.fecha ? "dia" : "sig";
+    for (const r of p.rows) {
+      const pr = programadas(r, mid); if (!pr) continue;
+      const rk = rkey(p.dia, r.k), he = hechas(mid, rk), falta = pr - he;
+      if (falta <= 0 && !(H.completas && grupo !== "atraso")) continue;
+      const x = { p, r, rk, pr, he, falta: Math.max(0, falta), grupo };
+      if (vistos.has(rk)) out[vistos.get(rk)] = x; else { vistos.set(rk, out.length); out.push(x); }   // misma OP en dos días: cuenta el más reciente
+    }
+  }
+  return out;
+}
+function renderHora() {
+  const el = $("#v-hora"), m = maqActual();
+  if (!CT.turnos.includes(H.turno)) { H.turno = turnoActual(CT); H.franja = franjaActual(H.turno); }
+  const regsDia = DB.registros.filter(x => x.fecha === H.fecha && x.maquina === m.id);
+  const enFr = rk => regsDia.filter(x => x.turno === H.turno && x.franja === H.franja && rkey(x.dia, x.k) === rk).reduce((s, x) => s + x.pz, 0);
+  const pend = pendientes(m.id), idx = indiceOPs();
+  const atrasoPz = pend.filter(x => x.grupo === "atraso").reduce((s, x) => s + x.falta, 0), faltaDia = pend.filter(x => x.grupo === "dia").reduce((s, x) => s + x.falta, 0);
+  const buenas = regsDia.reduce((s, x) => s + x.pz, 0), danadas = regsDia.reduce((s, x) => s + (x.dan || 0), 0);
+  let h = `<div class="card"><div class="body" style="padding-top:14px"><div class="params">
+      ${uniProc(CT) ? "" : `<label>Máquina<div class="seg">${CT.maqs.map(x => `<button data-hm="${esc(x.id)}" class="${x.id === m.id ? "on" : ""}">${esc(x.label)}</button>`).join("")}</div></label>`}
+      <label>Fecha<input type="date" id="hF" value="${H.fecha}"></label>
+      <label>Turno<select id="hT">${CT.turnos.map(t => `<option ${t === H.turno ? "selected" : ""}>${t}</option>`).join("")}</select></label>
+      <label>Franja<select id="hFr">${(FRANJAS[H.turno] || []).map((f, i) => `<option value="${i}" ${i === H.franja ? "selected" : ""} ${f.includes("Comida") ? "disabled" : ""}>${esc(f)}</option>`).join("")}</select></label>
+      <label>Operador<input type="text" id="hOp" value="${esc(PREF.operador || "")}" placeholder="Nombre" style="width:170px"></label>
+      <label class="chk"><input type="checkbox" id="hSig" ${PREF.siguiente ? "checked" : ""}>Incluir programas siguientes</label>
+      <label class="chk"><input type="checkbox" id="hComp" ${H.completas ? "checked" : ""}>Ver completas</label>
+    </div></div></div>
+    <div class="kpis">${kpi(esc(m.hechas) + " hoy", fmt(buenas), "piezas buenas · " + fechaCorta(H.fecha), "info")}${kpi("Dañadas hoy", fmt(danadas), "retrabajo", danadas ? "err" : "")}
+      ${kpi("Faltante del día", fmt(faltaDia), (() => { const ps = progsVigentes().filter(p => trabajoDe(p) === H.fecha); return ps.length ? "programa del " + ps.map(p => fechaCorta(p.dia)).join(", ") + " · se trabaja hoy" : "sin programa para trabajar este día"; })(), faltaDia ? "warn" : "ok")}${kpi("Atraso", fmt(atrasoPz), "piezas que debieron trabajarse antes y siguen sin procesar", atrasoPz ? "err" : "ok")}</div>`;
+  if (!progsVigentes().length) h += `<div class="card"><div class="empty"><b>No hay programas de ${esc(CT.label)} guardados</b>Carga y guarda un programa para registrar contra él.</div></div>`;
+  h += `<div class="card"><div class="hd">Programa · ${esc(m.label)} <span class="sub">${esc(H.turno)} · franja ${esc(franjaTxt(H.turno, H.franja))}</span><span class="sp"></span><button class="pri" id="hGuardar">Guardar franja</button></div>
+    <div class="body"><div class="tw"><table><thead><tr><th>Programa</th><th>OP</th><th>Modelo</th><th>Ruta de piezas</th><th class="num">Programadas</th><th class="num">${esc(m.hechas)}</th><th class="num">Faltan</th><th class="num">En esta franja</th><th>Piezas buenas</th><th>Dañadas</th><th>Causa</th></tr></thead><tbody>`;
+  const NG = { atraso: "Atraso · se debieron trabajar antes", dia: "Programa que se trabaja este día", sig: "Programas siguientes" };
+  for (const g of ["atraso", "dia", "sig"]) {
+    const xs = pend.filter(x => x.grupo === g); if (!xs.length) continue;
+    h += `<tr class="grupo"><td colspan="11">${NG[g]} · ${fmt(xs.reduce((s, x) => s + x.falta, 0))} pz por procesar</td></tr>`;
+    for (const x of xs) {
+      const pt = piezasTxt(x.r, m.id);
+      h += `<tr data-id="${esc(x.rk)}" class="${x.falta <= 0 ? "hecho" : ""}"><td class="mono" title="Programa del ${fechaCorta(x.p.dia)}; se trabaja el ${fechaCorta(trabajoDe(x.p))}">${fechaCorta(x.p.dia)}<div class="dim" style="font-size:10.5px">trabajo ${diaCorto(trabajoDe(x.p))}</div></td><td class="mono">${esc(x.r.op)}</td>
+        <td>${modeloHTML({ ...x.r, desc: pt }, ` <span class="dim">×${x.r.cant} · ${esc(x.r.ruta || "—")}</span>`)}</td>
+        <td>${rutaHTML(x.r, CT.id, otrosDeIdx(idx, x.rk), { rk: x.rk, yo: m.id })}</td>
+        <td class="num">${fmt(x.pr)}</td><td class="num">${fmt(x.he)}</td><td class="num ${g === "atraso" ? "err-t" : ""}">${fmt(x.falta)}</td><td class="num">${fmt(enFr(x.rk)) || ""}</td>
+        <td><div class="cnt"><button class="ico hm">−</button><input type="number" class="hpz ancho" min="0" placeholder="0"><button class="ico hp">+</button><button class="mini hall" title="Todo lo que falta">${fmt(x.falta)}</button></div></td>
+        <td><input type="number" class="hdan" min="0" placeholder="0"></td><td><select class="hcau"><option value="">—</option>${CAUSAS.map(c => `<option>${esc(c)}</option>`).join("")}</select></td></tr>`;
+    }
+  }
+  if (!pend.length && progsVigentes().length) h += `<tr><td colspan="11"><div class="empty">Nada pendiente en ${esc(m.label)} para ${fechaCorta(H.fecha)}. ${PREF.siguiente ? "" : "Activa «Incluir programas siguientes» para adelantar."}</div></td></tr>`;
+  h += `</tbody></table></div><p class="note">Ruta de piezas: <span class="rt"><span class="n">pendiente</span><span class="l"></span><span class="n part">en proceso %</span><span class="l"><i style="width:100%"></i></span><span class="n done">completo ✓</span></span> · el contorno ámbar es donde estás registrando · <span class="rt"><span class="n">Corte</span><span class="l off"></span><span class="fin">sin doblez</span></span> = la pieza no pasa a la dobladora.</p></div></div>`;
+
+  h += `<details class="card"><summary>Fuera de programa <span class="sub">prototipo, muestra, pedido urgente… (no cuenta para el avance del programa)</span></summary><div class="body"><div class="params">
+      <label>Modelo / pieza<input type="text" id="fpMod" style="width:180px"></label><label>Piezas<input type="number" id="fpPz" min="1" style="width:90px"></label>
+      <label>Motivo<select id="fpMot">${MOTIVOS_FP.map(x => `<option>${esc(x)}</option>`).join("")}</select></label><button id="fpAdd">Agregar a la franja</button></div></div></details>`;
+
+  const porT = CT.turnos.map(t => ({ t, xs: regsDia.filter(x => x.turno === t) })).filter(x => x.xs.length);
+  h += `<div class="card"><div class="hd">Hora por hora · ${fechaCorta(H.fecha)} · ${esc(m.label)} <span class="sub">${fmt(buenas)} buenas · ${fmt(danadas)} dañadas</span></div><div class="body">`;
+  if (!porT.length) h += `<div class="empty">Sin registros este día.</div>`;
+  for (const { t, xs } of porT) {
+    h += `<div class="tw" style="margin-bottom:12px"><table><thead><tr><th>${esc(t)}</th><th class="num">Buenas</th><th class="num">Dañadas</th><th>Detalle</th></tr></thead><tbody>`;
+    let tb = 0, td = 0;
+    (FRANJAS[t] || []).forEach((f, i) => {
+      const ys = xs.filter(x => x.franja === i); if (!ys.length) return;
+      const bb = ys.reduce((s, x) => s + x.pz, 0), d = ys.reduce((s, x) => s + (x.dan || 0), 0); tb += bb; td += d;
+      h += `<tr><td class="mono">${esc(franjaTxt(t, i))}</td><td class="num"><b>${fmt(bb)}</b></td><td class="num ${d ? "err-t" : ""}">${fmt(d)}</td>
+        <td>${ys.map(x => `<span class="chip" title="${esc((x.operador || "") + " · " + horaCorta(x.ts) + (x.causa ? " · " + x.causa : ""))}">${x.fp ? "FP " + esc(x.fp) + " · " : ""}${esc(x.op || "")} ${esc(x.modelo)} +${x.pz}${x.dan ? " / " + x.dan + "✕" : ""} <a href="#" data-del="${x.id}" style="color:var(--red);text-decoration:none">✕</a></span>`).join("")}</td></tr>`;
+    });
+    h += `<tr class="tot"><td>Total turno</td><td class="num">${fmt(tb)}</td><td class="num">${fmt(td)}</td><td></td></tr></tbody></table></div>`;
+  }
+  h += `<p class="note">✕ en un registro lo borra (para corregir una captura). El avance del programa se recalcula solo.</p></div></div>`;
+  el.innerHTML = h;
+
+  el.querySelectorAll("[data-hm]").forEach(b => b.onclick = () => { PREF.maq[CT.id] = b.dataset.hm; guardar("pref"); renderHora(); });
+  $("#hF").onchange = e => { H.fecha = e.target.value || fechaTrabajo(); renderHora(); };
+  $("#hT").onchange = e => { H.turno = e.target.value; H.franja = franjaActual(H.turno); renderHora(); };
+  $("#hFr").onchange = e => { H.franja = +e.target.value; renderHora(); };
+  $("#hOp").onchange = e => { PREF.operador = e.target.value.trim(); guardar("pref"); };
+  $("#hSig").onchange = e => { PREF.siguiente = e.target.checked; guardar("pref"); renderHora(); };
+  $("#hComp").onchange = e => { H.completas = e.target.checked; renderHora(); };
+  el.querySelectorAll("tr[data-id]").forEach(tr => {
+    const inp = tr.querySelector(".hpz"), x = pend.find(y => y.rk === tr.dataset.id);
+    tr.querySelector(".hm").onclick = () => { inp.value = Math.max(0, (+inp.value || 0) - 1) || ""; };
+    tr.querySelector(".hp").onclick = () => { inp.value = (+inp.value || 0) + 1; };
+    tr.querySelector(".hall").onclick = () => { inp.value = x.falta || ""; };
+  });
+  $("#hGuardar").onclick = () => {
+    const op = ($("#hOp").value || "").trim(); PREF.operador = op; guardar("pref");
+    const nuevos = []; let excede = 0;
+    el.querySelectorAll("tr[data-id]").forEach(tr => {
+      const x = pend.find(y => y.rk === tr.dataset.id); if (!x) return;
+      const pz = Math.max(0, Math.round(+tr.querySelector(".hpz").value || 0)), dan = Math.max(0, Math.round(+tr.querySelector(".hdan").value || 0)), cau = tr.querySelector(".hcau").value;
+      if (!pz && !dan) return;
+      if (pz > x.falta) excede++;
+      nuevos.push({ id: uid(), ct: CT.id, fecha: H.fecha, maquina: m.id, turno: H.turno, franja: H.franja, dia: x.p.dia, k: x.r.k, op: x.r.op, modelo: x.r.modelo, pz, dan, causa: dan ? cau : "", operador: op, ts: new Date().toISOString() });
+    });
+    if (!nuevos.length) { toast("Captura las piezas de al menos una OP.", "warn"); return; }
+    if (nuevos.some(x => x.dan && !x.causa)) { toast("Elige la causa de las piezas dañadas.", "warn"); return; }
+    if (excede && !confirm(`${excede} OP(s) quedan con más piezas que las programadas. ¿Guardar de todos modos?`)) return;
+    DB.registros.push(...nuevos); guardar("registros");
+    toast(`Franja ${esc(franjaTxt(H.turno, H.franja))}: ${fmt(nuevos.reduce((s, x) => s + x.pz, 0))} piezas en ${nuevos.length} OP(s).`, "ok");
+    renderHora();
+  };
+  $("#fpAdd").onclick = () => {
+    const mod = $("#fpMod").value.trim(), pz = Math.round(+$("#fpPz").value || 0);
+    if (!mod || !(pz > 0)) { toast("Captura el modelo y las piezas.", "warn"); return; }
+    DB.registros.push({ id: uid(), ct: CT.id, fecha: H.fecha, maquina: m.id, turno: H.turno, franja: H.franja, dia: "", k: "", op: "", modelo: mod, pz, dan: 0, causa: "", fp: $("#fpMot").value, operador: PREF.operador || "", ts: new Date().toISOString() });
+    guardar("registros"); toast("Registrado fuera de programa.", "ok"); renderHora();
+  };
+  el.querySelectorAll("[data-del]").forEach(a => a.onclick = e => {
+    e.preventDefault();
+    const x = DB.registros.find(r => r.id === a.dataset.del);
+    if (!x || !confirm(`¿Borrar el registro ${x.op || ""} ${x.modelo} +${x.pz} (${franjaTxt(x.turno, x.franja)})?`)) return;
+    DB.registros = DB.registros.filter(r => r.id !== x.id); guardar("registros"); renderHora();
+  });
+}
+
+/* ---------- Rutas de pieza (despiece) ---------- */
+function bcRutaTxt(ruta) {
+  const x = ruta && DB.bcRutas[up(ruta)];
+  if (!x || !x.cts) return "";
+  return Object.entries(x.cts).filter(([, v]) => v.pz > 0).map(([c, v]) => `${c.toLowerCase()} ${fmt(v.pz)}`).join(" · ");
+}
+function resumenDesp(d) {
+  const t = ORDEN.map(m => [m, pzDesp(d, m)]).filter(([, s]) => s > 0).map(([m, s]) => `${MAQ[m].corto} ${fmt(s)}`).join(" → ");
+  const sd = d.piezas.filter(p => p.ruta.includes(CORTE) && !p.ruta.includes(DOBLEZ)).reduce((s, p) => s + (+p.pz || 0), 0);
+  return esc(t) + (sd ? ` · <span class="warn-t">${fmt(sd)} sin doblez</span>` : "");
+}
+function renderRutas() {
+  const el = $("#v-rutas");
+  const mapa = new Map();
+  const agrega = (ruta, modelo, familia) => { const k = keyD(ruta, modelo); const x = mapa.get(k) || { k, ruta: ruta || "", modelos: new Set(), familia: familia || "" }; if (modelo) x.modelos.add(modelo); if (!x.familia && familia) x.familia = familia; mapa.set(k, x); };
+  Object.values(DB.modelos).filter(x => x.tipo === "modelo" && x.estado === "dentro").forEach(x => agrega(x.ruta, x.valor, x.familia));
+  DB.programas.forEach(p => p.rows.forEach(r => agrega(r.ruta, r.modelo, r.familia)));
+  despModelos().forEach(([k, d]) => { if (!mapa.has(k)) mapa.set(k, { k, ruta: d.ruta || "", modelos: new Set([d.modelo].filter(Boolean)), familia: d.familia || "" }); });
+  const q = up(busqR);
+  let xs = [...mapa.values()].filter(x => !q || up(x.ruta).includes(q) || [...x.modelos].some(m => up(m).includes(q)) || up(x.familia).includes(q));
+  const con = xs.filter(x => DB.despiece[x.k]).length;
+  if (filtroR === "con") xs = xs.filter(x => DB.despiece[x.k]); else if (filtroR === "sin") xs = xs.filter(x => !DB.despiece[x.k]);
+  xs.sort((a, b) => (!!DB.despiece[b.k] - !!DB.despiece[a.k]) || (a.ruta || [...a.modelos][0] || "").localeCompare(b.ruta || [...b.modelos][0] || "", "es", { numeric: true }));
+  let h = `<div class="card"><div class="body" style="padding-top:14px"><ul class="avisos">
+      <li class="info">Cada pieza lleva su ruta: <span class="rt"><span class="n">Corte</span><span class="l"></span><span class="n">Doblez</span><span class="l"></span><span class="n">Estructura</span></span> o <span class="rt"><span class="n">Corte</span><span class="l off"></span><span class="fin">sin doblez</span></span>. El despiece es por ruta de BC (sirve para todas sus variantes: NI105, L105, S105…) y alimenta los programas de Troqueles y de Estructura.</li>
+      <li class="info">Sin despiece, el programa usa las piezas por mueble que captures en «Cargar programa». Captura primero los modelos que más se programan.</li></ul></div></div>
+    <div class="toolbar"><input type="text" id="rBus" placeholder="Buscar ruta, modelo o familia" value="${esc(busqR)}" style="width:260px">
+      <div class="seg">${[["todos", "Todas"], ["con", `Con despiece (${con})`], ["sin", "Sin despiece"]].map(([k, t]) => `<button data-fr="${k}" class="${filtroR === k ? "on" : ""}">${t}</button>`).join("")}</div>
+      <span class="sp"></span><input type="text" id="rNueva" placeholder="Ruta o modelo nuevo" style="width:170px"><button id="rAdd">Capturar despiece</button></div>
+    <div class="card"><div class="tw"><table><thead><tr><th>Ruta BC</th><th>Modelos</th><th>Familia</th><th class="num">Piezas</th><th>Ruta por proceso (pz/mueble)</th><th>BC por CT (pz/mueble)</th><th></th></tr></thead><tbody>
+    ${xs.map(x => { const d = DB.despiece[x.k], f0 = { ruta: x.ruta, modelo: [...x.modelos][0] || "" }, g = ingDe(f0); return `<tr><td><div class="mod">${fotoHTML(f0, g)}<div><b class="mono">${esc(x.ruta || "—")}</b> ${melHTML(g)}<div>${ligasIng(g)}</div></div></div></td><td>${[...x.modelos].slice(0, 6).map(m => `<span class="chip">${esc(m)}</span>`).join("")}${x.modelos.size > 6 ? `<span class="dim">+${x.modelos.size - 6}</span>` : ""}</td>
+      <td class="muted">${esc(x.familia)}</td><td class="num">${d ? d.piezas.length : '<span class="dim">—</span>'}</td><td>${d ? resumenDesp(d) : '<span class="dim">sin despiece</span>'}</td>
+      <td class="dim" style="font-size:11.5px">${esc(bcRutaTxt(x.ruta))}</td><td><button class="mini ${d ? "" : "pri"}" data-k="${esc(x.k)}">${d ? "Editar" : "Capturar"}</button></td></tr>`; }).join("")}
+    </tbody></table></div>${!xs.length ? '<div class="empty">Sin rutas todavía: aparecen al guardar programas o al capturar un despiece.</div>' : ""}</div>`;
+  el.innerHTML = h;
+  const bus = $("#rBus"); bus.oninput = () => { busqR = bus.value; clearTimeout(bus._t); bus._t = setTimeout(() => { renderRutas(); const b = $("#rBus"); b.focus(); b.setSelectionRange(b.value.length, b.value.length); }, 250); };
+  el.querySelectorAll("[data-fr]").forEach(b => b.onclick = () => { filtroR = b.dataset.fr; renderRutas(); });
+  el.querySelectorAll("button[data-k]").forEach(b => b.onclick = () => { const x = mapa.get(b.dataset.k); abrirDespiece(x.ruta, [...x.modelos][0] || ""); });
+  $("#rAdd").onclick = () => { const v = $("#rNueva").value.trim(); if (!v) return; const ruta = DB.equiv[up(v)] || EQUIV_SEED[up(v)] || (DB.bcRutas[up(v)] || ING.fichas[up(v)] ? v : ""); abrirDespiece(ruta || v, ruta ? v : ""); };
+}
+
+/** Editor del despiece de una ruta (o de un modelo sin ruta) */
+function abrirDespiece(ruta, modelo) {
+  const k = keyD(ruta, modelo), d0 = DB.despiece[k];
+  const D = d0 ? clon(d0) : { ruta: ruta || "", modelo: modelo || "", piezas: [] };
+  if (!D.piezas.length) D.piezas.push({ id: uid(), nombre: "", pz: 1, ruta: [CORTE, DOBLEZ] });
+  const modelos = [...new Set(Object.values(DB.modelos).filter(x => x.tipo === "modelo" && ruta && up(x.ruta) === up(ruta)).map(x => x.valor))];
+  const g = ingDe({ ruta, modelo });
+  $("#dlgT").innerHTML = `Despiece · ${ruta ? "ruta <span class='mono'>" + esc(ruta) + "</span>" : "modelo <span class='mono'>" + esc(modelo) + "</span>"} <span class="dim" style="font-weight:400;font-size:12px">${esc(modelos.slice(0, 8).join(", "))}</span>`;
+  const pintar = () => {
+    const bc = bcRutaTxt(ruta);
+    let h = `<div class="ficha" style="margin-bottom:10px">${g.foto ? `<img src="${g.foto}" alt="" style="width:200px">` : ""}<div style="flex:1;min-width:260px"><ul class="avisos">
+      <li class="info">Marca por cada pieza los procesos por los que pasa, en orden: <b>Corte</b> (Láser de cama), <b>Doblez</b> (Dobladora G-Weike) y <b>Estructura</b>. Si una pieza no lleva doblez, déjalo sin marcar.</li>
+      ${bc ? `<li class="info">BC («Tiempos y Piezas», piezas por mueble): ${esc(bc)}</li>` : ""}
+      ${g.desc ? `<li class="info">${esc(g.desc)} ${melHTML(g)}</li>` : ""}<li>${ligasIng(g)}</li></ul></div></div>
+      <div class="tw"><table><thead><tr><th>Pieza</th><th class="num">Pz x mueble</th><th>Procesos</th><th>Ruta de la pieza</th><th></th></tr></thead><tbody>
+      ${D.piezas.map((p, i) => `<tr data-i="${i}"><td><input type="text" class="dn" value="${esc(p.nombre)}" placeholder="p. ej. Lateral, Fondo, Escuadra" style="min-width:200px"></td>
+        <td class="num"><input type="number" class="dp" min="0" step="1" value="${p.pz ?? ""}"></td>
+        <td><div class="cnt" style="flex-wrap:wrap">${ORDEN.map(m => `<button class="tg ${p.ruta.includes(m) ? "on" : ""}" data-m="${esc(m)}" title="${esc(MAQ[m].label)}">${esc(MAQ[m].corto)}</button>`).join("")}</div></td>
+        <td>${rutaPiezaHTML(p)}</td><td><button class="mini peligro dx">✕</button></td></tr>`).join("")}
+      </tbody></table></div>
+      <div class="toolbar" style="margin-top:10px"><button id="dA1">+ Pieza Corte → Doblez</button><button id="dA2">+ Pieza solo corte (sin doblez)</button><button id="dA3">+ Corte → Doblez → Estructura</button></div>
+      <div class="mh">${ORDEN.map(m => `<div class="m" style="min-width:120px"><div class="dim" style="font-size:11px">${esc(MAQ[m].label)}</div><b class="mono">${fmt(pzDesp(D, m))}</b> <span class="dim">pz/mueble</span></div>`).join("")}</div>
+      <div class="toolbar"><span class="sp"></span>${d0 ? '<button class="peligro" id="dDel">Borrar despiece</button>' : ""}<button id="dCan">Cancelar</button><button class="pri" id="dOk">Guardar despiece</button></div>`;
+    $("#dlgB").innerHTML = h;
+    $("#dlgB").querySelectorAll("tr[data-i]").forEach(tr => {
+      const p = D.piezas[+tr.dataset.i];
+      tr.querySelector(".dn").oninput = e => { p.nombre = e.target.value; };
+      tr.querySelector(".dp").onchange = e => { const v = parseFloat(e.target.value); p.pz = v > 0 ? v : 0; pintar(); };
+      tr.querySelectorAll(".tg").forEach(b => b.onclick = () => { const m = b.dataset.m; p.ruta = p.ruta.includes(m) ? p.ruta.filter(x => x !== m) : ORDEN.filter(x => x === m || p.ruta.includes(x)); pintar(); });
+      tr.querySelector(".dx").onclick = () => { D.piezas.splice(+tr.dataset.i, 1); pintar(); };
+    });
+    const nueva = r => { D.piezas.push({ id: uid(), nombre: "", pz: 1, ruta: r }); pintar(); setTimeout(() => { const xs = $("#dlgB").querySelectorAll(".dn"); xs[xs.length - 1]?.focus(); }, 30); };
+    $("#dA1").onclick = () => nueva([CORTE, DOBLEZ]);
+    $("#dA2").onclick = () => nueva([CORTE]);
+    $("#dA3").onclick = () => nueva([CORTE, DOBLEZ, CTS[1].maqs[0].id]);
+    $("#dCan").onclick = () => $("#dlg").close();
+    if ($("#dDel")) $("#dDel").onclick = () => { if (!confirm("¿Borrar el despiece de esta ruta? Los programas ya guardados no cambian.")) return; delete DB.despiece[k]; guardar("despiece"); repreparar(); $("#dlg").close(); abrir(vista); };
+    $("#dOk").onclick = () => {
+      const piezas = D.piezas.filter(p => (p.nombre || "").trim() || p.ruta.length).map(p => ({ id: p.id || uid(), nombre: (p.nombre || "").trim(), pz: +p.pz || 0, ruta: p.ruta }));
+      if (!piezas.length) { toast("Agrega al menos una pieza.", "warn"); return; }
+      if (piezas.some(p => !p.nombre)) { toast("Ponle nombre a cada pieza.", "warn"); return; }
+      if (piezas.some(p => !(p.pz > 0) || !p.ruta.length)) { toast("Cada pieza necesita piezas por mueble y al menos un proceso.", "warn"); return; }
+      const fam = Object.values(DB.modelos).find(x => ruta && up(x.ruta) === up(ruta))?.familia || "";
+      DB.despiece[k] = { ruta: ruta || "", modelo: ruta ? "" : modelo, familia: fam, piezas, act: new Date().toISOString() };
+      guardar("despiece"); repreparar(); $("#dlg").close();
+      toast(`Despiece de ${esc(ruta || modelo)} guardado: ${piezas.length} pieza(s). Se aplica a los borradores y a los siguientes programas.`, "ok");
+      abrir(vista);
+    };
+  };
+  pintar(); $("#dlg").showModal();
+}
+
+/* ---------- Modelos fuera / dentro ---------- */
+function renderModelos() {
+  const el = $("#v-modelos"), todos = Object.values(DB.modelos).filter(x => x.ct === CT.id);
+  const fuera = todos.filter(x => x.estado === "fuera"), dentro = todos.filter(x => x.estado === "dentro");
+  $("#acc").innerHTML = `<button id="mXls">Exportar lista (Excel)</button>`;
+  const q = up(busq), pasa = x => !q || [x.valor, x.ruta, x.desc, x.familia].some(v => up(v).includes(q));
+  let h = `<div class="toolbar"><div class="seg"><button data-mt="fuera" class="${modTab === "fuera" ? "on" : ""}">No pasan por ${esc(CT.label)} (${fuera.length})</button><button data-mt="dentro" class="${modTab === "dentro" ? "on" : ""}">Pasan por ${esc(CT.label)} (${dentro.length})</button></div>
+    <input type="text" id="mBus" placeholder="Buscar modelo, ruta o familia" value="${esc(busq)}" style="width:260px"></div>`;
+  if (modTab === "fuera") {
+    const xs = fuera.filter(pasa).sort((a, b) => a.valor.localeCompare(b.valor));
+    h += `<div class="card"><div class="hd">Agregar a la lista <span class="sub">también puedes marcarlos desde «Cargar programa»</span></div><div class="body"><div class="params">
+        <label>Modelo o ruta<input type="text" id="mNuevo" style="width:200px" placeholder="p. ej. FA-6728 o 692"></label>
+        <label>Tipo<select id="mTipo"><option value="modelo">Modelo (SKU exacto)</option><option value="ruta">Ruta (todas sus variantes)</option></select></label>
+        <button class="peligro" id="mAdd">No pasa por ${esc(CT.label)}</button></div></div></div>
+      <div class="card"><div class="tw"><table><thead><tr><th>Tipo</th><th>Modelo / ruta</th><th>Ruta</th><th>Familia</th><th>Desde</th><th>Origen</th><th></th></tr></thead><tbody>
+      ${xs.map(x => `<tr><td>${x.tipo === "ruta" ? '<span class="st info">Ruta</span>' : '<span class="st gris">Modelo</span>'}</td><td>${modeloHTML({ modelo: x.valor, ruta: x.ruta, desc: x.desc })}</td>
+        <td class="mono">${esc(x.ruta || "—")}</td><td class="muted">${esc(x.familia)}</td><td class="mono">${horaCorta(x.alta)}</td><td class="dim">${esc(x.origen || "")}</td>
+        <td><button class="mini ok" data-reg="${esc(x.key)}">Regresar a ${esc(CT.label)}</button></td></tr>`).join("")}</tbody></table></div>
+      ${!xs.length ? '<div class="empty">Sin modelos fuera todavía.</div>' : ""}</div>`;
+  } else {
+    const xs = dentro.filter(pasa).sort((a, b) => a.valor.localeCompare(b.valor));
+    h += `<div class="card"><div class="tw"><table><thead><tr><th>Modelo</th><th>Ruta</th><th>Familia</th>${CT.maqs.map(m => `<th>${uniProc(CT) ? "Piezas por mueble" : esc(m.corto) + " · pz/mueble"}</th>`).join("")}<th>Ruta de piezas</th><th>Último programa</th><th></th></tr></thead><tbody>
+      ${xs.map(x => { const desp = !!despieceDe({ ruta: x.ruta, modelo: x.valor }); const r = { ...x, modelo: x.valor, cant: 1, proc: x.proc || procVacio(CT) };
+        return `<tr data-key="${esc(x.key)}"><td>${modeloHTML({ modelo: x.valor, ruta: x.ruta, desc: x.desc })}</td><td class="mono">${esc(x.ruta || "—")}</td><td class="muted">${esc(x.familia)}</td>
+        ${CT.maqs.map(m => { const p = x.proc?.[m.id] || {}; return `<td><span class="proc">${uniProc(CT) ? "" : `<input type="checkbox" class="pc" data-m="${esc(m.id)}" ${p.on ? "checked" : ""}>`}<input type="number" min="0" class="pn" data-m="${esc(m.id)}" value="${p.pz ?? ""}" placeholder="1"></span></td>`; }).join("")}
+        <td>${rutaHTML(r, CT.id, {})}${desp ? ' <span class="st desp">despiece</span>' : ""}</td>
+        <td class="mono">${x.visto ? fechaCorta(x.visto) : "—"}</td><td><button class="mini peligro" data-fuera="${esc(x.key)}">No pasa</button></td></tr>`; }).join("")}</tbody></table></div>
+      ${!xs.length ? '<div class="empty">Se llena solo al guardar programas: cada modelo que queda en el programa se recuerda aquí.</div>' : ""}</div>
+      <p class="note">Los cambios aplican a los siguientes programas que cargues (los ya guardados no cambian). Si la ruta tiene despiece, el despiece manda.</p>`;
+  }
+  el.innerHTML = h;
+  el.querySelectorAll("[data-mt]").forEach(b => b.onclick = () => { modTab = b.dataset.mt; renderModelos(); });
+  const bus = $("#mBus"); bus.oninput = () => { busq = bus.value; clearTimeout(bus._t); bus._t = setTimeout(() => { renderModelos(); const b = $("#mBus"); b.focus(); b.setSelectionRange(b.value.length, b.value.length); }, 250); };
+  $("#mXls").onclick = exportarModelos;
+  el.querySelectorAll("[data-reg]").forEach(b => b.onclick = () => { regresarDentro(b.dataset.reg); renderModelos(); });
+  el.querySelectorAll("[data-fuera]").forEach(b => b.onclick = () => { const x = DB.modelos[b.dataset.fuera]; x.estado = "fuera"; x.act = new Date().toISOString(); x.origen = "Catálogo"; guardar("modelos"); renderModelos(); });
+  if ($("#mAdd")) $("#mAdd").onclick = () => {
+    const v = $("#mNuevo").value.trim(), t = $("#mTipo").value; if (!v) return;
+    const key = t === "ruta" ? keyR(CT.id, v) : keyM(CT.id, v), now = new Date().toISOString();
+    DB.modelos[key] = { key, ct: CT.id, tipo: t, valor: v, estado: "fuera", ruta: t === "ruta" ? v : (DB.equiv[up(v)] || EQUIV_SEED[up(v)] || ""), desc: "", familia: "", alta: now, act: now, origen: "Captura manual" };
+    guardar("modelos"); toast(`${esc(v)} queda fuera de ${esc(CT.label)}.`, "ok"); renderModelos();
+  };
+  el.querySelectorAll("tr[data-key]").forEach(tr => {
+    const x = DB.modelos[tr.dataset.key]; x.proc = x.proc || procVacio(CT);
+    tr.querySelectorAll(".pc").forEach(cb => cb.onchange = () => { (x.proc[cb.dataset.m] = x.proc[cb.dataset.m] || {}).on = cb.checked; x.act = new Date().toISOString(); guardar("modelos"); renderModelos(); });
+    tr.querySelectorAll(".pn").forEach(inp => inp.onchange = () => { const v = parseFloat(inp.value); const pp = (x.proc[inp.dataset.m] = x.proc[inp.dataset.m] || {}); pp.pz = v > 0 ? v : null; if (uniProc(CT)) pp.on = true; x.act = new Date().toISOString(); guardar("modelos"); renderModelos(); });
+  });
+}
+
+/* ============================== EXPORTAR / IMPRIMIR / RESPALDO ============================== */
+/** Troqueles: 1ª hoja «Ordenes» (formato de BC que lee Nidos) y hojas por máquina con «Observaciones» (formato del programa del día de la OEE) */
+function exportarExcel(p) {
+  if (!p) return;
+  const ct = ctDe(p.ct), wb = XLSX.utils.book_new(), idx = indiceOPs();
+  if (ct.id === "TROQUELES") {
+    const ord = [["Nº", "Cód. procedencia mov.", "Cantidad", "Descripción", "Nº ruta", "Fecha-hora inicial", "Familia"]];
+    p.rows.filter(r => r.proc?.[CORTE]?.on).forEach(r => ord.push([r.op, r.modelo, r.cant, r.desc || "", r.ruta || "", r.ini ? new Date(r.ini) : "", r.familia || ""]));
+    const w1 = XLSX.utils.aoa_to_sheet(ord, { cellDates: true }); w1["!cols"] = [{ wch: 13 }, { wch: 22 }, { wch: 9 }, { wch: 40 }, { wch: 14 }, { wch: 18 }, { wch: 14 }];
+    XLSX.utils.book_append_sheet(wb, w1, "Ordenes");
+  }
+  for (const m of ct.maqs) {
+    const filas = p.rows.filter(r => r.proc?.[m.id]?.on); if (!filas.length) continue;
+    const aoa = [[`F-PROGRAMA DE PRODUCCIÓN ${ct.label.toUpperCase()}${uniProc(ct) ? "" : " · " + m.label.toUpperCase()}`], [fechaLarga(p.dia).toUpperCase() + ` · ${p.tipo} v${p.version} · SE TRABAJA EL ${fechaLarga(trabajoDe(p)).toUpperCase()}`], [],
+                 ["#", "Modelo", "OP", "Cant.", "Familia", "Ruta", "Pz x mueble", "Cant. progra.", "Ruta de piezas", "Piezas", "Observaciones"]];
+    filas.forEach((r, i) => aoa.push([i + 1, r.modelo, r.op, r.cant, r.familia || "", r.ruta || "", pzEf(r.proc[m.id].pz), programadas(r, m.id), rutaTexto(r, ct.id, otrosDeIdx(idx, rkey(p.dia, r.k))), piezasTxt(r, m.id), ""]));
+    const ws = XLSX.utils.aoa_to_sheet(aoa); ws["!cols"] = [{ wch: 5 }, { wch: 20 }, { wch: 13 }, { wch: 7 }, { wch: 12 }, { wch: 12 }, { wch: 11 }, { wch: 13 }, { wch: 30 }, { wch: 36 }, { wch: 30 }];
+    XLSX.utils.book_append_sheet(wb, ws, m.id.slice(0, 31));
+  }
+  if (ct.id === "TROQUELES") {     // desglose de piezas de lámina: compartidas sumadas, propias por modelo
+    if (stats(p, CORTE).ops) XLSX.utils.book_append_sheet(wb, hojaDesglose(p, CORTE), "Piezas Laser de Cama");
+    if (stats(p, DOBLEZ).ops) XLSX.utils.book_append_sheet(wb, hojaDesglose(p, DOBLEZ), "Piezas Dobladora");
+  }
+  const ret = [["OP", "Modelo", "Cant.", "Ruta", "Fuera por"], ...(p.retirados || []).map(r => [r.op, r.modelo, r.cant, r.ruta, r.por])];
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ret), "Retiradas");
+  const nombre = `${p.dia}-programa-${ct.slug}.xlsx`;
+  XLSX.writeFile(wb, nombre);
+  toast(`Exportado <b>${esc(nombre)}</b>${ct.id === "TROQUELES" ? ": la hoja «Ordenes» sirve para Nidos y «Laser de Cama» para la OEE" : ""}.`, "ok");
+}
+function exportarModelos() {
+  const wb = XLSX.utils.book_new(), xs = Object.values(DB.modelos).filter(x => x.ct === CT.id).sort((a, b) => a.estado.localeCompare(b.estado) || a.valor.localeCompare(b.valor));
+  const aoa = [["Estado", "Tipo", "Modelo / ruta", "Ruta", "Familia", "Descripción", ...CT.maqs.flatMap(m => [m.label, "Pz x mueble"]), "Alta", "Origen"],
+    ...xs.map(x => [x.estado === "fuera" ? `No pasa por ${CT.label}` : `Pasa por ${CT.label}`, x.tipo, x.valor, x.ruta || "", x.familia || "", x.desc || "",
+      ...CT.maqs.flatMap(m => x.estado === "dentro" ? [x.proc?.[m.id]?.on ? "Sí" : "No", x.proc?.[m.id]?.pz ?? ""] : ["", ""]), (x.alta || "").slice(0, 10), x.origen || ""])];
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(aoa), "Modelos");
+  const desp = [["Ruta", "Modelo", "Pieza", "Pz x mueble", ...ORDEN.map(m => MAQ[m].label), "Ruta de la pieza"]];
+  for (const [, d] of despModelos()) for (const p of d.piezas) desp.push([d.ruta, d.modelo || "", p.nombre, p.pz, ...ORDEN.map(m => p.ruta.includes(m) ? "Sí" : ""), ORDEN.filter(m => p.ruta.includes(m)).map(m => MAQ[m].corto).join(" → ")]);
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(desp), "Despiece");
+  XLSX.writeFile(wb, `${hoyISO()}-modelos-${CT.slug}.xlsx`);
+}
+function imprimir(p, maqs) {
+  const ct = ctDe(p.ct), logo = new URL("assets/logo-li.png", location.href).href, idx = indiceOPs();
+  $("#print").innerHTML = maqs.map(m => {
+    const filas = p.rows.filter(r => r.proc?.[m.id]?.on); let fam = null, tot = 0, mu = 0;
+    const cuerpo = filas.map((r, i) => {
+      const pr = programadas(r, m.id); tot += pr; mu += r.cant;
+      const g = r.familia !== fam ? `<tr class="grupo"><td colspan="11">${esc(r.familia || "Sin familia")}</td></tr>` : ""; fam = r.familia;
+      const pt = piezasTxt(r, m.id);
+      return g + `<tr><td>${i + 1}</td><td>${esc(r.op)}</td><td><b>${esc(r.modelo)}</b>${pt ? `<div class="pzs">${esc(pt)}</div>` : ""}</td><td>${esc(r.ruta || "")}</td><td style="text-align:right">${r.cant}</td><td style="text-align:right">${pzEf(r.proc[m.id].pz)}</td><td style="text-align:right"><b>${pr}</b></td>
+        <td>${esc(rutaTexto(r, ct.id, otrosDeIdx(idx, rkey(p.dia, r.k))))}</td><td style="width:62px"></td><td style="width:62px"></td><td style="width:150px"></td></tr>`;
+    }).join("");
+    return `<div class="pg"><div class="ph"><img src="${logo}" alt=""><div><h1>Programa de producción · ${esc(ct.label)}${uniProc(ct) ? "" : " · " + esc(m.label)}</h1><div class="s">Programa del ${fechaLarga(p.dia)} · se trabaja el <b>${fechaLarga(trabajoDe(p))}</b></div></div>
+      <div class="r">${esc(p.tipo)} v${p.version} · ${esc(p.archivo)}<br>Impreso ${horaCorta(new Date().toISOString())}</div></div>
+      <table><thead><tr><th>#</th><th>OP</th><th>Modelo / piezas</th><th>Ruta BC</th><th>Muebles</th><th>Pz x mueble</th><th>Pz progra.</th><th>Ruta de piezas</th><th>${esc(m.hechas)}</th><th>Dañadas</th><th>Observaciones</th></tr></thead>
+      <tbody>${cuerpo}<tr class="tot"><td colspan="4">Total · ${filas.length} OPs</td><td style="text-align:right">${mu}</td><td></td><td style="text-align:right">${tot}</td><td></td><td></td><td></td><td></td></tr></tbody></table>
+      <div class="firmas"><div>Elaboró</div><div>Líder de ${esc(ct.label)}</div><div>Operador</div></div>
+      <div class="pf"><span>Línea Italia · Ingeniería de Procesos</span><span>Programas de producción</span></div></div>`;
+  }).join("");
+  setTimeout(() => window.print(), 150);
+}
+$("#bResp").onclick = () => {
+  const data = { app: "programa-troqueles", version: VERSION, fecha: new Date().toISOString(), modelos: DB.modelos, despiece: DB.despiece, equiv: DB.equiv, bcRutas: DB.bcRutas, programas: DB.programas, registros: DB.registros };
+  descargar(`${hoyISO()}-respaldo-programas-produccion.json`, JSON.stringify(data), "application/json");
+};
+$("#fResp").onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+  try {
+    const d = JSON.parse(await f.text()); if (d.app !== "programa-troqueles") throw new Error("No es un respaldo de esta herramienta");
+    if (!confirm(`Restaurar el respaldo del ${horaCorta(d.fecha)}: ${Object.keys(d.modelos || {}).length} modelos, ${Object.keys(d.despiece || {}).length} despieces, ${(d.programas || []).length} programas y ${(d.registros || []).length} registros. Reemplaza lo que hay en este navegador. ¿Continuar?`)) return;
+    DB.modelos = d.modelos || {}; DB.despiece = d.despiece || {}; DB.equiv = d.equiv || {}; DB.bcRutas = d.bcRutas || {}; DB.programas = d.programas || []; DB.registros = d.registros || [];
+    migrar(); guardar("modelos", "despiece", "equiv", "bcRutas", "programas", "registros"); toast("Respaldo restaurado.", "ok"); abrir(vista);
+  } catch (err) { toast(esc(err.message), "err"); }
+};
+
+/* ============================== ARRANQUE ============================== */
+document.querySelectorAll(".nav-item[data-t]").forEach(n => n.onclick = () => abrir(n.dataset.t));
+$("#bMenu").onclick = () => { const c = $("#sidebar").classList.toggle("collapsed"); PREF.menu = c ? "1" : "0"; guardar("pref"); };
+$("#dlgX").onclick = () => $("#dlg").close();
+if (PREF.menu === "1") $("#sidebar").classList.add("collapsed");
+document.addEventListener("dragover", e => e.preventDefault());
+document.addEventListener("drop", e => { e.preventDefault(); const f = e.dataTransfer?.files?.[0]; if (f && /\.xlsx?$/i.test(f.name)) f.arrayBuffer().then(b => cargarArchivo(b, f.name)); });
+pintarCTs();
+LISTO = true;
+abrir(bor() ? "carga" : (progsVigentes().length ? "hora" : "carga"));
+// nube: al abrir trae todo; luego cada minuto, al volver a la pestaña y al recuperar internet
+$("#bNube").onclick = abrirNube;
+pintarNube();
+if (NUBE.url) nubeTraer(true);
+setInterval(() => { if (NUBE.url && !document.hidden) nubeTraer(false); }, 60000);
+document.addEventListener("visibilitychange", () => { if (NUBE.url && !document.hidden) nubeTraer(false); });
+window.addEventListener("online", () => { if (NUBE.url) nubeTraer(false); });
+window.PT = { cargarArchivo, DB, cambiarCT, abrirDespiece, ingDe, guardarTodos, NUBE, PREF, guardar, nubeTraer, nubeEnviar, CTS, VERSION,
+  get B() { return bor(); }, get BS() { return BS; }, get CT() { return CT; },
+  /** Rutina del agente: abre un previo o exporte servido por el mismo servidor (herramientas/servir.ps1 → /previo/<archivo>) */
+  async cargarUrl(u) { const r = await fetch(u, { cache: "no-store" }); if (!r.ok) throw new Error(`No se pudo leer ${u} (${r.status})`); cargarArchivo(await r.arrayBuffer(), decodeURIComponent(u.split("/").pop())); },
+  /** Lo que se guardaría por CT: OPs incluidas, retiradas y modelos nuevos (sin marcar fuera/dentro) */
+  resumen() { return CTS.map(c => { const b = bor(c); if (!b) return { ct: c.id, sinBorrador: true }; const fs = filasB(c), inc = fs.filter(x => !x.c.fuera);
+    return { ct: c.id, archivo: b.archivo, dia: b.dia, trabajo: restarHabiles(b.dia, c.adelanto || 0), ops: fs.length, incluidas: inc.length, retiradas: fs.length - inc.length,
+             piezas: inc.reduce((a, x) => a + Object.values(x.f.proc || {}).reduce((s, p) => s + (p.on && p.pz ? p.pz * x.f.cant : 0), 0), 0),
+             nuevos: [...new Set(inc.filter(x => x.c.nuevo).map(x => x.f.modelo))],
+             sinPiezas: c.id === "TROQUELES" ? [...new Set(inc.filter(x => x.f.proc?.[CORTE]?.on && !piezasCat(x.f).length).map(x => x.f.ruta || x.f.modelo))] : [] }; }); },
+  /** Programas ya guardados de un día (todas las versiones) */
+  guardados(dia) { return DB.programas.filter(p => p.dia === dia).map(p => ({ ct: p.ct, version: p.version, ops: p.rows.length, guardado: p.guardado })); },
+  /** Modelos (ruta) del programa vigente de Troqueles de ese día que aún no tienen piezas en el catálogo: lo que falta capturar */
+  sinPiezas(dia) { const p = vigente(dia, ctDe("TROQUELES")); return p ? [...new Set(p.rows.filter(r => r.proc?.[CORTE]?.on && !piezasCat(r).length).map(r => r.ruta || r.modelo))] : []; } };   // para pruebas y para la rutina
+</script>
+</body>
+</html>
