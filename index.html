@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Programas de producción</title>
+<title>Programación Troqueles</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -29,7 +29,8 @@ body{margin:0;font:13px/1.45 var(--sans);background:var(--bg);color:var(--text);
 .sidebar.collapsed .sidebar-logo{padding:1rem 0;justify-content:center}
 .logo-box{width:34px;height:34px;flex-shrink:0;background:#fff;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:5px}
 .logo-box img{width:100%;height:100%;object-fit:contain}
-.logo-text{font-size:14.5px;font-weight:600;letter-spacing:.3px}
+.logo-txt{white-space:normal;min-width:0}
+.logo-text{font-size:14.5px;font-weight:600;letter-spacing:.3px;line-height:1.2}
 .logo-sub{font-size:11px;color:var(--text2);margin-top:2px;font-family:var(--mono)}
 .ctsw{margin:0 1rem .8rem;display:flex;flex-direction:column;gap:4px;padding-bottom:.8rem;border-bottom:1px solid var(--border)}
 .ctsw button{justify-content:flex-start;width:100%;background:transparent;border:1px solid var(--border);color:var(--text2);padding:7px 10px}
@@ -171,7 +172,7 @@ td select{padding:4px 6px;font-size:12px}
 .mh{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
 .mh .m{flex:1;min-width:220px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px}
 
-/* ---------- indicador de ruta: Corte ━━━ Doblez ━━━ Estructura ---------- */
+/* ---------- indicador de ruta: Corte ━━━ Doblez ---------- */
 .rt{display:inline-flex;align-items:center;white-space:nowrap;font:600 10.5px var(--sans)}
 .rt .n{padding:2px 8px;border-radius:10px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);line-height:1.4}
 .rt .n.part{border-color:var(--blue);color:var(--blue);background:var(--info-bg)}
@@ -224,7 +225,7 @@ dialog .db{padding:14px 16px;overflow:auto;max-height:calc(92vh - 60px)}
 <nav class="sidebar" id="sidebar">
   <div class="sidebar-logo">
     <div class="logo-box"><img src="assets/logo-li.png" alt="LI" onerror="this.style.display='none'"></div>
-    <div class="logo-txt"><div class="logo-text">Programas de producción</div><div class="logo-sub" id="logoSub">Troqueles</div></div>
+    <div class="logo-txt"><div class="logo-text">Programación Troqueles</div><div class="logo-sub" id="logoSub">Láser y dobladora</div></div>
   </div>
   <div class="ctsw" id="ctsw"></div>
   <div class="nav-section">
@@ -273,7 +274,7 @@ dialog .db{padding:14px 16px;overflow:auto;max-height:calc(92vh - 60px)}
 <script>
 "use strict";
 /* ============================== CONFIGURACIÓN ============================== */
-const VERSION = "2026-11-17b";
+const VERSION = "2026-11-17c";
 const T1 = ["8AM–9AM","9AM–10AM","10AM–11AM","11AM–12PM","12PM–12:30PM ⏸ Comida","12:30PM–1:30PM","1:30PM–2:30PM","2:30PM–3:30PM","3:30PM–4:30PM","4:30PM–5PM"];
 /* Mismas franjas que el hora por hora de la OEE Planta */
 const FRANJAS = {
@@ -282,22 +283,21 @@ const FRANJAS = {
   "Turno 3 (23:00–07:00)": ["11PM–12AM","12AM–1AM","1AM–2AM","2AM–3AM","3AM–4AM","4AM–5AM","5AM–6AM","6AM–7AM"],
   "Turno único (8:00–17:00)": T1
 };
-/* Centros de trabajo. Troqueles: corte en Láser de cama y doblez en la Dobladora G-Weike (nombres de la OEE Planta).
-   Estructura · Muebles: solo interesa si el mueble pasa o no por el CT (hay muebles 100 % de melamina), así que es un solo proceso. */
+/* Centro de trabajo: Troqueles, con corte en Láser de cama y doblez en la Dobladora G-Weike (nombres de la OEE Planta).
+   Programación Troqueles (antes «Programas de producción»): desde el 2026-11-17 solo lleva Troqueles; Estructura · Muebles salió de la
+   herramienta (Leonardo, tras un análisis). Sus datos viejos (ct "EST. MUEBLES") se quedan en la nube y la herramienta los ignora.
+   El código sigue siendo por CT (CTS) por si algún día se agrega otro. */
 const CTS = [
   /* adelanto = días hábiles antes de la fecha del programa en que el CT lo trabaja (Leonardo, 2026-11-12:
-     el jue 12-nov Troqueles trabaja el programa del 18 y Estructura el del 17; el lun 16-nov es festivo) */
+     el jue 12-nov Troqueles trabaja el programa del 18; el lun 16-nov es festivo) */
   { id: "TROQUELES", label: "Troqueles", corto: "TRQ", slug: "troqueles", bc: "TROQUELES", adelanto: 3,
     turnos: ["Turno 1 (8:00–17:00)", "Turno 2 (17:00–01:40)", "Turno 3 (23:00–07:00)"],
     maqs: [ { id: "Laser de Cama", label: "Láser de cama", corto: "Corte", hechas: "Cortadas", def: true },
-            { id: "Dobladora G-Weike", label: "Dobladora G-Weike", corto: "Doblez", hechas: "Dobladas", def: true } ] },
-  { id: "EST. MUEBLES", label: "Estructura · Muebles", corto: "EST", slug: "estructura-muebles", bc: "ESTRUCTURA MUEBLES", adelanto: 2,
-    turnos: ["Turno único (8:00–17:00)"],
-    excluirFamilias: ["MAMPARA"],   // las mamparas no van en el programa de Estructura · Muebles (Leonardo, 2026-11-12)
-    maqs: [ { id: "Estructura Muebles", label: "Estructura · Muebles", corto: "Estructura", hechas: "Procesadas", def: true } ] }
+            { id: "Dobladora G-Weike", label: "Dobladora G-Weike", corto: "Doblez", hechas: "Dobladas", def: true } ] }
 ];
+const esCT = id => CTS.some(c => c.id === id);                  // datos de un CT de esta herramienta (ignora los de Estructura · Muebles)
 const MAQ = {}; CTS.forEach(c => c.maqs.forEach(m => { MAQ[m.id] = { ...m, ct: c.id }; }));
-const ORDEN = CTS.flatMap(c => c.maqs.map(m => m.id));        // orden de la ruta: corte → doblez → estructura
+const ORDEN = CTS.flatMap(c => c.maqs.map(m => m.id));        // orden de la ruta: corte → doblez
 const CORTE = "Laser de Cama", DOBLEZ = "Dobladora G-Weike";
 const ctDe = id => CTS.find(c => c.id === id) || CTS[0];
 const CAUSAS = ["Error en dibujo de corte (Ingeniería)", "Error de operación (Estructura)", "Material rayado", "Material oxidado", "Material fuera de especificación"];
@@ -816,7 +816,7 @@ function cargarArchivo(buf, nombre) {
     const res = [];
     for (const c of CTS) { BS[c.id] = prepararBorrador(clon(nb), c); const fs = filasB(c); res.push(`${c.label}: ${fs.filter(x => !x.c.fuera).length} OPs (${fs.filter(x => x.c.fuera).length} retiradas)`); }
     guardar("bor");
-    toast(`${esc(nb.tipo)} del <b>${fechaCorta(nb.dia)}</b> desglosado: ${res.join(" · ")}. Revisa y pulsa <b>Guardar los dos programas</b>.`, "ok");
+    toast(`${esc(nb.tipo)} del <b>${fechaCorta(nb.dia)}</b> desglosado: ${res.join(" · ")}. Revisa y pulsa <b>Guardar programa</b>.`, "ok");
     abrir("carga");
   } catch (e) { console.error(e); toast(esc(e.message), "err"); }
 }
@@ -1156,18 +1156,18 @@ function guardarPrograma() {
   toast(`Programa de ${esc(CT.label)} del <b>${fechaCorta(p.dia)}</b> guardado (versión ${p.version}). Ya aparece en Hora por hora.`, "ok");
   verId = p.id; abrir("ver");
 }
-/** Un solo paso: guarda Troqueles y Estructura · Muebles del mismo archivo, cada uno con sus filtros */
+/** Un solo paso: guarda el programa de cada CT de la herramienta (hoy solo Troqueles) del archivo cargado. Lo usa la rutina (PT.guardarTodos). */
 function guardarTodos() {
   const dia = $("#bDia")?.value || bor()?.dia, hechos = [];
   for (const c of CTS) { const p = guardarCT(c, dia); if (p) hechos.push(`${c.label} v${p.version}: ${p.rows.length} OPs`); }
   if (!hechos.length) { toast("No hay OPs para guardar.", "warn"); return; }
   guardar("programas", "modelos", "bor");
-  toast(`Programas del <b>${fechaCorta(dia)}</b> guardados · ${hechos.join(" · ")}. Ya aparecen en Hora por hora.`, "ok");
+  toast(`Programa del <b>${fechaCorta(dia)}</b> guardado · ${hechos.join(" · ")}. Ya aparece en Hora por hora.`, "ok");
   abrir("progs");
 }
 
 /* ============================== INDICADOR DE RUTA ============================== */
-/** Pasos de la ruta de una OP en orden (Corte → Doblez → Estructura): los de este CT, los de la misma OP en el otro CT y, si no hay, los del despiece */
+/** Pasos de la ruta de una OP en orden (Corte → Doblez): los del programa y, si no hay, los del despiece */
 function pasosRuta(r, ctId, otros) {
   const fuentes = { ...(otros || {}), [ctId]: r }, d = despieceDe(r), out = [];
   for (const mid of ORDEN) {
@@ -1241,7 +1241,7 @@ function festivosLFT(y) {
 }
 const inhabil = iso => { const d = fechaDe(iso), w = d.getDay(); return w === 0 || w === 6 || festivosLFT(d.getFullYear()).includes(iso) || (PREF.inhabiles || []).includes(iso); };
 function restarHabiles(iso, n) { const d = fechaDe(iso); let k = 0; while (k < n) { d.setDate(d.getDate() - 1); if (!inhabil(isoDe(d))) k++; } return isoDe(d); }
-/** Día en que el CT trabaja un programa: su fecha menos el adelanto del CT en días hábiles (Troqueles 3, Estructura 2) */
+/** Día en que el CT trabaja un programa: su fecha menos el adelanto del CT en días hábiles (Troqueles 3) */
 const trabajoDe = p => p.trabajo || restarHabiles(p.dia, ctDe(p.ct).adelanto || 0);
 const diaCorto = iso => { const d = fechaDe(iso); return `${DIAS[d.getDay()].slice(0, 3)} ${d.getDate()}/${d.getMonth() + 1}`; };
 const H = { fecha: fechaTrabajo(), turno: turnoActual(CT), franja: franjaActual(turnoActual(CT)), completas: false };
@@ -1253,7 +1253,7 @@ const TITULOS = {
   progs: ["Programas", "Programas guardados por día, con su avance"],
   ver: ["Programa", "Piezas programadas"],
   hora: ["Hora por hora", "Registro de piezas por franja, contra el programa"],
-  rutas: ["Rutas de pieza", "Despiece por ruta: qué piezas se cortan, cuáles se doblan y si siguen a Estructura (compartido entre CT)"],
+  rutas: ["Rutas de pieza", "Despiece por ruta: qué piezas se cortan y cuáles se doblan"],
   modelos: ["Modelos fuera / dentro", "Base que se aplica sola a cada programa nuevo de este CT"],
   piezas: ["Piezas compartidas", "Piezas de lámina por modelo y qué modelos comparten la misma pieza (de la biblioteca DXF de Nidos y capturadas)"]
 };
@@ -1276,7 +1276,8 @@ function cambiarCT(id) {
 function pintarCTs() {
   $("#ctsw").innerHTML = CTS.map(c => `<button data-ct="${esc(c.id)}" class="${c.id === CT.id ? "on" : ""}" title="${esc(c.label)}"><b>${c.corto}</b><span class="ctl">${esc(c.label)}</span></button>`).join("");
   $("#ctsw").querySelectorAll("[data-ct]").forEach(b => b.onclick = () => cambiarCT(b.dataset.ct));
-  $("#logoSub").textContent = CT.label;
+  $("#ctsw").style.display = CTS.length > 1 ? "" : "none";   // con un solo CT no hace falta el selector
+  $("#logoSub").textContent = CTS.length > 1 ? CT.label : "Láser y dobladora";
 }
 function contadores() {
   $("#nCarga").textContent = bor() ? bor().ops.length : "–";
@@ -1285,7 +1286,7 @@ function contadores() {
   $("#nRutas").textContent = despModelos().length;
   $("#nPiezas").textContent = catalogo().lista.filter(p => nModelos(p) > 1).length;
   const hoy = fechaTrabajo(); $("#nHora").textContent = fmt(DB.registros.filter(x => x.ct === CT.id && x.fecha === hoy).reduce((s, x) => s + x.pz, 0));
-  $("#pieInfo").textContent = `v${VERSION} · ${DB.programas.length} programas · ${despModelos().length} despieces · ${catalogo().lista.length} piezas · ${DB.registros.length} registros · ingeniería: ${Object.keys(ING.fichas).length} rutas · ${NUBE.url ? "datos en Google Sheets" : "datos en este navegador"}`;
+  $("#pieInfo").textContent = `v${VERSION} · ${DB.programas.filter(p => esCT(p.ct)).length} programas ·${despModelos().length} despieces · ${catalogo().lista.length} piezas · ${DB.registros.length} registros · ingeniería: ${Object.keys(ING.fichas).length} rutas · ${NUBE.url ? "datos en Google Sheets" : "datos en este navegador"}`;
 }
 const kpi = (l, v, s = "", cls = "") => `<div class="kpi ${cls}"><div class="l">${l}</div><div class="v">${v}</div>${s ? `<div class="ks">${s}</div>` : ""}</div>`;
 const barra = (p, ok) => `<div class="bar ${ok ? "ok" : ""}"><i style="width:${Math.min(100, Math.round(p * 100))}%"></i></div>`;
@@ -1297,7 +1298,7 @@ const uniProc = CT => CT.maqs.length === 1;
 function renderCarga() {
   const el = $("#v-carga"), b = bor();
   const subir = `<label class="subir" id="dz"><b>Arrastra aquí el previo, el lanzado o el exporte de BC</b>
-      PRPCP-06- DD-MM-AAAA PREVIO.xlsx · LANZADO · «Órdenes producción planificadas».xlsx<br><span class="dim">Un archivo arma el borrador de Troqueles y de Estructura · Muebles. Si ya cargaste un previo, el exporte de BC solo le completa las rutas.</span>
+      PRPCP-06- DD-MM-AAAA PREVIO.xlsx · LANZADO · «Órdenes producción planificadas».xlsx<br><span class="dim">El archivo arma el borrador de ${CTS.length > 1 ? "cada CT" : esc(CT.label)}. Si ya cargaste un previo, el exporte de BC solo le completa las rutas.</span>
       <input type="file" id="fArch" accept=".xlsx,.xls" hidden></label>`;
   if (!b) {
     el.innerHTML = `<div class="card"><div class="body" style="padding-top:16px">${subir}
@@ -1312,16 +1313,17 @@ function renderCarga() {
   $("#acc").innerHTML = `<button id="bDesc" class="peligro">Descartar</button><label class="btn">Cargar otro<input type="file" id="fArch2" accept=".xlsx,.xls" hidden></label>`;
   const prev = vigente(b.dia);
   let h = `<div class="mh">
-      <div class="m"><div class="dim" style="font-size:11px">${esc(b.tipo)} · ${esc(b.archivo)}</div><div style="font-size:15px;font-weight:600">${fechaLarga(b.dia)}</div></div>
+      <div class="m"><div class="dim" style="font-size:11px">${esc(b.tipo)} · ${esc(b.archivo)}</div><div style="font-size:15px;font-weight:600">${fechaLarga(b.dia)}</div>
+        <div class="dim" style="font-size:11.5px">${esc(CT.label)} lo trabaja el <b>${diaCorto(restarHabiles(b.dia, CT.adelanto || 0))}</b></div></div>
       <div class="m" style="flex:0 1 auto"><div class="params"><label>Día del programa<input type="date" id="bDia" value="${b.dia}"></label>
-        <button class="pri" id="bTodos" title="Guarda de una vez Troqueles y Estructura · Muebles de este archivo, cada uno con sus filtros">Guardar los dos programas</button>
-        <button id="bGuardar" title="Guarda solo el programa de ${esc(CT.label)}">Solo ${esc(CT.label)}</button></div></div></div>
-    <div class="mh">${CTS.map(c => { const bc = bor(c);
+        ${CTS.length > 1 ? `<button class="pri" id="bTodos" title="Guarda de una vez el programa de cada CT de este archivo, cada uno con sus filtros">Guardar todos los programas</button>
+        <button id="bGuardar" title="Guarda solo el programa de ${esc(CT.label)}">Solo ${esc(CT.label)}</button>` : `<button class="pri" id="bGuardar" title="Guarda el programa de ${esc(CT.label)} de este archivo">Guardar programa</button>`}</div></div></div>
+    ${CTS.length < 2 ? "" : `<div class="mh">${CTS.map(c => { const bc = bor(c);
       if (!bc) return `<div class="m"><b>${esc(c.label)}</b><div class="dim" style="font-size:12px">Ya guardado (o sin archivo cargado)</div></div>`;
       const fs = filasB(c), dentro = fs.filter(x => !x.c.fuera), fam = fs.filter(x => x.c.por === "familia"), nv = dentro.filter(x => x.c.nuevo);
       return `<div class="m" style="${c.id === CT.id ? "border-color:var(--blue)" : ""}"><div style="display:flex;gap:8px;align-items:center"><b>${esc(c.label)}</b><span class="sp"></span>${c.id === CT.id ? '<span class="st info">viendo</span>' : `<button class="mini" data-vct="${esc(c.id)}">Revisar</button>`}</div>
         <div style="font-size:12.5px;margin-top:4px"><b class="mono">${dentro.length}</b> OPs · ${fmt(dentro.reduce((s, x) => s + x.f.cant, 0))} muebles${nv.length ? ` · <span class="warn-t">${nv.length} nuevas</span>` : ""}</div>
-        <div class="dim" style="font-size:11.5px">${fs.length - dentro.length} retiradas${fam.length ? ` (${fam.length} de mamparas)` : ""} · se trabaja el <b>${diaCorto(restarHabiles(b.dia, c.adelanto || 0))}</b></div></div>`; }).join("")}</div>
+        <div class="dim" style="font-size:11.5px">${fs.length - dentro.length} retiradas${fam.length ? ` (${fam.length} de mamparas)` : ""} · se trabaja el <b>${diaCorto(restarHabiles(b.dia, c.adelanto || 0))}</b></div></div>`; }).join("")}</div>`}
     <div class="kpis">
       ${kpi("OPs en el archivo", fmt(b.ops.length), fmt(b.ops.reduce((s, f) => s + f.cant, 0)) + " muebles")}
       ${kpi("Retiradas solas", fmt(ret.length), "fuera de " + esc(CT.label), ret.length ? "ok" : "")}
@@ -1386,7 +1388,7 @@ function renderCarga() {
   $("#bDesc").onclick = () => { if (confirm(`¿Descartar el archivo cargado en ${CT.label}? (no borra nada guardado)`)) { delete BS[CT.id]; guardar("bor"); abrir("carga"); } };
   $("#fArch2").onchange = e => leerInput(e.target);
   $("#bGuardar").onclick = guardarPrograma;
-  $("#bTodos").onclick = guardarTodos;
+  if ($("#bTodos")) $("#bTodos").onclick = guardarTodos;
   el.querySelectorAll("[data-vct]").forEach(x => x.onclick = () => cambiarCT(x.dataset.vct));
   // el día aplica a los borradores de todos los CT que vienen del mismo archivo
   $("#bDia").onchange = e => { for (const c of CTS) { const bc = bor(c); if (bc && bc.archivo === b.archivo) bc.dia = e.target.value; } guardar("bor"); renderCarga(); };
@@ -1547,7 +1549,7 @@ function generalHTML(p, idx) {
 function pendientes(mid) {
   const out = [], vistos = new Map();
   for (const p of progsVigentes()) {
-    const t = trabajoDe(p);   // el CT trabaja el programa unos días hábiles antes de su fecha (Troqueles 3, Estructura 2)
+    const t = trabajoDe(p);   // el CT trabaja el programa unos días hábiles antes de su fecha (Troqueles 3)
     if (t > H.fecha && !PREF.siguiente) continue;
     const grupo = t < H.fecha ? "atraso" : t === H.fecha ? "dia" : "sig";
     for (const r of p.rows) {
@@ -1679,8 +1681,8 @@ function renderRutas() {
   const el = $("#v-rutas");
   const mapa = new Map();
   const agrega = (ruta, modelo, familia) => { const k = keyD(ruta, modelo); const x = mapa.get(k) || { k, ruta: ruta || "", modelos: new Set(), familia: familia || "" }; if (modelo) x.modelos.add(modelo); if (!x.familia && familia) x.familia = familia; mapa.set(k, x); };
-  Object.values(DB.modelos).filter(x => x.tipo === "modelo" && x.estado === "dentro").forEach(x => agrega(x.ruta, x.valor, x.familia));
-  DB.programas.forEach(p => p.rows.forEach(r => agrega(r.ruta, r.modelo, r.familia)));
+  Object.values(DB.modelos).filter(x => x.tipo === "modelo" && x.estado === "dentro" && esCT(x.ct)).forEach(x => agrega(x.ruta, x.valor, x.familia));
+  DB.programas.filter(p => esCT(p.ct)).forEach(p => p.rows.forEach(r => agrega(r.ruta, r.modelo, r.familia)));
   despModelos().forEach(([k, d]) => { if (!mapa.has(k)) mapa.set(k, { k, ruta: d.ruta || "", modelos: new Set([d.modelo].filter(Boolean)), familia: d.familia || "" }); });
   const q = up(busqR);
   let xs = [...mapa.values()].filter(x => !q || up(x.ruta).includes(q) || [...x.modelos].some(m => up(m).includes(q)) || up(x.familia).includes(q));
@@ -1688,7 +1690,7 @@ function renderRutas() {
   if (filtroR === "con") xs = xs.filter(x => DB.despiece[x.k]); else if (filtroR === "sin") xs = xs.filter(x => !DB.despiece[x.k]);
   xs.sort((a, b) => (!!DB.despiece[b.k] - !!DB.despiece[a.k]) || (a.ruta || [...a.modelos][0] || "").localeCompare(b.ruta || [...b.modelos][0] || "", "es", { numeric: true }));
   let h = `<div class="card"><div class="body" style="padding-top:14px"><ul class="avisos">
-      <li class="info">Cada pieza lleva su ruta: <span class="rt"><span class="n">Corte</span><span class="l"></span><span class="n">Doblez</span><span class="l"></span><span class="n">Estructura</span></span> o <span class="rt"><span class="n">Corte</span><span class="l off"></span><span class="fin">sin doblez</span></span>. El despiece es por ruta de BC (sirve para todas sus variantes: NI105, L105, S105…) y alimenta los programas de Troqueles y de Estructura.</li>
+      <li class="info">Cada pieza lleva su ruta: <span class="rt"><span class="n">Corte</span><span class="l"></span><span class="n">Doblez</span></span> o <span class="rt"><span class="n">Corte</span><span class="l off"></span><span class="fin">sin doblez</span></span>. El despiece es por ruta de BC (sirve para todas sus variantes: NI105, L105, S105…) y alimenta el programa de Troqueles.</li>
       <li class="info">Sin despiece, el programa usa las piezas por mueble que captures en «Cargar programa». Captura primero los modelos que más se programan.</li></ul></div></div>
     <div class="toolbar"><input type="text" id="rBus" placeholder="Buscar ruta, modelo o familia" value="${esc(busqR)}" style="width:260px">
       <div class="seg">${[["todos", "Todas"], ["con", `Con despiece (${con})`], ["sin", "Sin despiece"]].map(([k, t]) => `<button data-fr="${k}" class="${filtroR === k ? "on" : ""}">${t}</button>`).join("")}</div>
@@ -1716,7 +1718,7 @@ function abrirDespiece(ruta, modelo) {
   const pintar = () => {
     const bc = bcRutaTxt(ruta);
     let h = `<div class="ficha" style="margin-bottom:10px">${g.foto ? `<img src="${g.foto}" alt="" style="width:200px">` : ""}<div style="flex:1;min-width:260px"><ul class="avisos">
-      <li class="info">Marca por cada pieza los procesos por los que pasa, en orden: <b>Corte</b> (Láser de cama), <b>Doblez</b> (Dobladora G-Weike) y <b>Estructura</b>. Si una pieza no lleva doblez, déjalo sin marcar.</li>
+      <li class="info">Marca por cada pieza los procesos por los que pasa, en orden: <b>Corte</b> (Láser de cama) y <b>Doblez</b> (Dobladora G-Weike). Si una pieza no lleva doblez, déjalo sin marcar.</li>
       ${bc ? `<li class="info">BC («Tiempos y Piezas», piezas por mueble): ${esc(bc)}</li>` : ""}
       ${g.desc ? `<li class="info">${esc(g.desc)} ${melHTML(g)}</li>` : ""}<li>${ligasIng(g)}</li></ul></div></div>
       <div class="tw"><table><thead><tr><th>Pieza</th><th class="num">Pz x mueble</th><th>Procesos</th><th>Ruta de la pieza</th><th></th></tr></thead><tbody>
@@ -1725,7 +1727,7 @@ function abrirDespiece(ruta, modelo) {
         <td><div class="cnt" style="flex-wrap:wrap">${ORDEN.map(m => `<button class="tg ${p.ruta.includes(m) ? "on" : ""}" data-m="${esc(m)}" title="${esc(MAQ[m].label)}">${esc(MAQ[m].corto)}</button>`).join("")}</div></td>
         <td>${rutaPiezaHTML(p)}</td><td><button class="mini peligro dx">✕</button></td></tr>`).join("")}
       </tbody></table></div>
-      <div class="toolbar" style="margin-top:10px"><button id="dA1">+ Pieza Corte → Doblez</button><button id="dA2">+ Pieza solo corte (sin doblez)</button><button id="dA3">+ Corte → Doblez → Estructura</button></div>
+      <div class="toolbar" style="margin-top:10px"><button id="dA1">+ Pieza Corte → Doblez</button><button id="dA2">+ Pieza solo corte (sin doblez)</button></div>
       <div class="mh">${ORDEN.map(m => `<div class="m" style="min-width:120px"><div class="dim" style="font-size:11px">${esc(MAQ[m].label)}</div><b class="mono">${fmt(pzDesp(D, m))}</b> <span class="dim">pz/mueble</span></div>`).join("")}</div>
       <div class="toolbar"><span class="sp"></span>${d0 ? '<button class="peligro" id="dDel">Borrar despiece</button>' : ""}<button id="dCan">Cancelar</button><button class="pri" id="dOk">Guardar despiece</button></div>`;
     $("#dlgB").innerHTML = h;
@@ -1739,7 +1741,6 @@ function abrirDespiece(ruta, modelo) {
     const nueva = r => { D.piezas.push({ id: uid(), nombre: "", pz: 1, ruta: r }); pintar(); setTimeout(() => { const xs = $("#dlgB").querySelectorAll(".dn"); xs[xs.length - 1]?.focus(); }, 30); };
     $("#dA1").onclick = () => nueva([CORTE, DOBLEZ]);
     $("#dA2").onclick = () => nueva([CORTE]);
-    $("#dA3").onclick = () => nueva([CORTE, DOBLEZ, CTS[1].maqs[0].id]);
     $("#dCan").onclick = () => $("#dlg").close();
     if ($("#dDel")) $("#dDel").onclick = () => { if (!confirm("¿Borrar el despiece de esta ruta? Los programas ya guardados no cambian.")) return; delete DB.despiece[k]; guardar("despiece"); repreparar(); $("#dlg").close(); abrir(vista); };
     $("#dOk").onclick = () => {
@@ -1862,13 +1863,13 @@ function imprimir(p, maqs) {
       <table><thead><tr><th>#</th><th>OP</th><th>Modelo / piezas</th><th>Ruta BC</th><th>Muebles</th><th>Pz x mueble</th><th>Pz progra.</th><th>Ruta de piezas</th><th>${esc(m.hechas)}</th><th>Dañadas</th><th>Observaciones</th></tr></thead>
       <tbody>${cuerpo}<tr class="tot"><td colspan="4">Total · ${filas.length} OPs</td><td style="text-align:right">${mu}</td><td></td><td style="text-align:right">${tot}</td><td></td><td></td><td></td><td></td></tr></tbody></table>
       <div class="firmas"><div>Elaboró</div><div>Líder de ${esc(ct.label)}</div><div>Operador</div></div>
-      <div class="pf"><span>Línea Italia · Ingeniería de Procesos</span><span>Programas de producción</span></div></div>`;
+      <div class="pf"><span>Línea Italia · Ingeniería de Procesos</span><span>Programación Troqueles</span></div></div>`;
   }).join("");
   setTimeout(() => window.print(), 150);
 }
 $("#bResp").onclick = () => {
   const data = { app: "programa-troqueles", version: VERSION, fecha: new Date().toISOString(), modelos: DB.modelos, despiece: DB.despiece, equiv: DB.equiv, bcRutas: DB.bcRutas, programas: DB.programas, registros: DB.registros };
-  descargar(`${hoyISO()}-respaldo-programas-produccion.json`, JSON.stringify(data), "application/json");
+  descargar(`${hoyISO()}-respaldo-programacion-troqueles.json`, JSON.stringify(data), "application/json");
 };
 $("#fResp").onchange = async e => {
   const f = e.target.files[0]; e.target.value = ""; if (!f) return;
@@ -1908,7 +1909,7 @@ window.PT = { cargarArchivo, DB, cambiarCT, abrirDespiece, ingDe, guardarTodos, 
              nuevos: [...new Set(inc.filter(x => x.c.nuevo).map(x => x.f.modelo))],
              sinPiezas: c.id === "TROQUELES" ? [...new Set(inc.filter(x => x.f.proc?.[CORTE]?.on && !piezasCat(x.f).length).map(x => x.f.ruta || x.f.modelo))] : [] }; }); },
   /** Programas ya guardados de un día (todas las versiones) */
-  guardados(dia) { return DB.programas.filter(p => p.dia === dia).map(p => ({ ct: p.ct, version: p.version, ops: p.rows.length, guardado: p.guardado })); },
+  guardados(dia) { return DB.programas.filter(p => p.dia === dia && esCT(p.ct)).map(p => ({ ct: p.ct, version: p.version, ops: p.rows.length, guardado: p.guardado })); },
   /** Modelos (ruta) del programa vigente de Troqueles de ese día que aún no tienen piezas en el catálogo: lo que falta capturar */
   sinPiezas(dia) { const p = vigente(dia, ctDe("TROQUELES")); return p ? [...new Set(p.rows.filter(r => r.proc?.[CORTE]?.on && !piezasCat(r).length).map(r => r.ruta || r.modelo))] : []; } };   // para pruebas y para la rutina
 </script>
