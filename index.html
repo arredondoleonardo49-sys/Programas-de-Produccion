@@ -302,7 +302,7 @@ dialog .db{padding:14px 16px;overflow:auto;max-height:calc(92vh - 60px)}
 <script>
 "use strict";
 /* ============================== CONFIGURACIÓN ============================== */
-const VERSION = "2026-11-18b";
+const VERSION = "2026-11-18c";
 const T1 = ["8AM–9AM","9AM–10AM","10AM–11AM","11AM–12PM","12PM–12:30PM ⏸ Comida","12:30PM–1:30PM","1:30PM–2:30PM","2:30PM–3:30PM","3:30PM–4:30PM","4:30PM–5PM"];
 /* Mismas franjas que el hora por hora de la OEE Planta */
 const FRANJAS = {
@@ -399,7 +399,7 @@ let LISTO = false;   // los contadores del menú se pintan hasta que la página 
 /* ============================== NUBE (Google Sheets vía Apps Script, apps-script/Code.gs) ==============================
    Cada documento (un modelo, un despiece, un programa, un registro, un borrador…) se manda por separado.
    Lo local se guarda siempre primero; sin internet, los cambios esperan aquí y se envían al volver.
-   Cada minuto (y al volver a la pestaña) se traen los cambios de otros navegadores. */
+   Cada 15 s (y al volver a la pestaña) se traen los cambios de otros navegadores. */
 const NUBE_URL_DEF = "https://script.google.com/macros/s/AKfycbz2FkhVj77SGb93Se7AHrgryIVF01W9flBsvqpB_PxsZWdhGERtzMxCNTmTXGd-b7OqTA/exec";   // Apps Script del Sheet «Programas de producción · Troqueles y Estructura» (se cambia con el botón «Nube»)
 const KN = { url: "pt_nube_url", hash: "pt_nube_hash", pend: "pt_nube_pend", env: "pt_nube_env", desde: "pt_nube_desde" };
 const SINC = ["modelos", "despiece", "equiv", "bcRutas", "programas", "registros", "borradores"];
@@ -538,7 +538,7 @@ function refrescarPorNube() {
    archivo igual que leerBC y lo deja en esta nube, en borradores «OEE|TROQUELES» (un buzón: no pisa el borrador de Troqueles).
    Aquí se toma como si se hubiera cargado el archivo: se retiran solos los modelos «fuera» y, si no hay modelos nuevos, se
    guarda el programa (nueva versión si ya había de ese día; misma regla que la rutina del previo). Con modelos nuevos queda
-   como borrador para revisarlo. Luego se borra el buzón. Si estás capturando, espera a la siguiente sincronización (≤1 min). */
+   como borrador para revisarlo. Luego se borra el buzón. Si estás capturando, espera a la siguiente sincronización (≤15 s). */
 const BUZON_OEE = "OEE|TROQUELES";
 function recibirOEE() {
   const nb = BS[BUZON_OEE];
@@ -2255,11 +2255,11 @@ document.addEventListener("drop", e => { e.preventDefault(); const f = e.dataTra
 pintarCTs();
 LISTO = true;
 abrir(progsVigentes().length && !bor() ? "hora" : "progs");   // con borrador por revisar, «Programas» lo muestra arriba
-// nube: al abrir trae todo; luego cada minuto, al volver a la pestaña y al recuperar internet
+// nube: al abrir trae todo; luego cada 15 s (con la pestaña a la vista), al volver a la pestaña y al recuperar internet
 $("#bNube").onclick = abrirNube;
 pintarNube();
 if (NUBE.url) nubeTraer(true);
-setInterval(() => { if (NUBE.url && !document.hidden) nubeTraer(false); }, 60000);
+setInterval(() => { if (NUBE.url && !document.hidden) nubeTraer(false); }, 15000);   // casi en tiempo real con la OEE (Leonardo, 2026-11-18): cada 15 s, solo lo que cambió
 document.addEventListener("visibilitychange", () => { if (NUBE.url && !document.hidden) nubeTraer(false); });
 window.addEventListener("online", () => { if (NUBE.url) nubeTraer(false); });
 window.PT = { cargarArchivo, recibirOEE, DB, cambiarCT, ingDe, verDibujo, geometriaDXF, BIB, guardarTodos, NUBE, PREF, guardar, nubeTraer, nubeEnviar, CTS, VERSION,
