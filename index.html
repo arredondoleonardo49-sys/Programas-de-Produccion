@@ -302,7 +302,7 @@ dialog .db{padding:14px 16px;overflow:auto;max-height:calc(92vh - 60px)}
 <script>
 "use strict";
 /* ============================== CONFIGURACIÓN ============================== */
-const VERSION = "2026-11-18a";
+const VERSION = "2026-11-18b";
 const T1 = ["8AM–9AM","9AM–10AM","10AM–11AM","11AM–12PM","12PM–12:30PM ⏸ Comida","12:30PM–1:30PM","1:30PM–2:30PM","2:30PM–3:30PM","3:30PM–4:30PM","4:30PM–5PM"];
 /* Mismas franjas que el hora por hora de la OEE Planta */
 const FRANJAS = {
@@ -952,7 +952,7 @@ const chipPieza = p => `${p.cal ? `<span class="chip">cal ${p.cal}</span>` : ""}
 /* ---------- Desglose de piezas de un programa ---------- */
 function desglosePiezas(p, mid) {
   const acc = new Map(), sin = [];
-  for (const r of p.rows) {
+  for (const r of filasP(p)) {
     if (!r.proc?.[mid]?.on) continue;
     const L = piezasCat(r);
     if (!L.length) { sin.push(r); continue; }
@@ -1534,13 +1534,18 @@ const progsCT = (ct = CT) => DB.programas.filter(p => p.ct === ct.id);
 const vigente = (dia, ct = CT) => progsCT(ct).filter(p => p.dia === dia).sort((a, b) => b.version - a.version)[0] || null;
 const esVigente = p => vigente(p.dia, ctDe(p.ct))?.id === p.id;
 const progsVigentes = (ct = CT) => [...new Set(progsCT(ct).map(p => p.dia))].map(d => vigente(d, ct)).filter(Boolean).sort((a, b) => a.dia.localeCompare(b.dia));
+/* Renglones del programa que siguen en el CT (Leonardo, 2026-11-18): un modelo que se marca fuera DESPUÉS de guardar el programa
+   (aquí con «⊘ Fuera», en «Modelos fuera» o desde la OEE) deja de mostrarse y de contar, igual que en la OEE y en Nidos.
+   El programa guardado no cambia: si el modelo regresa, sus OPs vuelven. */
+const filasP = p => p.rows.filter(r => !clasificar(r, ctDe(p.ct)).fuera);
+const fueraDespues = p => p.rows.filter(r => clasificar(r, ctDe(p.ct)).fuera);
 const programadas = (r, mid) => r.proc?.[mid]?.on ? r.cant * pzEf(r.proc[mid].pz) : 0;
 /** El avance se lleva por OP (si la OP cambia de día, lo registrado la sigue); los renglones sin OP, por día */
 const rkey = (dia, k) => /^OP/i.test(k) ? up(k) : dia + "|" + k;
 function hechas(mid, rk) { let s = 0; for (const x of DB.registros) if (!x.fp && x.maquina === mid && rkey(x.dia, x.k) === rk) s += x.pz; return s; }
 function stats(p, mid) {
   let prog = 0, h = 0, ops = 0, mu = 0;
-  for (const r of p.rows) { const pr = programadas(r, mid); if (!pr) continue; ops++; mu += r.cant; prog += pr; h += Math.min(pr, hechas(mid, rkey(p.dia, r.k))); }
+  for (const r of filasP(p)) { const pr = programadas(r, mid); if (!pr) continue; ops++; mu += r.cant; prog += pr; h += Math.min(pr, hechas(mid, rkey(p.dia, r.k))); }
   return { prog, h, falta: Math.max(0, prog - h), ops, mu, pct: prog ? h / prog : 0 };
 }
 function diffProgramas(antes, ahora) {
@@ -1551,7 +1556,7 @@ function diffProgramas(antes, ahora) {
 /** Índice de los programas vigentes de todos los CT: clave de avance → {CT: renglón}. Sirve para ver la ruta completa de una OP. */
 function indiceOPs() {
   const idx = {};
-  for (const c of CTS) for (const p of progsVigentes(c)) for (const r of p.rows) { const k = rkey(p.dia, r.k); (idx[k] = idx[k] || {})[c.id] = r; }
+  for (const c of CTS) for (const p of progsVigentes(c)) for (const r of filasP(p)) { const k = rkey(p.dia, r.k); (idx[k] = idx[k] || {})[c.id] = r; }
   return idx;
 }
 /** Guarda el borrador de un CT como programa (nueva versión si ya hay uno ese día). Devuelve el programa o null. */
@@ -1863,7 +1868,7 @@ function renderProgs() {
   for (const d of dias) {
     progsCT().filter(p => p.dia === d).sort((a, b) => b.version - a.version).forEach((p, i) => {
       h += `<tr class="${i ? "hecho" : ""}"><td>${i ? '<span class="dim">↳ versión anterior</span>' : `<b>${fechaLarga(d)}</b>`}</td><td class="mono">${i ? "" : diaCorto(trabajoDe(p))}</td><td>${esc(p.tipo)} v${p.version}<div class="dim" style="font-size:11px">${esc(p.archivo)}</div></td>
-        <td class="num">${p.rows.length}</td><td class="num">${fmt(p.rows.reduce((s, r) => s + r.cant, 0))}</td>
+        <td class="num">${filasP(p).length}</td><td class="num">${fmt(filasP(p).reduce((s, r) => s + r.cant, 0))}</td>
         ${CT.maqs.map(m => { const s = stats(p, m.id); return `<td><div class="cnt"><span class="mono">${fmt(s.h)} / ${fmt(s.prog)}</span>${barra(s.pct, s.pct >= 1)}<span class="mono dim">${Math.round(s.pct * 100)}%</span></div></td>`; }).join("")}
         <td class="mono">${horaCorta(p.guardado)}</td>
         <td style="white-space:nowrap"><button class="mini" data-ver="${p.id}">Ver</button> <button class="mini" data-xls="${p.id}">Excel</button> <button class="mini peligro" data-del="${p.id}">Borrar</button></td></tr>`;
@@ -1911,8 +1916,16 @@ function renderVer() {
     $("#bPr1").onclick = () => imprimir(p, m ? [m] : CT.maqs.filter(x => stats(p, x.id).prog > 0));
     if ($("#bPr2")) $("#bPr2").onclick = () => imprimir(p, CT.maqs.filter(x => stats(p, x.id).prog > 0));
     $("#bIrH").onclick = () => { if (m) { PREF.maq[CT.id] = m.id; guardar("pref"); } abrir("hora"); };
+    el.querySelectorAll("[data-fuera]").forEach(b => b.onclick = () => fueraDesdePrograma(p, b.dataset.fuera));
+    el.querySelectorAll("[data-regresar]").forEach(b => b.onclick = () => {
+      const x = DB.modelos[b.dataset.regresar]; if (!x) return;
+      const nom = (x.tipo === "ruta" ? "el modelo base " : "el modelo ") + x.valor;
+      if (!confirm(`¿Regresar ${nom} a ${CT.label}?\n\nSus OPs vuelven a contar en los programas y en Hora por hora (también en la OEE y Nidos).`)) return;
+      regresarDentro(b.dataset.regresar); toast(`${nom[0].toUpperCase() + nom.slice(1)} regresó a ${esc(CT.label)}.`, "ok"); renderVer();
+    });
   };
-  if (gen) { el.innerHTML = h + generalHTML(p, idx) + cambios() + retiradas; enlazar(); return; }
+  const fueraD = fueraDespuesHTML(p);
+  if (gen) { el.innerHTML = h + generalHTML(p, idx) + cambios() + fueraD + retiradas; enlazar(); return; }
   if (pzs) {
     if (!MAQ[verPzMaq] || !CT.maqs.some(x => x.id === verPzMaq)) verPzMaq = CORTE;
     el.innerHTML = h + `<div class="toolbar"><div class="seg">${CT.maqs.map(x => `<button data-pzm="${esc(x.id)}" class="${verPzMaq === x.id ? "on" : ""}">${esc(x.label)}</button>`).join("")}</div>
@@ -1921,44 +1934,70 @@ function renderVer() {
     el.querySelectorAll("[data-pzm]").forEach(b => b.onclick = () => { verPzMaq = b.dataset.pzm; renderVer(); });
     return;
   }
-  const s = stats(p, m.id), filas = p.rows.filter(r => r.proc?.[m.id]?.on);
+  const s = stats(p, m.id), filas = filasP(p).filter(r => r.proc?.[m.id]?.on);
   h += `<div class="kpis">${kpi("OPs", fmt(s.ops), fmt(s.mu) + " muebles")}${kpi("Programadas", fmt(s.prog), "piezas", "info")}${kpi(esc(m.hechas), fmt(s.h), Math.round(s.pct * 100) + "% del programa", s.pct >= 1 ? "ok" : "")}
       ${kpi("Faltan", fmt(s.falta), trabajoDe(p) < fechaTrabajo() && s.falta ? "atraso (se debió trabajar el " + fechaCorta(trabajoDe(p)) + ")" : "faltante por procesar", s.falta ? (trabajoDe(p) < fechaTrabajo() ? "err" : "warn") : "ok")}</div>`;
   h += cambios();
-  h += `<div class="card"><div class="tw"><table><thead><tr><th class="num">#</th><th>OP</th><th>Modelo</th><th>Ruta BC</th><th class="num">Muebles</th><th class="num">Pz x mueble</th><th class="num">Programadas</th><th class="num">${esc(m.hechas)}</th><th class="num">Faltan</th><th>Ruta de piezas · avance</th></tr></thead><tbody>`;
+  h += `<div class="card"><div class="tw"><table><thead><tr><th class="num">#</th><th>OP</th><th>Modelo</th><th>Ruta BC</th><th class="num">Muebles</th><th class="num">Pz x mueble</th><th class="num">Programadas</th><th class="num">${esc(m.hechas)}</th><th class="num">Faltan</th><th>Ruta de piezas · avance</th>${esVigente(p) ? "<th></th>" : ""}</tr></thead><tbody>`;
   let famAnt = null;
   filas.forEach((r, i) => {
-    if (r.familia !== famAnt) { h += `<tr class="grupo"><td colspan="10">${esc(r.familia || "Sin familia")}</td></tr>`; famAnt = r.familia; }
+    if (r.familia !== famAnt) { h += `<tr class="grupo"><td colspan="${esVigente(p) ? 11 : 10}">${esc(r.familia || "Sin familia")}</td></tr>`; famAnt = r.familia; }
     const rk = rkey(p.dia, r.k), pr = programadas(r, m.id), he = hechas(m.id, rk), pt = piezasTxt(r, m.id);
     h += `<tr class="${he >= pr ? "hecho" : ""}"><td class="num dim">${i + 1}</td><td class="mono">${esc(r.op)}</td><td>${modeloHTML({ ...r, desc: pt || r.desc })}</td>
       <td class="mono">${esc(r.ruta || "—")}</td><td class="num">${fmt(r.cant)}</td><td class="num">${r.proc[m.id].pz > 0 ? fmt(r.proc[m.id].pz) : '1 <span class="warn-t" title="Pz por mueble por definir">*</span>'}</td>
       <td class="num"><b>${fmt(pr)}</b></td><td class="num">${fmt(he)}</td><td class="num ${pr - he > 0 ? "" : "ok-t"}">${fmt(Math.max(0, pr - he))}</td>
-      <td>${rutaHTML(r, CT.id, otrosDeIdx(idx, rk), { rk, yo: m.id })}</td></tr>`;
+      <td>${rutaHTML(r, CT.id, otrosDeIdx(idx, rk), { rk, yo: m.id })}</td>${esVigente(p) ? `<td>${botonFuera(r)}</td>` : ""}</tr>`;
   });
-  h += `<tr class="tot"><td colspan="4">Total</td><td class="num">${fmt(s.mu)}</td><td></td><td class="num">${fmt(s.prog)}</td><td class="num">${fmt(s.h)}</td><td class="num">${fmt(s.falta)}</td><td>${barra(s.pct, s.pct >= 1)}</td></tr></tbody></table></div>
+  h += `<tr class="tot"><td colspan="4">Total</td><td class="num">${fmt(s.mu)}</td><td></td><td class="num">${fmt(s.prog)}</td><td class="num">${fmt(s.h)}</td><td class="num">${fmt(s.falta)}</td><td>${barra(s.pct, s.pct >= 1)}</td>${esVigente(p) ? "<td></td>" : ""}</tr></tbody></table></div>
     ${!filas.length ? `<div class="empty">Ninguna OP de este programa pasa por ${esc(m.label)}.</div>` : ""}</div>`;
-  el.innerHTML = h + retiradas;
+  el.innerHTML = h + fueraD + retiradas;
   enlazar();
 }
 const GENERAL = "GENERAL", PIEZAS = "PIEZAS";
 let verPzMaq = CORTE;
 /** Programa general del CT (Troqueles): todas las OPs con lo que lleva cada una en cada máquina */
 function generalHTML(p, idx) {
-  const st = Object.fromEntries(CT.maqs.map(x => [x.id, stats(p, x.id)])), mu = p.rows.reduce((a, r) => a + r.cant, 0);
-  const sinNada = p.rows.filter(r => !CT.maqs.some(x => r.proc?.[x.id]?.on)).length;
-  let h = `<div class="kpis">${kpi("OPs", fmt(p.rows.length), fmt(mu) + " muebles")}${CT.maqs.map(x => kpi(esc(x.label), fmt(st[x.id].ops) + " OPs", fmt(st[x.id].prog) + " piezas · " + Math.round(st[x.id].pct * 100) + "% hecho", "info")).join("")}
+  const rows = filasP(p), vig = esVigente(p);
+  const st = Object.fromEntries(CT.maqs.map(x => [x.id, stats(p, x.id)])), mu = rows.reduce((a, r) => a + r.cant, 0);
+  const sinNada = rows.filter(r => !CT.maqs.some(x => r.proc?.[x.id]?.on)).length;
+  let h = `<div class="kpis">${kpi("OPs", fmt(rows.length), fmt(mu) + " muebles")}${CT.maqs.map(x => kpi(esc(x.label), fmt(st[x.id].ops) + " OPs", fmt(st[x.id].prog) + " piezas · " + Math.round(st[x.id].pct * 100) + "% hecho", "info")).join("")}
       ${sinNada ? kpi("Sin proceso", fmt(sinNada), "OPs sin corte ni doblez marcado", "warn") : ""}</div>`;
-  h += `<div class="card"><div class="tw"><table><thead><tr><th class="num">#</th><th>OP</th><th>Modelo</th><th>Ruta BC</th><th class="num">Muebles</th>${CT.maqs.map(x => `<th class="num">${esc(x.corto)} (pz)</th>`).join("")}<th>Ruta de piezas · avance</th></tr></thead><tbody>`;
+  h += `<div class="card"><div class="tw"><table><thead><tr><th class="num">#</th><th>OP</th><th>Modelo</th><th>Ruta BC</th><th class="num">Muebles</th>${CT.maqs.map(x => `<th class="num">${esc(x.corto)} (pz)</th>`).join("")}<th>Ruta de piezas · avance</th>${vig ? "<th></th>" : ""}</tr></thead><tbody>`;
   let famAnt = null;
-  p.rows.forEach((r, i) => {
-    if (r.familia !== famAnt) { h += `<tr class="grupo"><td colspan="${6 + CT.maqs.length}">${esc(r.familia || "Sin familia")}</td></tr>`; famAnt = r.familia; }
+  rows.forEach((r, i) => {
+    if (r.familia !== famAnt) { h += `<tr class="grupo"><td colspan="${6 + CT.maqs.length + (vig ? 1 : 0)}">${esc(r.familia || "Sin familia")}</td></tr>`; famAnt = r.familia; }
     const rk = rkey(p.dia, r.k);
     h += `<tr><td class="num dim">${i + 1}</td><td class="mono">${esc(r.op)}</td><td>${modeloHTML(r)}</td><td class="mono">${esc(r.ruta || "—")}</td><td class="num">${fmt(r.cant)}</td>
       ${CT.maqs.map(x => { const pr = programadas(r, x.id); return `<td class="num">${pr ? fmt(pr) : '<span class="dim">—</span>'}</td>`; }).join("")}
-      <td>${rutaHTML(r, CT.id, otrosDeIdx(idx, rk), { rk })}</td></tr>`;
+      <td>${rutaHTML(r, CT.id, otrosDeIdx(idx, rk), { rk })}</td>${vig ? `<td>${botonFuera(r)}</td>` : ""}</tr>`;
   });
-  h += `<tr class="tot"><td colspan="4">Total</td><td class="num">${fmt(mu)}</td>${CT.maqs.map(x => `<td class="num">${fmt(st[x.id].prog)}</td>`).join("")}<td></td></tr></tbody></table></div></div>`;
+  h += `<tr class="tot"><td colspan="4">Total</td><td class="num">${fmt(mu)}</td>${CT.maqs.map(x => `<td class="num">${fmt(st[x.id].prog)}</td>`).join("")}<td></td>${vig ? "<td></td>" : ""}</tr></tbody></table></div></div>`;
   return h;
+}
+/* ---------- Marcar fuera desde un programa guardado (Leonardo, 2026-11-18) ----------
+   Botón «⊘ Fuera» en cada renglón del programa vigente: marca fuera del CT el modelo base (ruta de BC; si no trae, el modelo), en la
+   misma lista que usan la OEE y Nidos. Sus OPs dejan de contar en todos los programas guardados (filasP) y se retiran solas de los
+   siguientes. Se regresan desde «Fuera después de guardar» o en «Modelos fuera». */
+const botonFuera = r => `<button class="mini" data-fuera="${esc(r.k)}" title="Marcar ${r.ruta ? "el modelo base " + esc(r.ruta) : "el modelo " + esc(r.modelo)} fuera de ${esc(CT.label)}: sus OPs dejan de contar en los programas y en Hora por hora (misma lista que la OEE y Nidos)">⊘ Fuera</button>`;
+function fueraDesdePrograma(p, k) {
+  const r = p.rows.find(x => x.k === k); if (!r) return;
+  const porRuta = !!r.ruta, que = porRuta ? `el modelo base ${r.ruta}` : `el modelo ${r.modelo}`;
+  const igual = x => porRuta ? up(x.ruta) === up(r.ruta) : up(x.modelo) === up(r.modelo);
+  const n = progsVigentes(ctDe(p.ct)).reduce((s, q) => s + filasP(q).filter(igual).length, 0);
+  if (!confirm(`¿Marcar ${que} fuera de ${CT.label}?\n\n${n} OP(s) en los programas guardados dejan de mostrarse y de contar (también en Hora por hora), y se retira solo de los siguientes programas. Es la misma lista que usan la OEE y Nidos.\n\nSe regresa desde «Fuera después de guardar» o en «Modelos fuera».`)) return;
+  marcarFuera([r], porRuta, `Programa ${fechaCorta(p.dia)}`, ctDe(p.ct));
+  toast(`${que[0].toUpperCase() + que.slice(1)} quedó fuera de ${esc(CT.label)}: ${n} OP(s) ya no cuentan.`, "ok");
+  renderVer();
+}
+/** OPs del programa cuyos modelos se marcaron fuera después de guardarlo: no se muestran ni cuentan; aquí se pueden regresar */
+function fueraDespuesHTML(p) {
+  const fd = fueraDespues(p); if (!fd.length) return "";
+  const ct = ctDe(p.ct), keys = new Map();
+  for (const r of fd) { const c = clasificar(r, ct), kk = c.key || "fam:" + c.fam; if (!keys.has(kk)) keys.set(kk, { c, rs: [] }); keys.get(kk).rs.push(r); }
+  return `<details class="card" open><summary>Fuera después de guardar <span class="sub">${fd.length} OP(s) de modelos que se marcaron fuera de ${esc(ct.label)} (aquí, en la OEE o en «Modelos fuera»): no se muestran ni cuentan</span></summary><div class="body">
+    ${[...keys.values()].map(({ c, rs }) => { const x = c.key ? DB.modelos[c.key] : null, nom = c.por === "ruta" ? `Modelo base ${x?.valor || rs[0].ruta}` : c.por === "modelo" ? `Modelo ${x?.valor || rs[0].modelo}` : `Familia ${c.fam}`;
+      return `<div style="margin:4px 0"><b>${esc(nom)}</b>${x?.origen ? ` <span class="dim">· ${esc(x.origen)}</span>` : ""} · ${rs.map(r => `<span class="chip">${esc(r.op)} ${esc(r.modelo)} ×${r.cant}</span>`).join("")}
+        ${c.key ? `<button class="mini" data-regresar="${esc(c.key)}" title="Regresar a ${esc(ct.label)}: sus OPs vuelven a contar">Regresar</button>` : ""}</div>`; }).join("")}</div></details>`;
 }
 
 /* ---------- Hora por hora ---------- */
@@ -1968,7 +2007,7 @@ function pendientes(mid) {
     const t = trabajoDe(p);   // el CT trabaja el programa unos días hábiles antes de su fecha (Troqueles 3)
     if (t > H.fecha && !PREF.siguiente) continue;
     const grupo = t < H.fecha ? "atraso" : t === H.fecha ? "dia" : "sig";
-    for (const r of p.rows) {
+    for (const r of filasP(p)) {
       const pr = programadas(r, mid); if (!pr) continue;
       const rk = rkey(p.dia, r.k), he = hechas(mid, rk), falta = pr - he;
       if (falta <= 0 && !(H.completas && grupo !== "atraso")) continue;
@@ -2139,12 +2178,12 @@ function exportarExcel(p) {
   const ct = ctDe(p.ct), wb = XLSX.utils.book_new(), idx = indiceOPs();
   if (ct.id === "TROQUELES") {
     const ord = [["Nº", "Cód. procedencia mov.", "Cantidad", "Descripción", "Nº ruta", "Fecha-hora inicial", "Familia"]];
-    p.rows.filter(r => r.proc?.[CORTE]?.on).forEach(r => ord.push([r.op, r.modelo, r.cant, r.desc || "", r.ruta || "", r.ini ? new Date(r.ini) : "", r.familia || ""]));
+    filasP(p).filter(r => r.proc?.[CORTE]?.on).forEach(r => ord.push([r.op, r.modelo, r.cant, r.desc || "", r.ruta || "", r.ini ? new Date(r.ini) : "", r.familia || ""]));
     const w1 = XLSX.utils.aoa_to_sheet(ord, { cellDates: true }); w1["!cols"] = [{ wch: 13 }, { wch: 22 }, { wch: 9 }, { wch: 40 }, { wch: 14 }, { wch: 18 }, { wch: 14 }];
     XLSX.utils.book_append_sheet(wb, w1, "Ordenes");
   }
   for (const m of ct.maqs) {
-    const filas = p.rows.filter(r => r.proc?.[m.id]?.on); if (!filas.length) continue;
+    const filas = filasP(p).filter(r => r.proc?.[m.id]?.on); if (!filas.length) continue;
     const aoa = [[`F-PROGRAMA DE PRODUCCIÓN ${ct.label.toUpperCase()}${uniProc(ct) ? "" : " · " + m.label.toUpperCase()}`], [fechaLarga(p.dia).toUpperCase() + ` · ${p.tipo} v${p.version} · SE TRABAJA EL ${fechaLarga(trabajoDe(p)).toUpperCase()}`], [],
                  ["#", "Modelo", "OP", "Cant.", "Familia", "Ruta", "Pz x mueble", "Cant. progra.", "Ruta de piezas", "Piezas", "Observaciones"]];
     filas.forEach((r, i) => aoa.push([i + 1, r.modelo, r.op, r.cant, r.familia || "", r.ruta || "", pzEf(r.proc[m.id].pz), programadas(r, m.id), rutaTexto(r, ct.id, otrosDeIdx(idx, rkey(p.dia, r.k))), piezasTxt(r, m.id), ""]));
@@ -2175,7 +2214,7 @@ function exportarModelos() {
 function imprimir(p, maqs) {
   const ct = ctDe(p.ct), logo = new URL("assets/logo-li.png", location.href).href, idx = indiceOPs();
   $("#print").innerHTML = maqs.map(m => {
-    const filas = p.rows.filter(r => r.proc?.[m.id]?.on); let fam = null, tot = 0, mu = 0;
+    const filas = filasP(p).filter(r => r.proc?.[m.id]?.on); let fam = null, tot = 0, mu = 0;
     const cuerpo = filas.map((r, i) => {
       const pr = programadas(r, m.id); tot += pr; mu += r.cant;
       const g = r.familia !== fam ? `<tr class="grupo"><td colspan="11">${esc(r.familia || "Sin familia")}</td></tr>` : ""; fam = r.familia;
@@ -2236,7 +2275,7 @@ window.PT = { cargarArchivo, recibirOEE, DB, cambiarCT, ingDe, verDibujo, geomet
   /** Programas ya guardados de un día (todas las versiones) */
   guardados(dia) { return DB.programas.filter(p => p.dia === dia && esCT(p.ct)).map(p => ({ ct: p.ct, version: p.version, ops: p.rows.length, guardado: p.guardado })); },
   /** Modelos (ruta) del programa vigente de Troqueles de ese día que aún no tienen piezas en el catálogo: lo que falta capturar */
-  sinPiezas(dia) { const p = vigente(dia, ctDe("TROQUELES")); return p ? [...new Set(p.rows.filter(r => r.proc?.[CORTE]?.on && !piezasCat(r).length).map(r => r.ruta || r.modelo))] : []; } };   // para pruebas y para la rutina
+  sinPiezas(dia) { const p = vigente(dia, ctDe("TROQUELES")); return p ? [...new Set(filasP(p).filter(r => r.proc?.[CORTE]?.on && !piezasCat(r).length).map(r => r.ruta || r.modelo))] : []; } };   // para pruebas y para la rutina
 </script>
 </body>
 </html>
