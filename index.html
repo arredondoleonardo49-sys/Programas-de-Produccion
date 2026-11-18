@@ -302,7 +302,7 @@ dialog .db{padding:14px 16px;overflow:auto;max-height:calc(92vh - 60px)}
 <script>
 "use strict";
 /* ============================== CONFIGURACIÓN ============================== */
-const VERSION = "2026-11-17d";
+const VERSION = "2026-11-18a";
 const T1 = ["8AM–9AM","9AM–10AM","10AM–11AM","11AM–12PM","12PM–12:30PM ⏸ Comida","12:30PM–1:30PM","1:30PM–2:30PM","2:30PM–3:30PM","3:30PM–4:30PM","4:30PM–5PM"];
 /* Mismas franjas que el hora por hora de la OEE Planta */
 const FRANJAS = {
@@ -518,19 +518,52 @@ async function nubeTraer(todo) {
     }
     NUBE.desde = d.ahora - 15000; NUBE.cargado = true; NUBE.error = ""; NUBE.ultimo = Date.now();
     if (cambio) { guardarLocal(...SINC); refrescarPorNube(); }
+    try { recibirOEE(); } catch (e) { console.error(e); toast("No se pudo tomar el programa que llegó de la OEE: " + esc(e.message), "err"); }   // buzón «OEE|TROQUELES»
     nubeEstado();
     if (vacia && primera) toast("Nube conectada: se suben los datos de este navegador.", "ok");
     if (Object.keys(NUBE.pend).length) { clearTimeout(NUBE.timer); NUBE.timer = setTimeout(nubeEnviar, 300); }
   } catch (e) { NUBE.error = e.message; }
   NUBE.trayendo = false; pintarNube();
 }
+const capturando = () => $("#dlg").open || ["INPUT", "SELECT", "TEXTAREA"].includes(document.activeElement?.tagName) ||
+  [...document.querySelectorAll("#v-hora .hpz, #v-hora .hdan")].some(i => i.value);
 /** Repinta con lo que llegó, salvo que alguien esté capturando (entonces avisa y espera) */
 function refrescarPorNube() {
   if (!LISTO) return;
-  const capturando = $("#dlg").open || ["INPUT", "SELECT", "TEXTAREA"].includes(document.activeElement?.tagName) ||
-    [...document.querySelectorAll("#v-hora .hpz, #v-hora .hdan")].some(i => i.value);
-  if (capturando) { NUBE.porAplicar = true; pintarNube(); return; }
+  if (capturando()) { NUBE.porAplicar = true; pintarNube(); return; }
   NUBE.porAplicar = false; contadores(); abrir(vista);
+}
+/* ============================== PROGRAMA QUE LLEGA DE LA OEE (Leonardo, 2026-11-18) ==============================
+   Cada vez que en la OEE Planta se sube el programa de Troqueles (BC «Órdenes producción lanzadas»), la OEE lee el mismo
+   archivo igual que leerBC y lo deja en esta nube, en borradores «OEE|TROQUELES» (un buzón: no pisa el borrador de Troqueles).
+   Aquí se toma como si se hubiera cargado el archivo: se retiran solos los modelos «fuera» y, si no hay modelos nuevos, se
+   guarda el programa (nueva versión si ya había de ese día; misma regla que la rutina del previo). Con modelos nuevos queda
+   como borrador para revisarlo. Luego se borra el buzón. Si estás capturando, espera a la siguiente sincronización (≤1 min). */
+const BUZON_OEE = "OEE|TROQUELES";
+function recibirOEE() {
+  const nb = BS[BUZON_OEE];
+  if (!nb || !NUBE.cargado || !LISTO || capturando()) return;
+  delete BS[BUZON_OEE];
+  if (!Array.isArray(nb.ops) || !nb.ops.length) { guardar("bor"); return; }
+  nb.dia = nb.dia || hoyISO();
+  let eq = 0;   // como leerBC: aprende modelo → ruta de BC
+  for (const f of nb.ops) if (f.ruta && f.modelo && DB.equiv[up(f.modelo)] !== f.ruta) { DB.equiv[up(f.modelo)] = f.ruta; eq++; }
+  if (eq) guardar("equiv");
+  const r = usarLeido(nb), ct = ctDe("TROQUELES"), b = bor(ct), de = `Llegó de la OEE${nb.deOEE?.por ? ` (${esc(nb.deOEE.por)})` : ""}`;
+  if (!b) { contadores(); abrir(vista); return; }
+  const fs = filasB(ct), incl = fs.filter(x => !x.c.fuera), ret = fs.length - incl.length;
+  const nuevos = [...new Set(incl.filter(x => x.c.nuevo).map(x => x.f.modelo))];
+  const retTxt = ret ? ` · ${ret} retirada${ret === 1 ? "" : "s"} por modelos fuera` : "";
+  const p = incl.length && !nuevos.length ? guardarCT(ct, b.dia) : null;
+  if (p) {
+    guardar("programas", "modelos", "bor");
+    toast(`${de} el programa del <b>${fechaCorta(p.dia)}</b> (${esc(nb.archivo || "")}): guardado, versión ${p.version} · ${p.rows.length} OPs${retTxt}.`, "ok");
+  } else if (r.completo) {
+    toast(`${de} el exporte de BC: rutas y descripciones tomadas para <b>${r.completo}</b> OPs del previo cargado${nuevos.length ? ` · <b>${nuevos.length}</b> modelo(s) nuevo(s) por revisar` : ""}.`, "warn");
+  } else {
+    toast(`${de} el programa del <b>${fechaCorta(b.dia)}</b> (${esc(nb.archivo || "")}): ${incl.length} OPs${retTxt}. ${nuevos.length ? `<b>${nuevos.length}</b> modelo(s) nuevo(s): marca los que no pasan y pulsa <b>Guardar programa</b>.` : ""}`, nuevos.length ? "warn" : "ok");
+  }
+  contadores(); abrir(vista);
 }
 function pintarNube() {
   const b = $("#bNube"); if (!b) return;
@@ -830,22 +863,27 @@ function prepararBorrador(b, ct, mantener) {
 }
 function repreparar() { for (const c of CTS) if (BS[c.id]) prepararBorrador(BS[c.id], c, true); guardar("bor"); }
 function filasB(ct = CT) { const b = bor(ct); return b ? b.ops.map(f => ({ f, c: clasificar(f, ct) })) : []; }
+/** Usa un archivo ya leído (previo o BC) como «Cargar archivo»: arma el borrador. Devuelve {completo: n} o {res: [texto por CT]}. */
+function usarLeido(nb) {
+  // exporte de BC encima de un previo con las mismas OPs: solo completa rutas y descripciones (en todos los CT)
+  if (nb.origen === "bc" && CTS.some(c => BS[c.id]?.origen === "previo")) {
+    const porOp = new Map(nb.ops.map(o => [up(o.op), o])); let n = 0;
+    for (const c of CTS) { const b = BS[c.id]; if (!b || b.origen !== "previo") continue; let nc = 0;
+      for (const f of b.ops) { const o = porOp.get(up(f.op)); if (o) { if (o.ruta) { f.ruta = o.ruta; f.rutaSrc = "BC"; } f.desc = o.desc; f.ini = o.ini; nc++; } }
+      n = Math.max(n, nc); prepararBorrador(b, c, true); }
+    if (n) { guardar("bor"); return { completo: n }; }
+  }
+  // un archivo arma de una vez el borrador de todos los CT; cada uno retira sus modelos «fuera» y sus familias excluidas
+  const res = [];
+  for (const c of CTS) { BS[c.id] = prepararBorrador(clon(nb), c); const fs = filasB(c); res.push(`${c.label}: ${fs.filter(x => !x.c.fuera).length} OPs (${fs.filter(x => x.c.fuera).length} retiradas)`); }
+  guardar("bor");
+  return { res };
+}
 function cargarArchivo(buf, nombre) {
   try {
-    const nb = leerLibro(buf, nombre);
-    // exporte de BC encima de un previo con las mismas OPs: solo completa rutas y descripciones (en todos los CT)
-    if (nb.origen === "bc" && CTS.some(c => BS[c.id]?.origen === "previo")) {
-      const porOp = new Map(nb.ops.map(o => [up(o.op), o])); let n = 0;
-      for (const c of CTS) { const b = BS[c.id]; if (!b || b.origen !== "previo") continue; let nc = 0;
-        for (const f of b.ops) { const o = porOp.get(up(f.op)); if (o) { if (o.ruta) { f.ruta = o.ruta; f.rutaSrc = "BC"; } f.desc = o.desc; f.ini = o.ini; nc++; } }
-        n = Math.max(n, nc); prepararBorrador(b, c, true); }
-      if (n) { guardar("bor"); toast(`Rutas y descripciones de BC tomadas para <b>${n}</b> OPs del previo.`, "ok"); abrir("carga"); return; }
-    }
-    // un archivo arma de una vez el borrador de todos los CT; cada uno retira sus modelos «fuera» y sus familias excluidas
-    const res = [];
-    for (const c of CTS) { BS[c.id] = prepararBorrador(clon(nb), c); const fs = filasB(c); res.push(`${c.label}: ${fs.filter(x => !x.c.fuera).length} OPs (${fs.filter(x => x.c.fuera).length} retiradas)`); }
-    guardar("bor");
-    toast(`${esc(nb.tipo)} del <b>${fechaCorta(nb.dia)}</b> desglosado: ${res.join(" · ")}. Revisa y pulsa <b>Guardar programa</b>.`, "ok");
+    const nb = leerLibro(buf, nombre), r = usarLeido(nb);
+    if (r.completo) toast(`Rutas y descripciones de BC tomadas para <b>${r.completo}</b> OPs del previo.`, "ok");
+    else toast(`${esc(nb.tipo)} del <b>${fechaCorta(nb.dia)}</b> desglosado: ${r.res.join(" · ")}. Revisa y pulsa <b>Guardar programa</b>.`, "ok");
     abrir("carga");
   } catch (e) { console.error(e); toast(esc(e.message), "err"); }
 }
@@ -2185,7 +2223,7 @@ if (NUBE.url) nubeTraer(true);
 setInterval(() => { if (NUBE.url && !document.hidden) nubeTraer(false); }, 60000);
 document.addEventListener("visibilitychange", () => { if (NUBE.url && !document.hidden) nubeTraer(false); });
 window.addEventListener("online", () => { if (NUBE.url) nubeTraer(false); });
-window.PT = { cargarArchivo, DB, cambiarCT, ingDe, verDibujo, geometriaDXF, BIB, guardarTodos, NUBE, PREF, guardar, nubeTraer, nubeEnviar, CTS, VERSION,
+window.PT = { cargarArchivo, recibirOEE, DB, cambiarCT, ingDe, verDibujo, geometriaDXF, BIB, guardarTodos, NUBE, PREF, guardar, nubeTraer, nubeEnviar, CTS, VERSION,
   get B() { return bor(); }, get BS() { return BS; }, get CT() { return CT; },
   /** Rutina del agente: abre un previo o exporte servido por el mismo servidor (herramientas/servir.ps1 → /previo/<archivo>) */
   async cargarUrl(u) { const r = await fetch(u, { cache: "no-store" }); if (!r.ok) throw new Error(`No se pudo leer ${u} (${r.status})`); cargarArchivo(await r.arrayBuffer(), decodeURIComponent(u.split("/").pop())); },
