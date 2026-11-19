@@ -302,7 +302,7 @@ dialog .db{padding:14px 16px;overflow:auto;max-height:calc(92vh - 60px)}
 <script>
 "use strict";
 /* ============================== CONFIGURACIÓN ============================== */
-const VERSION = "2026-11-18d";
+const VERSION = "2026-11-19a";
 const T1 = ["8AM–9AM","9AM–10AM","10AM–11AM","11AM–12PM","12PM–12:30PM ⏸ Comida","12:30PM–1:30PM","1:30PM–2:30PM","2:30PM–3:30PM","3:30PM–4:30PM","4:30PM–5PM"];
 /* Mismas franjas que el hora por hora de la OEE Planta */
 const FRANJAS = {
@@ -2273,7 +2273,9 @@ window.addEventListener("online", () => { if (NUBE.url) nubeTraer(false); });
    y rutinas del agente) no corre. */
 const UPD = { cada: 3 * 60000, quieto: 60000, campo: 10 * 60000, firma: null, nueva: false, revisando: false, ult: 0, accion: Date.now(), t: null };
 function updFirma(doc) {
-  let s = ""; doc.querySelectorAll("script:not([src])").forEach(x => { s += x.textContent + "\u0000"; });
+  // solo el script de esta herramienta (el que trae esta función): las extensiones de Chrome meten sus propios <script>
+  // y, si se contaban, la página creía que había versión nueva y se recargaba cada rato (2026-11-19)
+  let s = ""; doc.querySelectorAll("script:not([src])").forEach(x => { const t = x.textContent || ""; if (t.indexOf("function updFirma(") >= 0) s += t + "\u0000"; });
   let h1 = 0x811c9dc5, h2 = 7; for (let i = 0; i < s.length; i++) { const c = s.charCodeAt(i); h1 = Math.imul(h1 ^ c, 16777619); h2 = (Math.imul(h2, 31) + c) | 0; }
   return s.length + "." + (h1 >>> 0).toString(36) + "." + (h2 >>> 0).toString(36);
 }
