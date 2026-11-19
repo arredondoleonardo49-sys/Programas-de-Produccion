@@ -302,7 +302,7 @@ dialog .db{padding:14px 16px;overflow:auto;max-height:calc(92vh - 60px)}
 <script>
 "use strict";
 /* ============================== CONFIGURACIÓN ============================== */
-const VERSION = "2026-11-18c";
+const VERSION = "2026-11-18d";
 const T1 = ["8AM–9AM","9AM–10AM","10AM–11AM","11AM–12PM","12PM–12:30PM ⏸ Comida","12:30PM–1:30PM","1:30PM–2:30PM","2:30PM–3:30PM","3:30PM–4:30PM","4:30PM–5PM"];
 /* Mismas franjas que el hora por hora de la OEE Planta */
 const FRANJAS = {
@@ -2254,7 +2254,10 @@ document.addEventListener("dragover", e => e.preventDefault());
 document.addEventListener("drop", e => { e.preventDefault(); const f = e.dataTransfer?.files?.[0]; if (f && /\.xlsx?$/i.test(f.name)) f.arrayBuffer().then(b => cargarArchivo(b, f.name)); });
 pintarCTs();
 LISTO = true;
-abrir(progsVigentes().length && !bor() ? "hora" : "progs");   // con borrador por revisar, «Programas» lo muestra arriba
+// tras actualizarse sola (ver «Versión al día» abajo) vuelve a la misma sección
+const _updRest = (() => { try { const s = JSON.parse(sessionStorage.getItem("pt_upd_restore_v1")); sessionStorage.removeItem("pt_upd_restore_v1"); return s && Date.now() - s.ts < 180000 ? s : null; } catch (e) { return null; } })();
+if (_updRest && _updRest.vista && _updRest.vista !== "ver") { abrir(_updRest.vista); if (_updRest.y) setTimeout(() => { try { scrollTo(0, _updRest.y); } catch (e) {} }, 300); }
+else abrir(progsVigentes().length && !bor() ? "hora" : "progs");   // con borrador por revisar, «Programas» lo muestra arriba
 // nube: al abrir trae todo; luego cada 15 s (con la pestaña a la vista), al volver a la pestaña y al recuperar internet
 $("#bNube").onclick = abrirNube;
 pintarNube();
@@ -2262,6 +2265,58 @@ if (NUBE.url) nubeTraer(true);
 setInterval(() => { if (NUBE.url && !document.hidden) nubeTraer(false); }, 15000);   // casi en tiempo real con la OEE (Leonardo, 2026-11-18): cada 15 s, solo lo que cambió
 document.addEventListener("visibilitychange", () => { if (NUBE.url && !document.hidden) nubeTraer(false); });
 window.addEventListener("online", () => { if (NUBE.url) nubeTraer(false); });
+/* ===== VERSIÓN AL DÍA EN TODOS LOS EQUIPOS, EN SEGUNDO PLANO (Leonardo, 2026-11-18) =====
+   «Que las plataformas en las otras PC se actualicen en automático… sin ventanas ni tener que seleccionar nada».
+   Igual que la OEE: cada 3 min (y al volver a la pestaña) compara su código con el publicado y, si hay versión nueva, se
+   recarga sola y sin avisar en cuanto nadie la usa: sin cursor en un campo, sin ventana abierta, 1 min sin tocarla y sin
+   cambios por mandar a la nube. Los datos y lo pendiente viven en este navegador: no se pierde nada. En localhost (pruebas
+   y rutinas del agente) no corre. */
+const UPD = { cada: 3 * 60000, quieto: 60000, campo: 10 * 60000, firma: null, nueva: false, revisando: false, ult: 0, accion: Date.now(), t: null };
+function updFirma(doc) {
+  let s = ""; doc.querySelectorAll("script:not([src])").forEach(x => { s += x.textContent + "\u0000"; });
+  let h1 = 0x811c9dc5, h2 = 7; for (let i = 0; i < s.length; i++) { const c = s.charCodeAt(i); h1 = Math.imul(h1 ^ c, 16777619); h2 = (Math.imul(h2, 31) + c) | 0; }
+  return s.length + "." + (h1 >>> 0).toString(36) + "." + (h2 >>> 0).toString(36);
+}
+const updUrl = () => location.href.split("#")[0].replace(/([?&])_v=\d+&?/, "$1").replace(/[?&]$/, "");
+const updActivo = () => /^https?:$/.test(location.protocol) && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+["pointerdown", "keydown", "input", "wheel", "touchstart"].forEach(ev => document.addEventListener(ev, () => { UPD.accion = Date.now(); }, { capture: true, passive: true }));
+async function updRevisar() {
+  if (!updActivo() || UPD.revisando || UPD.nueva || navigator.onLine === false) return;
+  UPD.revisando = true; UPD.ult = Date.now();
+  try {
+    if (UPD.firma === null) UPD.firma = updFirma(document);
+    const u = updUrl(), r = await fetch(u + (u.includes("?") ? "&" : "?") + "_v=" + Date.now(), { cache: "no-store", credentials: "same-origin" });
+    const txt = r.ok ? await r.text() : "";
+    if (/<title>Programación Troqueles<\/title>/.test(txt) && /<\/html>\s*$/i.test(txt)) {   // solo una página completa de esta herramienta
+      if (updFirma(new DOMParser().parseFromString(txt, "text/html")) !== UPD.firma) { UPD.nueva = true; console.info("Programación Troqueles: hay versión nueva; se actualiza sola en cuanto la pantalla esté libre."); updIntentar(); }
+    }
+  } catch (e) {}
+  UPD.revisando = false;
+}
+function updEspera() {
+  const quieto = Date.now() - UPD.accion, a = document.activeElement;
+  if (NUBE.enviando || Object.keys(NUBE.pend).length) return "nube";
+  if ($("#dlg")?.open) return "ventana";
+  if (a && a !== document.body && (a.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) && quieto < UPD.campo) return "campo";
+  if (quieto < UPD.quieto && !document.hidden) return "en uso";
+  return "";
+}
+function updIntentar() {
+  clearTimeout(UPD.t); if (!UPD.nueva) return;
+  let n = []; try { n = JSON.parse(sessionStorage.getItem("pt_upd_n_v1") || "[]").filter(t => Date.now() - t < 15 * 60000); } catch (e) {}
+  if (n.length >= 3) { UPD.nueva = false; return; }   // ya se recargó 3 veces en 15 min (el servidor aún reparte la anterior): espera
+  if (updEspera()) { UPD.t = setTimeout(updIntentar, 15000); return; }
+  try {
+    nubeEstado();
+    sessionStorage.setItem("pt_upd_restore_v1", JSON.stringify({ ts: Date.now(), vista, y: Math.round(window.scrollY || 0) }));
+    sessionStorage.setItem("pt_upd_n_v1", JSON.stringify([...n, Date.now()]));
+  } catch (e) {}
+  fetch(updUrl(), { cache: "reload", credentials: "same-origin" }).catch(() => {}).finally(() => setTimeout(() => location.reload(), 800));
+}
+setTimeout(updRevisar, 30000);
+setInterval(updRevisar, UPD.cada);
+document.addEventListener("visibilitychange", () => { if (!document.hidden && Date.now() - UPD.ult > 60000) updRevisar(); });
+window.addEventListener("online", () => setTimeout(updRevisar, 5000));
 window.PT = { cargarArchivo, recibirOEE, DB, cambiarCT, ingDe, verDibujo, geometriaDXF, BIB, guardarTodos, NUBE, PREF, guardar, nubeTraer, nubeEnviar, CTS, VERSION,
   get B() { return bor(); }, get BS() { return BS; }, get CT() { return CT; },
   /** Rutina del agente: abre un previo o exporte servido por el mismo servidor (herramientas/servir.ps1 → /previo/<archivo>) */
